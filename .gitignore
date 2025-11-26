@@ -208,3 +208,11 @@ __marimo__/
 
 
 assets/design.txt
+*.pyc
+__pycache__/
+.env
+*.db
+venv/
+.vscode/
+static/uploads/*
+!static/uploads/.gitkeep
