@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCohort</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="logo">
+                    <span>LeetCohort</span>
+                </div>
+                <a href="{{ url_for('auth') }}" class="nav-link">Sign In</a>
+            </div>
+        </div>
+    </nav>
+    <main class="main">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">LeetCohort</h1>
+                <div class="divider"></div>
+                <p class="hero-subtitle">Practice coding problems and compete with developers</p>
+                <a href="{{ url_for('auth') }}" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="footer-link">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="footer-link">Saurabh</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html> 
