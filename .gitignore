@@ -216,3 +216,4 @@ venv/
 .vscode/
 static/uploads/*
 !static/uploads/.gitkeep
+firebase-admin-sdk.json
