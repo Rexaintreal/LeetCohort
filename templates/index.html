@@ -5,36 +5,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeetCohort</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7E1EE7',
+                        'primary-hover': '#6B19C7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #000000;
+        }
+
+        .animated-bg {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            background: 
+                radial-gradient(
+                    circle at 100% 50%,
+                    #ff00cc 0% 2%,
+                    #00ffcc 3% 5%,
+                    transparent 6%
+                ),
+                radial-gradient(
+                    circle at 0% 50%,
+                    #ff00cc 0% 2%,
+                    #00ffcc 3% 5%,
+                    transparent 6%
+                ),
+                radial-gradient(ellipse at 50% 0%, #3300ff 0% 3%, transparent 4%) 10px 10px,
+                radial-gradient(
+                    circle at 50% 50%,
+                    #00ffcc 0% 1%,
+                    #ff00cc 2% 3%,
+                    #3300ff 4% 5%,
+                    transparent 6%
+                ) 20px 20px,
+                repeating-linear-gradient(
+                    45deg,
+                    #1a1a1a,
+                    #1a1a1a 10px,
+                    #242424 10px,
+                    #242424 20px
+                );
+            background-size:
+                50px 50px,
+                50px 50px,
+                40px 40px,
+                60px 60px,
+                100% 100%;
+            animation: shift 15s linear infinite;
+        }
+
+        @keyframes shift {
+            0% {
+                background-position:
+                    0 0,
+                    0 0,
+                    10px 10px,
+                    20px 20px,
+                    0 0;
+            }
+            100% {
+                background-position:
+                    50px 50px,
+                    -50px -50px,
+                    60px 60px,
+                    80px 80px,
+                    0 0;
+            }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-code {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="nav-brand">
-                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="logo">
+<body class="bg-black text-gray-100 min-h-screen flex flex-col">
+    <div class="animated-bg"></div>
+    <div class="fixed inset-0 bg-black bg-opacity-60 z-0"></div>
+    <div class="fixed inset-0 pointer-events-none overflow-hidden opacity-5 z-0">
+        <div class="floating-code absolute top-20 left-10 text-6xl text-primary" style="animation-delay: 0s;">&lt;/&gt;</div>
+        <div class="floating-code absolute top-40 right-20 text-4xl text-primary" style="animation-delay: 1s;">{ }</div>
+        <div class="floating-code absolute bottom-32 left-1/4 text-5xl text-primary" style="animation-delay: 2s;">[ ]</div>
+        <div class="floating-code absolute bottom-20 right-1/3 text-4xl text-primary" style="animation-delay: 1.5s;">( )</div>
+        <div class="floating-code absolute top-1/3 right-10 text-3xl text-primary" style="animation-delay: 2.5s;">;</div>
+    </div>
+    <nav class="bg-transparent relative z-10">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex justify-between items-center">
+                <a href="{{ url_for('index') }}" class="flex items-center gap-3 text-xl font-bold hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/logo-outlined.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg shadow-lg">
                     <span>LeetCohort</span>
-                </div>
-                <a href="{{ url_for('auth') }}" class="nav-link">Sign In</a>
+                </a>
+                <a href="{{ url_for('auth') }}" class="text-gray-400 hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+                    Sign In
+                </a>
             </div>
         </div>
     </nav>
-    <main class="main">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">LeetCohort</h1>
-                <div class="divider"></div>
-                <p class="hero-subtitle">Practice coding problems and compete with developers</p>
-                <a href="{{ url_for('auth') }}" class="btn btn-primary">Get Started</a>
-            </div>
+    <main class="flex-1 flex items-center justify-center px-6 relative z-10">
+        <div class="text-center max-w-4xl mx-auto">
+            <h1 class="text-6xl md:text-7xl lg:text-8xl font-extrabold mb-8 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent leading-tight">
+                LeetCohort
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+                Practice coding problems and compete with developers
+            </p>
+            <a href="{{ url_for('auth') }}" class="inline-block bg-primary hover:bg-primary-hover text-white font-semibold px-10 py-4 rounded-lg transition shadow-lg shadow-primary/50">
+                Get Started
+            </a>
         </div>
     </main>
-    <footer class="footer">
-        <div class="container">
-            <p class="footer-text">
-                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="footer-link">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="footer-link">Saurabh</a>
+    <footer class="py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="text-center text-sm text-gray-400">
+                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Saurabh Tiwari</a>
             </p>
         </div>
     </footer>
 </body>
-</html> 
+</html>

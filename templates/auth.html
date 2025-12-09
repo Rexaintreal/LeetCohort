@@ -5,23 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - LeetCohort</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7E1EE7',
+                        'primary-hover': '#6B19C7',
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <a href="{{ url_for('index') }}" class="nav-brand">
-                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="logo">
+<body class="bg-black text-gray-100 min-h-screen flex flex-col">
+    <div class="animated-bg"></div>
+    <div class="fixed inset-0 bg-black bg-opacity-60 z-0"></div>
+    <nav class="bg-transparent relative z-10">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex justify-between items-center">
+                <a href="{{ url_for('index') }}" class="flex items-center gap-3 text-xl font-bold hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg shadow-lg">
                     <span>LeetCohort</span>
                 </a>
-                <a href="{{ url_for('index') }}" class="nav-link">Back to Home</a>
+                <a href="{{ url_for('index') }}" class="text-gray-400 hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+                    Back to Home
+                </a>
             </div>
         </div>
     </nav>
-    <main class="main">
-        <div class="auth-container">
+    <main class="flex-1 flex items-center justify-center px-6 relative z-10">
+        <div class="w-full max-w-md">
             <div class="auth-card">
                 <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="auth-logo">
                 <h1 class="auth-title">Welcome to LeetCohort</h1>
@@ -42,11 +59,10 @@
             </div>
         </div>
     </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p class="footer-text">
-                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="footer-link">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="footer-link">Saurabh Tiwari</a>
+    <footer class="py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="text-center text-sm text-gray-400">
+                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Saurabh Tiwari</a>
             </p>
         </div>
     </footer>
