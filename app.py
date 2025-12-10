@@ -56,7 +56,8 @@ def get_problems():
         for row in cur.fetchall():
             problems.append({
                 'id': row['id'],
-                'title': row['slug'],
+                'title': row['title'], 
+                'slug': row['slug'],   
                 'description': row['description'],
                 'difficulty': row['difficulty'],
                 'created_at': row['created_at']
