@@ -14,7 +14,6 @@ function checkAuth() {
     };
 }
 
-
 function showLoading() {
     document.getElementById('loadingState').classList.remove('hidden');
     document.getElementById('mainContent').classList.add('hidden');
@@ -33,7 +32,7 @@ function showError(message) {
     document.getElementById('errorState').classList.remove('hidden');
     document.getElementById('errorMessage').textContent = message;
 }
-// profile card
+
 function updateUserProfile(userData, rank) {
     const userName = document.getElementById('userName');
     const userEmail = document.getElementById('userEmail');
@@ -84,36 +83,36 @@ function renderProblems(problems, solvedProblems = []) {
     
     if (problems.length === 0) {
         problemsList.innerHTML = `
-            <div class="p-8 text-center text-gray-400">
-                <i class="fas fa-inbox text-4xl mb-3"></i>
-                <p>No problems found</p>
+            <div class="p-12 text-center text-gray-500">
+                <i class="fas fa-inbox text-3xl mb-3 opacity-30"></i>
+                <p class="text-sm">No problems found</p>
             </div>
         `;
         return;
     }
     
-    problemsList.innerHTML = problems.map(problem => {
+    problemsList.innerHTML = problems.map((problem, index) => {
         const isSolved = solvedProblems.includes(problem.id);
         const difficultyColors = {
-            'Easy': 'text-green-400',
-            'Medium': 'text-yellow-400',
-            'Hard': 'text-red-400'
+            'Easy': 'text-green-500',
+            'Medium': 'text-yellow-500',
+            'Hard': 'text-red-500'
         };
         return `
-            <div class="p-4 hover:bg-gray-800 transition cursor-pointer problem-item" data-difficulty="${problem.difficulty}">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4 flex-1">
-                        <div class="flex items-center justify-center w-8">
-                            ${isSolved ? '<i class="fas fa-check-circle text-primary text-lg"></i>' : '<i class="far fa-circle text-gray-600 text-lg"></i>'}
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-medium text-white mb-1">${problem.title}</h3>
-                            <p class="text-sm text-gray-400 line-clamp-1">${problem.description.substring(0, 100)}...</p>
-                        </div>
+            <div class="p-5 cursor-pointer problem-item" data-difficulty="${problem.difficulty}">
+                <div class="flex items-start gap-4">
+                    <div class="flex items-center justify-center w-8 text-gray-500 font-medium text-sm flex-shrink-0 mt-0.5">
+                        ${index + 1}
                     </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm font-medium ${difficultyColors[problem.difficulty]}">${problem.difficulty}</span>
-                        <i class="fas fa-chevron-right text-gray-600"></i>
+                    <div class="flex items-center justify-center w-5 flex-shrink-0 mt-0.5">
+                        ${isSolved ? '<i class="fas fa-check-circle text-white text-sm"></i>' : '<i class="far fa-circle text-gray-600 text-sm"></i>'}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-4 mb-2">
+                            <h3 class="font-medium text-white text-base">${problem.title}</h3>
+                            <span class="text-sm font-medium ${difficultyColors[problem.difficulty]} flex-shrink-0">${problem.difficulty}</span>
+                        </div>
+                        <p class="text-sm text-gray-400 leading-relaxed">${problem.description}</p>
                     </div>
                 </div>
             </div>
@@ -128,9 +127,9 @@ function renderLeaderboard(leaderboard, currentUserId) {
     
     if (leaderboard.length === 0) {
         leaderboardList.innerHTML = `
-            <div class="text-center text-gray-400 py-8">
-                <i class="fas fa-users text-3xl mb-2"></i>
-                <p class="text-sm">No users yet</p>
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-users text-2xl mb-2 opacity-30"></i>
+                <p class="text-xs">No users yet</p>
             </div>
         `;
         return;
@@ -145,22 +144,21 @@ function renderLeaderboard(leaderboard, currentUserId) {
         };
         
         return `
-            <div class="flex items-center gap-3 p-3 rounded-lg ${isCurrentUser ? 'bg-primary bg-opacity-10 border border-primary' : 'hover:bg-gray-800'} transition">
-                <div class="flex items-center justify-center w-8 font-bold ${rankColors[index] || 'text-gray-500'}">
-                    ${index < 3 ? '<i class="fas fa-medal"></i>' : `#${index + 1}`}
+            <div class="flex items-center gap-3 p-3 rounded-lg transition ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
+                <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
+                    ${index < 3 ? '<i class="fas fa-medal"></i>' : `${index + 1}`}
                 </div>
-                <img src="${user.picture || 'https://via.placeholder.com/32'}" alt="${user.name}" class="h-8 w-8 rounded-full border border-gray-700">
+                <img src="${user.picture || 'https://via.placeholder.com/32'}" alt="${user.name}" class="h-8 w-8 rounded-full border border-white border-opacity-10">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium truncate ${isCurrentUser ? 'text-primary' : 'text-white'}">${user.name}</p>
-                    <p class="text-xs text-gray-400">${user.problems_solved} solved</p>
+                    <p class="text-sm font-medium truncate text-white">${user.name}</p>
+                    <p class="text-xs text-gray-500">${user.problems_solved} solved</p>
                 </div>
-                <div class="text-sm font-bold text-primary">${user.points}</div>
+                <div class="text-sm font-semibold text-white">${user.points}</div>
             </div>
         `;
     }).join('');
 }
 
-//funcs
 async function fetchUserData(uid, token) {
     const response = await fetch(`/api/user/${uid}`, {
         method: 'GET',
@@ -257,7 +255,7 @@ async function initHomePage() {
             fetchProblems(authData.token),
             fetchLeaderboard(authData.token)
         ]);
-        
+
         localStorage.setItem('userData', JSON.stringify(userData));
         const userRank = leaderboardData.findIndex(u => u.uid === userData.uid) + 1;
         updateUserProfile(userData, userRank);
@@ -266,8 +264,9 @@ async function initHomePage() {
         updateProgressBars(allProblems, userData.solved_problems || []);
         renderLeaderboard(leaderboardData, userData.uid);
         showContent();
-        
+
     } catch (error) {
+        console.error('Error initializing home page:', error);
         showError(error.message || 'Failed to load your dashboard. Please try logging in again.');
     }
 }
@@ -285,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterButtons = document.querySelectorAll('.difficulty-filter');
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            filterButtons.forEach(b => b.classList.remove('active', 'bg-primary'));
-            btn.classList.add('active', 'bg-primary');
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             currentFilter = btn.dataset.difficulty;
             filterProblems();
         });
