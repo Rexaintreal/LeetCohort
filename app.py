@@ -6,6 +6,7 @@ from firebase_admin import auth as firebase_auth
 from datetime import datetime
 import os
 from functools import wraps
+import sqlite3
 
 app = Flask(__name__)
 CORS(app)
@@ -31,6 +32,130 @@ def token_required(f):
             return jsonify({'error': 'Invalid token'}), 401
     
     return decorated_function
+
+def get_db_connection():
+    conn= sqlite3.connect('db/problems.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# API 
+@app.route('/api/problems', methods=['GET'])
+@token_required
+def get_problems():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT id, title, slug, description, difficulty, created_at
+            FROM problems
+            ORDER BY id ASC         
+        """)
+
+        problems = []
+        for row in cur.fetchall():
+            problems.append({
+                'id': row['id'],
+                'title': row['slug'],
+                'description': row['description'],
+                'difficulty': row['difficulty'],
+                'created_at': row['created_at']
+            })
+        conn.close()
+        return jsonify(problems), 200
+    
+    except Exception as e:
+        print(f"Error fetching problems: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/leaderboard', methods=['GET'])
+@token_required
+def get_leaderboard():
+    try:
+        users_ref = db.collection('users')
+        users = users_ref.order_by('points', direction=firestore.Query.DESCENDING).limit(100).stream()
+
+        leaderboard = []
+        for user in users:
+            user_data = user.to_dict()
+            leaderboard.append({
+                'uid': user_data.get('uid'),
+                'name':user_data.get('name'),
+                'email': user_data.get('email'),
+                'picture': user_data.get('picture'),
+                'points': user_data.get('points', 0),
+                'problems_solved': user_data.get('problems_solved', 0)
+            })
+        return jsonify(leaderboard), 200
+    
+    except Exception as e:
+        print(f"Error fetching leaderboard: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/problem/<slug>', methods=['GET'])
+@token_required
+def get_problem_detail(slug):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, title, slug, description, difficulty, boilerplate_code, created_at
+            FROM problems
+            WHERE slug = ?
+        """, (slug,))
+
+        problem_row = cur.fetchone()
+        if not problem_row:
+            conn.close()
+            return jsonify({'error': 'Problem not found'}), 404
+        
+        problem = {
+            'id': problem_row['id'],
+            'title': problem_row['title'],
+            'slug': problem_row['slug'],
+            'description': problem_row['description'],
+            'difficulty': problem_row['difficulty'],
+            'boilerplate_code': problem_row['boilerplate_code'],
+            'created_at': problem_row['created_at']
+        }
+
+        cur.execute("""
+                    SELECT id, input, expected_output, points
+                    FROM test_cases
+                    WHERE problem_id = ?
+                    """, (problem['id'],))
+        test_cases = []
+        for tc in cur.fetchall():
+            test_cases.append({
+                'id': tc['id'],
+                'input': tc['input'],
+                'expected_output': tc['expected_output'],
+                'points': tc['points']
+            })
+
+        problem['test_cases'] = test_cases
+
+        cur.execute("""
+            SELECT id, hint
+            FROM hints
+            WHERE problem_id = ?
+        """, (problem['id'],))
+
+        hints = []
+        for hint in cur.fetchall():
+            hints.append({
+                'id': hint['id'],
+                'hint': hint['hint']
+            })
+
+        problem['hint'] = hints
+
+        conn.close()
+        return jsonify(problem), 200
+    
+    except Exception as e:
+        print(f"Error fetching problem detail: {e}")
+        return jsonify({'error': str(e)}), 500
 
 #routes
 

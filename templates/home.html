@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - LeetCohort</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,56 +23,159 @@
 <body class="bg-black text-gray-100 min-h-screen">
     <!-- Navbar -->
     <nav class="border-b border-gray-800 bg-black sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="max-w-[1800px] mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="/" class="flex items-center gap-3 text-xl font-bold hover:opacity-80 transition">
                     <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg">
                     <span>LeetCohort</span>
                 </a>
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-3">
-                        <img id="userAvatar" src="" alt="User" class="h-8 w-8 rounded-full border border-gray-700">
-                        <span id="userName" class="text-sm text-gray-400">Loading...</span>
-                    </div>
-                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
-                        Logout
-                    </button>
-                </div>
+                <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
             </div>
         </div>
     </nav>
-    <div class="max-w-7xl mx-auto px-6 py-8">
-        <div id="loadingState" class="text-center py-20">
+
+    <!-- Loading State -->
+    <div id="loadingState" class="flex items-center justify-center min-h-[calc(100vh-73px)]">
+        <div class="text-center">
             <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             <p class="mt-4 text-gray-400">Loading your dashboard...</p>
         </div>
-        <div id="mainContent" class="hidden">
-            <h1 class="text-3xl font-bold mb-8">Welcome back, <span id="welcomeName">User</span>!</h1>
-            <div class="bg-gray-900 rounded-lg border border-gray-800 p-6 mb-8">
-                <h2 class="text-xl font-bold mb-4">Your Progress</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-gray-400 text-sm">Problems Solved</p>
-                        <p id="problemsSolved" class="text-3xl font-bold text-primary">0</p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="hidden">
+        <div class="max-w-[1800px] mx-auto px-6 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Sidebar - User Profile -->
+                <aside class="lg:col-span-3">
+                    <div class="bg-gray-900 rounded-lg border border-gray-800 p-6 sticky top-24">
+                        <div class="text-center mb-6">
+                            <img id="userAvatar" src="" alt="User" class="h-24 w-24 rounded-full mx-auto mb-4 border-2 border-primary">
+                            <h2 id="userName" class="text-xl font-bold">Loading...</h2>
+                            <p id="userEmail" class="text-sm text-gray-400 mt-1">user@email.com</p>
+                        </div>
+                        
+                        <div class="border-t border-gray-800 pt-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400 text-sm">
+                                    <i class="fas fa-trophy mr-2"></i>Points
+                                </span>
+                                <span id="userPoints" class="text-xl font-bold text-primary">0</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400 text-sm">
+                                    <i class="fas fa-check-circle mr-2"></i>Solved
+                                </span>
+                                <span id="userSolved" class="text-xl font-bold text-primary">0</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400 text-sm">
+                                    <i class="fas fa-chart-line mr-2"></i>Rank
+                                </span>
+                                <span id="userRank" class="text-xl font-bold text-primary">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-800 mt-6 pt-6">
+                            <h3 class="text-sm font-semibold text-gray-400 mb-3">Progress</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-green-400">Easy</span>
+                                        <span id="easyProgress" class="text-gray-400">0/0</span>
+                                    </div>
+                                    <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="easyBar" class="h-full bg-green-400 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-yellow-400">Medium</span>
+                                        <span id="mediumProgress" class="text-gray-400">0/0</span>
+                                    </div>
+                                    <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="mediumBar" class="h-full bg-yellow-400 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-red-400">Hard</span>
+                                        <span id="hardProgress" class="text-gray-400">0/0</span>
+                                    </div>
+                                    <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="hardBar" class="h-full bg-red-400 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-gray-400 text-sm">Total Points</p>
-                        <p id="totalPoints" class="text-3xl font-bold text-primary">0</p>
+                </aside>
+
+                <!-- Center - Problems List -->
+                <main class="lg:col-span-6">
+                    <div class="bg-gray-900 rounded-lg border border-gray-800">
+                        <div class="p-6 border-b border-gray-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-2xl font-bold">Problems</h2>
+                                <div class="flex gap-2">
+                                    <button class="difficulty-filter active px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 transition" data-difficulty="all">
+                                        All
+                                    </button>
+                                    <button class="difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 transition" data-difficulty="Easy">
+                                        Easy
+                                    </button>
+                                    <button class="difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 transition" data-difficulty="Medium">
+                                        Medium
+                                    </button>
+                                    <button class="difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 transition" data-difficulty="Hard">
+                                        Hard
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                                <input type="text" id="searchProblems" placeholder="Search problems..." class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-primary transition">
+                            </div>
+                        </div>
+                        
+                        <div id="problemsList" class="divide-y divide-gray-800">
+                            <!-- Problems will be loaded here -->
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="bg-gray-900 rounded-lg border border-gray-800 p-8 text-center">
-                <p class="text-gray-400">Problems list and leaderboard coming next!</p>
+                </main>
+
+                <!-- Right Sidebar - Leaderboard -->
+                <aside class="lg:col-span-3">
+                    <div class="bg-gray-900 rounded-lg border border-gray-800 sticky top-24">
+                        <div class="p-6 border-b border-gray-800">
+                            <h2 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-crown text-yellow-400 mr-2"></i>
+                                Leaderboard
+                            </h2>
+                        </div>
+                        <div id="leaderboardList" class="p-6 space-y-3 max-h-[600px] overflow-y-auto">
+                            <!-- Leaderboard will be loaded here -->
+                        </div>
+                    </div>
+                </aside>
+
             </div>
         </div>
-        <div id="errorState" class="hidden text-center py-20">
-            <p class="text-red-500 mb-4">Failed to load dashboard</p>
+    </div>
+    <div id="errorState" class="hidden flex items-center justify-center min-h-[calc(100vh-73px)]">
+        <div class="text-center">
+            <i class="fas fa-exclamation-circle text-red-500 text-5xl mb-4"></i>
+            <p class="text-red-500 mb-2 text-lg">Failed to load dashboard</p>
             <p class="text-gray-400 text-sm mb-6" id="errorMessage"></p>
             <a href="/auth" class="inline-block bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-lg transition">
                 Back to Login
             </a>
         </div>
     </div>
+
     <script type="module" src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>
