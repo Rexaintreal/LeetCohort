@@ -3,6 +3,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstati
 
 let app, auth, provider;
 
+//firebase init
 async function initializeFirebase() {
     try {
         const response = await fetch('/api/firebase-config');
@@ -23,6 +24,8 @@ async function initializeFirebase() {
         throw error;
     }
 }
+
+//ui helpers
 
 function showError(message) {
     const errorElement = document.getElementById('errorMessage');
@@ -49,28 +52,36 @@ function setButtonState(isLoading) {
     }
 }
 
+//auth
+
 async function handleGoogleSignIn() {
     setButtonState(true);
     hideError();
-
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         const idToken = await user.getIdToken();
-        const response = await fetch('/auth/verify', {
+        const response = await fetch('/api/auth/verify', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ idToken: idToken })
         });
-
-        if (response.ok) {
-            window.location.href = '/home';
-        } else {
+        if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Authentication failed');
         }
+        const data = await response.json();
+        localStorage.setItem('firebaseToken', idToken);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        if (data.user.is_new_user) {
+            console.log('Welcome new user!');
+        } else {
+            console.log('Welcome back!');
+        }
+        window.location.href = '/home';
+        
     } catch (error) {
         console.error('Error during sign in:', error);
         let errorMessage = 'Failed to sign in. Please try again.';
@@ -90,9 +101,15 @@ async function handleGoogleSignIn() {
     }
 }
 
+//init
 
 async function initAuthPage() {
     try {
+        const token = localStorage.getItem('firebaseToken');
+        if (token) {
+            window.location.href = '/home';
+            return;
+        }
         await initializeFirebase();
         const signInBtn = document.getElementById('googleSignInBtn');
         if (signInBtn) {
