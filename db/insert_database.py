@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-with open("problems.json", "r", encoding="utf-8") as f:
+with open("db/problems.json", "r", encoding="utf-8") as f:
     problems = json.load(f)
 
 conn = sqlite3.connect("problems.db")
