@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - LeetCohort</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7E1EE7',
+                        'primary-hover': '#6B19C7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #000000;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: rgba(126, 30, 231, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-100 min-h-screen">
+    <nav class="border-b border-white border-opacity-5 bg-black sticky top-0 z-50 backdrop-blur-lg">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center gap-3 text-xl font-bold hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg">
+                    <span>LeetCohort</span>
+                </a>
+                <a href="/home" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Home</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div id="loadingState" class="flex items-center justify-center min-h-[calc(100vh-73px)]">
+        <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white border-opacity-20"></div>
+            <p class="mt-4 text-gray-500">Loading profile...</p>
+        </div>
+    </div>
+    <div id="mainContent" class="hidden">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="glass-card rounded-xl p-8 mb-6">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                    <img id="profileAvatar" src="" alt="Profile" class="h-32 w-32 rounded-full border-4 border-white border-opacity-10">
+                    <div class="flex-1 text-center md:text-left">
+                        <h1 id="profileName" class="text-3xl font-bold mb-2">Loading...</h1>
+                        <p id="profileEmail" class="text-gray-400 mb-4">email@example.com</p>
+                        <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+                            <div class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5">
+                                <i class="fas fa-medal text-yellow-400"></i>
+                                <span class="text-sm">Rank <span id="profileRank" class="font-bold text-white">#-</span></span>
+                            </div>
+                            <div class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5">
+                                <i class="fas fa-trophy text-yellow-400"></i>
+                                <span class="text-sm"><span id="profilePoints" class="font-bold text-white">0</span> points</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5">
+                                <i class="fas fa-check-circle text-green-400"></i>
+                                <span class="text-sm"><span id="profileSolved" class="font-bold text-white">0</span> solved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="stat-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Easy Problems</h3>
+                        <i class="fas fa-smile text-green-500 text-xl"></i>
+                    </div>
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Solved</span>
+                            <span id="easySolved" class="text-white font-semibold">0/0</span>
+                        </div>
+                        <div class="h-2 bg-white bg-opacity-5 rounded-full overflow-hidden">
+                            <div id="easyBar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <p id="easyPercent" class="text-2xl font-bold text-green-500">0%</p>
+                </div>
+                <div class="stat-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Medium Problems</h3>
+                        <i class="fas fa-meh text-yellow-500 text-xl"></i>
+                    </div>
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Solved</span>
+                            <span id="mediumSolved" class="text-white font-semibold">0/0</span>
+                        </div>
+                        <div class="h-2 bg-white bg-opacity-5 rounded-full overflow-hidden">
+                            <div id="mediumBar" class="h-full bg-yellow-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <p id="mediumPercent" class="text-2xl font-bold text-yellow-500">0%</p>
+                </div>
+                <div class="stat-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Hard Problems</h3>
+                        <i class="fas fa-fire text-red-500 text-xl"></i>
+                    </div>
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Solved</span>
+                            <span id="hardSolved" class="text-white font-semibold">0/0</span>
+                        </div>
+                        <div class="h-2 bg-white bg-opacity-5 rounded-full overflow-hidden">
+                            <div id="hardBar" class="h-full bg-red-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <p id="hardPercent" class="text-2xl font-bold text-red-500">0%</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-lg font-semibold mb-4">Problems by Difficulty</h3>
+                    <div class="relative h-64">
+                        <canvas id="difficultyChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card rounded-xl p-6">
+                    <h3 class="text-lg font-semibold mb-4">Completion Progress</h3>
+                    <div class="relative h-64">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Activity</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-sm text-gray-400 mb-2">Member Since</p>
+                        <p id="memberSince" class="text-base font-semibold">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400 mb-2">Last Active</p>
+                        <p id="lastActive" class="text-base font-semibold">-</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div id="errorState" class="hidden flex items-center justify-center min-h-[calc(100vh-73px)]">
+        <div class="text-center">
+            <i class="fas fa-user-slash text-white text-5xl mb-4 opacity-20"></i>
+            <p class="text-white mb-2 text-lg font-semibold">User not found</p>
+            <p class="text-gray-500 text-sm mb-6" id="errorMessage"></p>
+            <a href="/home" class="inline-block bg-white bg-opacity-5 hover:bg-opacity-10 text-white font-semibold px-6 py-3 rounded-lg transition border border-white border-opacity-10">
+                Back to Home
+            </a>
+        </div>
+    </div>
+    <script>
+        const username = "{{ username }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+</body>
+</html>

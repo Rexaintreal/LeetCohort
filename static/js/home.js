@@ -144,17 +144,19 @@ function renderLeaderboard(leaderboard, currentUserId) {
         };
         
         return `
-            <div class="flex items-center gap-3 p-3 rounded-lg transition ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
-                <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
-                    ${index < 3 ? '<i class="fas fa-medal"></i>' : `${index + 1}`}
+            <a href="/profile/${user.uid}" class="block">
+                <div class="flex items-center gap-3 p-3 rounded-lg transition cursor-pointer ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
+                    <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
+                        ${index < 3 ? '<i class="fas fa-medal"></i>' : `${index + 1}`}
+                    </div>
+                    <img src="${user.picture || 'https://via.placeholder.com/32'}" alt="${user.name}" class="h-8 w-8 rounded-full border border-white border-opacity-10">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate text-white">${user.name}</p>
+                        <p class="text-xs text-gray-500">${user.problems_solved} solved</p>
+                    </div>
+                    <div class="text-sm font-semibold text-white">${user.points}</div>
                 </div>
-                <img src="${user.picture || 'https://via.placeholder.com/32'}" alt="${user.name}" class="h-8 w-8 rounded-full border border-white border-opacity-10">
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium truncate text-white">${user.name}</p>
-                    <p class="text-xs text-gray-500">${user.problems_solved} solved</p>
-                </div>
-                <div class="text-sm font-semibold text-white">${user.points}</div>
-            </div>
+            </a>
         `;
     }).join('');
 }

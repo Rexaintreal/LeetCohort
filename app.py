@@ -15,7 +15,6 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 def token_required(f):
-    """Decorator to verify Firebase ID token"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
@@ -157,6 +156,68 @@ def get_problem_detail(slug):
     except Exception as e:
         print(f"Error fetching problem detail: {e}")
         return jsonify({'error': str(e)}), 500
+    
+
+
+
+    
+@app.route('/api/profile/<uid>', methods=['GET'])
+def get_public_profile(uid):
+    """Get public profile data for any user (no auth required)"""
+    try:
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+        
+        if not user_doc.exists:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_data = user_doc.to_dict()
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, difficulty FROM problems")
+        all_problems = cur.fetchall()
+        conn.close()
+        
+        solved_ids = user_data.get('solved_problems', [])
+        difficulty_stats = {'Easy': 0, 'Medium': 0, 'Hard': 0}
+        total_by_difficulty = {'Easy': 0, 'Medium': 0, 'Hard': 0}
+        
+        for problem in all_problems:
+            diff = problem['difficulty']
+            total_by_difficulty[diff] += 1
+            if problem['id'] in solved_ids:
+                difficulty_stats[diff] += 1
+        
+        profile_data = {
+            'uid': user_data['uid'],
+            'name': user_data['name'],
+            'email': user_data['email'],
+            'picture': user_data.get('picture'),
+            'points': user_data.get('points', 0),
+            'problems_solved': user_data.get('problems_solved', 0),
+            'solved_problems': user_data.get('solved_problems', []),
+            'difficulty_stats': difficulty_stats,
+            'total_by_difficulty': total_by_difficulty,
+            'created_at': user_data['created_at'].isoformat() if 'created_at' in user_data else None,
+            'last_active': user_data['last_active'].isoformat() if 'last_active' in user_data else None
+        }
+        
+        users_ref = db.collection('users').order_by('points', direction=firestore.Query.DESCENDING).stream()
+        rank = 1
+        for user in users_ref:
+            if user.id == uid:
+                profile_data['rank'] = rank
+                break
+            rank += 1
+        
+        return jsonify(profile_data), 200
+        
+    except Exception as e:
+        print(f"Error fetching public profile: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 
 #routes
 
@@ -171,6 +232,10 @@ def auth():
 @app.route('/home')
 def home():
     return render_template('home.html')
+
+@app.route('/profile/<username>')
+def profile(username):
+    return render_template('profile.html', username=username)
 
 @app.route('/api/firebase-config')
 def firebase_config():
