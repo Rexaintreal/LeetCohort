@@ -259,7 +259,6 @@ def profile(username):
 
 @app.route('/api/firebase-config')
 def firebase_config():
-    """Serve public Firebase configuration from environment variables"""
     config = {
         'apiKey': os.getenv('FIREBASE_API_KEY'),
         'authDomain': os.getenv('FIREBASE_AUTH_DOMAIN'),

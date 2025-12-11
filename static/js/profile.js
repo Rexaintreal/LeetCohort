@@ -1,3 +1,30 @@
+// toast
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type} show`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle'
+    };
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <i class="fas ${icons[type]} text-lg"></i>
+            <p class="text-sm text-white">${message}</p>
+        </div>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
 // auth
 function checkAuth() {
     const token = localStorage.getItem('firebaseToken');
@@ -35,7 +62,10 @@ function showError(message) {
 function handleLogout() {
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
-    window.location.href = '/';
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => {
+        window.location.href = '/';
+    }, 500);
 }
 
 function updateNavbarProfile(currentUserData, isOwnProfile) {
@@ -105,15 +135,19 @@ function updateProfile(data) {
     
     const stats = data.difficulty_stats || { Easy: 0, Medium: 0, Hard: 0 };
     const totals = data.total_by_difficulty || { Easy: 0, Medium: 0, Hard: 0 };
-    ['Easy', 'Medium', 'Hard'].forEach(diff => {
-        const solved = stats[diff] || 0;
-        const total = totals[diff] || 0;
-        const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
-        const key = diff.toLowerCase();
-        document.getElementById(`${key}Solved`).textContent = `${solved}/${total}`;
-        document.getElementById(`${key}Bar`).style.width = `${percent}%`;
-        document.getElementById(`${key}Percent`).textContent = `${percent}%`;
-    });
+    setTimeout(() => {
+        ['Easy', 'Medium', 'Hard'].forEach(diff => {
+            const solved = stats[diff] || 0;
+            const total = totals[diff] || 0;
+            const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
+            const key = diff.toLowerCase();
+            
+            document.getElementById(`${key}Solved`).textContent = `${solved}/${total}`;
+            document.getElementById(`${key}Bar`).style.width = `${percent}%`;
+            document.getElementById(`${key}Percent`).textContent = `${percent}%`;
+        });
+    }, 200);
+    
     document.getElementById('memberSince').textContent = formatDate(data.created_at);
     document.getElementById('lastActive').textContent = timeAgo(data.last_active);
     createDifficultyChart(stats);
@@ -139,12 +173,19 @@ function createDifficultyChart(stats) {
                     'rgb(234, 179, 8)',
                     'rgb(239, 68, 68)'
                 ],
-                borderWidth: 2
+                borderWidth: 2,
+                hoverOffset: 10
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            },
             plugins: {
                 legend: {
                     position: 'bottom',
@@ -152,18 +193,28 @@ function createDifficultyChart(stats) {
                         color: '#9CA3AF',
                         padding: 15,
                         font: {
-                            size: 12
-                        }
+                            size: 12,
+                            weight: 500
+                        },
+                        usePointStyle: true,
+                        pointStyle: 'circle'
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
                     titleColor: '#fff',
                     bodyColor: '#fff',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: 1,
-                    padding: 10,
-                    displayColors: false
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            return `${label}: ${value} problems`;
+                        }
+                    }
                 }
             }
         }
@@ -191,7 +242,8 @@ function createProgressChart(solved, totals) {
                         'rgb(234, 179, 8)',
                         'rgb(239, 68, 68)'
                     ],
-                    borderWidth: 2
+                    borderWidth: 2,
+                    borderRadius: 6
                 },
                 {
                     label: 'Remaining',
@@ -202,32 +254,46 @@ function createProgressChart(solved, totals) {
                     ],
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    borderRadius: 6
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            },
             scales: {
                 x: {
                     stacked: true,
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.05)'
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
                     },
                     ticks: {
-                        color: '#9CA3AF'
+                        color: '#9CA3AF',
+                        font: {
+                            size: 12,
+                            weight: 500
+                        }
                     }
                 },
                 y: {
                     stacked: true,
                     beginAtZero: true,
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.05)'
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
                     },
                     ticks: {
                         color: '#9CA3AF',
-                        stepSize: 1
+                        stepSize: 1,
+                        font: {
+                            size: 12
+                        }
                     }
                 }
             },
@@ -237,17 +303,27 @@ function createProgressChart(solved, totals) {
                         color: '#9CA3AF',
                         padding: 15,
                         font: {
-                            size: 12
-                        }
+                            size: 12,
+                            weight: 500
+                        },
+                        usePointStyle: true,
+                        pointStyle: 'circle'
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
                     titleColor: '#fff',
                     bodyColor: '#fff',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: 1,
-                    padding: 10
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y || 0;
+                            return `${label}: ${value}`;
+                        }
+                    }
                 }
             }
         }
@@ -287,9 +363,16 @@ async function initProfilePage() {
         const profileData = await fetchProfile(uid);
         updateProfile(profileData);
         showContent();
+        if (isOwnProfile) {
+            showToast(`Welcome to your profile!`, 'success');
+        } else {
+            showToast(`Viewing ${profileData.name}'s profile`, 'info');
+        }
         
     } catch (error) {
+        console.error('Profile initialization error:', error);
         showError(error.message || 'Failed to load user profile');
+        showToast(error.message || 'Failed to load profile', 'error');
     }
 }
 
