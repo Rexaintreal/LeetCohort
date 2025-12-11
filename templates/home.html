@@ -76,6 +76,27 @@
         .stat-item:hover {
             border-color: rgba(255, 255, 255, 0.1);
         }
+
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-link.active {
+            background: rgba(126, 30, 231, 0.1);
+            color: white;
+            border-bottom: 2px solid #7E1EE7;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(126, 30, 231, 0.3);
+        }
     </style>
 </head>
 <body class="bg-black text-gray-100 min-h-screen">
@@ -86,10 +107,25 @@
                     <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg">
                     <span>LeetCohort</span>
                 </a>
-                <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </button>
+                <div class="flex items-center gap-6">
+                    <a href="/home" class="nav-link active px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-home"></i>
+                        <span>Problems</span>
+                    </a>
+                    <a href="/leaderboard" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-trophy"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                    <a href="#" id="profileLink" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <img id="navProfilePic" src="" alt="Profile" class="profile-avatar" style="display: none;">
+                        <i id="navProfileIcon" class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -217,7 +253,6 @@
                         </div>
                     </div>
                 </aside>
-
             </div>
         </div>
     </div>

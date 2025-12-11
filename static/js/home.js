@@ -33,6 +33,20 @@ function showError(message) {
     document.getElementById('errorMessage').textContent = message;
 }
 
+function updateNavbarProfile(userData) {
+    const profilePic = document.getElementById('navProfilePic');
+    const profileIcon = document.getElementById('navProfileIcon');
+    
+    if (userData.picture) {
+        profilePic.src = `/proxy-image?url=${encodeURIComponent(userData.picture)}`;
+        profilePic.style.display = 'block';
+        profileIcon.style.display = 'none';
+    } else {
+        profilePic.style.display = 'none';
+        profileIcon.style.display = 'block';
+    }
+}
+
 function updateUserProfile(userData, rank) {
     const userName = document.getElementById('userName');
     const userEmail = document.getElementById('userEmail');
@@ -52,6 +66,9 @@ function updateUserProfile(userData, rank) {
     if (userPoints) userPoints.textContent = userData.points || 0;
     if (userSolved) userSolved.textContent = userData.problems_solved || 0;
     if (userRank) userRank.textContent = rank ? `#${rank}` : '-';
+    
+    updateNavbarProfile(userData);
+    document.getElementById('profileLink').href = `/profile/${userData.uid}`;
 }
 
 function updateProgressBars(problems, solvedProblems) {

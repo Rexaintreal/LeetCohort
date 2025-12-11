@@ -1,3 +1,17 @@
+// auth
+function checkAuth() {
+    const token = localStorage.getItem('firebaseToken');
+    const userData = localStorage.getItem('userData');
+    
+    if (!token || !userData) {
+        return null;
+    }
+    
+    return {
+        token: token,
+        user: JSON.parse(userData)
+    };
+}
 
 function showLoading() {
     document.getElementById('loadingState').classList.remove('hidden');
@@ -16,6 +30,35 @@ function showError(message) {
     document.getElementById('mainContent').classList.add('hidden');
     document.getElementById('errorState').classList.remove('hidden');
     document.getElementById('errorMessage').textContent = message;
+}
+
+function handleLogout() {
+    localStorage.removeItem('firebaseToken');
+    localStorage.removeItem('userData');
+    window.location.href = '/';
+}
+
+function updateNavbarProfile(currentUserData, isOwnProfile) {
+    const profilePic = document.getElementById('navProfilePic');
+    const profileIcon = document.getElementById('navProfileIcon');
+    const profileLink = document.getElementById('profileLink');
+    
+    if (currentUserData && currentUserData.picture) {
+        profilePic.src = `/proxy-image?url=${encodeURIComponent(currentUserData.picture)}`;
+        profilePic.style.display = 'block';
+        profileIcon.style.display = 'none';
+    } else {
+        profilePic.style.display = 'none';
+        profileIcon.style.display = 'block';
+    }
+    if (currentUserData) {
+        profileLink.href = `/profile/${currentUserData.uid}`;
+    }
+    if (isOwnProfile) {
+        profileLink.classList.add('active');
+    } else {
+        profileLink.classList.remove('active');
+    }
 }
 
 function formatDate(dateString) {
@@ -237,7 +280,10 @@ async function initProfilePage() {
         if (!uid) {
             throw new Error('No user ID provided');
         }
-        
+        const authData = checkAuth();
+        const currentUserData = authData ? authData.user : null;
+        const isOwnProfile = currentUserData && currentUserData.uid === uid;
+        updateNavbarProfile(currentUserData, isOwnProfile);
         const profileData = await fetchProfile(uid);
         updateProfile(profileData);
         showContent();
@@ -247,4 +293,11 @@ async function initProfilePage() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initProfilePage);
+document.addEventListener('DOMContentLoaded', () => {
+    initProfilePage();
+    
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+});
