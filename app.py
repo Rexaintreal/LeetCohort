@@ -249,6 +249,10 @@ def auth():
 def home():
     return render_template('home.html')
 
+@app.route('/leaderboard')
+def leaderboard():
+    return render_template('leaderboard.html')
+
 @app.route('/profile/<username>')
 def profile(username):
     return render_template('profile.html', username=username)
