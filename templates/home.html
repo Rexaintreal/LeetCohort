@@ -38,6 +38,11 @@
         .problem-item:hover {
             background: rgba(255, 255, 255, 0.02);
             border-left-color: #7E1EE7;
+            transform: translateX(2px);
+        }
+
+        .problem-item:active {
+            transform: translateX(2px) scale(0.99);
         }
         
         .filter-btn {
@@ -48,6 +53,10 @@
             background: rgba(126, 30, 231, 0.1);
             color: white;
             border: 1px solid rgba(126, 30, 231, 0.3);
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
         }
         
         ::-webkit-scrollbar {
@@ -75,6 +84,7 @@
         
         .stat-item:hover {
             border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .nav-link {
@@ -96,10 +106,116 @@
             height: 32px;
             border-radius: 50%;
             border: 2px solid rgba(126, 30, 231, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .profile-avatar:hover {
+            border-color: rgba(126, 30, 231, 0.6);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text {
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .skeleton-title {
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .skeleton-circle {
+            border-radius: 50%;
+        }
+
+        .skeleton-avatar {
+            width: 80px;
+            height: 80px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .leaderboard-item {
+            transition: all 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(4px);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 300px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+            opacity: 0;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+
+        .toast-error {
+            border-left: 3px solid #ef4444;
+        }
+
+        .toast-success {
+            border-left: 3px solid #10b981;
+        }
+
+        .toast-info {
+            border-left: 3px solid #3b82f6;
         }
     </style>
 </head>
 <body class="bg-black text-gray-100 min-h-screen">
+    <div id="toastContainer"></div>
     <nav class="border-b border-white border-opacity-5 bg-black sticky top-0 z-50 backdrop-blur-lg">
         <div class="max-w-[1800px] mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
@@ -129,19 +245,132 @@
             </div>
         </div>
     </nav>
-    <div id="loadingState" class="flex items-center justify-center min-h-[calc(100vh-73px)]">
-        <div class="text-center">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white border-opacity-20"></div>
-            <p class="mt-4 text-gray-500">Loading your dashboard...</p>
+
+    <div id="loadingState" class="max-w-[1800px] mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <aside class="lg:col-span-3">
+                <div class="glass-card rounded-xl p-6">
+                    <div class="text-center mb-6">
+                        <div class="skeleton skeleton-circle skeleton-avatar mx-auto mb-3"></div>
+                        <div class="skeleton skeleton-title w-32 mx-auto mb-2"></div>
+                        <div class="skeleton skeleton-text w-40 mx-auto"></div>
+                    </div>
+                    <div class="space-y-2 mb-6">
+                        <div class="stat-item rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="skeleton skeleton-text w-20"></div>
+                                <div class="skeleton skeleton-text w-12"></div>
+                            </div>
+                        </div>
+                        <div class="stat-item rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="skeleton skeleton-text w-20"></div>
+                                <div class="skeleton skeleton-text w-12"></div>
+                            </div>
+                        </div>
+                        <div class="stat-item rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="skeleton skeleton-text w-20"></div>
+                                <div class="skeleton skeleton-text w-12"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-white border-opacity-5 pt-4">
+                        <div class="skeleton skeleton-text w-24 mb-3"></div>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1.5">
+                                    <div class="skeleton skeleton-text w-12"></div>
+                                    <div class="skeleton skeleton-text w-12"></div>
+                                </div>
+                                <div class="h-1.5 bg-white bg-opacity-5 rounded-full"></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1.5">
+                                    <div class="skeleton skeleton-text w-16"></div>
+                                    <div class="skeleton skeleton-text w-12"></div>
+                                </div>
+                                <div class="h-1.5 bg-white bg-opacity-5 rounded-full"></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1.5">
+                                    <div class="skeleton skeleton-text w-12"></div>
+                                    <div class="skeleton skeleton-text w-12"></div>
+                                </div>
+                                <div class="h-1.5 bg-white bg-opacity-5 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <main class="lg:col-span-6">
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-white border-opacity-5">
+                        <div class="skeleton skeleton-title w-32 mb-4"></div>
+                        <div class="skeleton skeleton-text h-10 w-full rounded-lg"></div>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="p-5 glass-card rounded-lg">
+                            <div class="skeleton skeleton-title w-3/4 mb-2"></div>
+                            <div class="skeleton skeleton-text w-full mb-1"></div>
+                            <div class="skeleton skeleton-text w-5/6"></div>
+                        </div>
+                        <div class="p-5 glass-card rounded-lg">
+                            <div class="skeleton skeleton-title w-2/3 mb-2"></div>
+                            <div class="skeleton skeleton-text w-full mb-1"></div>
+                            <div class="skeleton skeleton-text w-4/5"></div>
+                        </div>
+                        <div class="p-5 glass-card rounded-lg">
+                            <div class="skeleton skeleton-title w-3/5 mb-2"></div>
+                            <div class="skeleton skeleton-text w-full mb-1"></div>
+                            <div class="skeleton skeleton-text w-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <aside class="lg:col-span-3">
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <div class="p-6 border-b border-white border-opacity-5">
+                        <div class="skeleton skeleton-title w-32"></div>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <div class="flex items-center gap-3 p-3">
+                            <div class="skeleton skeleton-text w-6"></div>
+                            <div class="skeleton skeleton-circle w-8 h-8"></div>
+                            <div class="flex-1">
+                                <div class="skeleton skeleton-text w-24 mb-1"></div>
+                                <div class="skeleton skeleton-text w-16"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3">
+                            <div class="skeleton skeleton-text w-6"></div>
+                            <div class="skeleton skeleton-circle w-8 h-8"></div>
+                            <div class="flex-1">
+                                <div class="skeleton skeleton-text w-32 mb-1"></div>
+                                <div class="skeleton skeleton-text w-16"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3">
+                            <div class="skeleton skeleton-text w-6"></div>
+                            <div class="skeleton skeleton-circle w-8 h-8"></div>
+                            <div class="flex-1">
+                                <div class="skeleton skeleton-text w-28 mb-1"></div>
+                                <div class="skeleton skeleton-text w-16"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
-    <div id="mainContent" class="hidden">
+
+    <div id="mainContent" class="hidden fade-in">
         <div class="max-w-[1800px] mx-auto px-6 py-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <aside class="lg:col-span-3 h-fit">
                     <div class="glass-card rounded-xl p-6 sticky top-24">
                         <div class="text-center mb-6">
-                            <img id="userAvatar" src="" alt="User" class="h-20 w-20 rounded-full mx-auto mb-3 border-2 border-white border-opacity-10">
+                            <img id="userAvatar" src="" alt="User" class="h-20 w-20 rounded-full mx-auto mb-3 border-2 border-white border-opacity-10 transition-transform hover:scale-105">
                             <h2 id="userName" class="text-base font-semibold text-white">Loading...</h2>
                             <p id="userEmail" class="text-xs text-gray-500 mt-1">user@email.com</p>
                         </div>
@@ -187,7 +416,7 @@
                                         <span id="easyProgress" class="text-gray-500">0/0</span>
                                     </div>
                                     <div class="h-1.5 bg-white bg-opacity-5 rounded-full overflow-hidden">
-                                        <div id="easyBar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                        <div id="easyBar" class="h-full bg-green-500 rounded-full progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
                                 <div>
@@ -196,7 +425,7 @@
                                         <span id="mediumProgress" class="text-gray-500">0/0</span>
                                     </div>
                                     <div class="h-1.5 bg-white bg-opacity-5 rounded-full overflow-hidden">
-                                        <div id="mediumBar" class="h-full bg-yellow-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                        <div id="mediumBar" class="h-full bg-yellow-500 rounded-full progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
                                 <div>
@@ -205,13 +434,14 @@
                                         <span id="hardProgress" class="text-gray-500">0/0</span>
                                     </div>
                                     <div class="h-1.5 bg-white bg-opacity-5 rounded-full overflow-hidden">
-                                        <div id="hardBar" class="h-full bg-red-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                        <div id="hardBar" class="h-full bg-red-500 rounded-full progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </aside>
+
                 <main class="lg:col-span-6">
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="p-6 border-b border-white border-opacity-5">
@@ -241,6 +471,7 @@
                         </div>
                     </div>
                 </main>
+
                 <aside class="lg:col-span-3 h-fit">
                     <div class="glass-card rounded-xl overflow-hidden sticky top-24">
                         <div class="p-6 border-b border-white border-opacity-5">
@@ -257,7 +488,7 @@
         </div>
     </div>
     <div id="errorState" class="hidden flex items-center justify-center min-h-[calc(100vh-73px)]">
-        <div class="text-center">
+        <div class="text-center fade-in">
             <i class="fas fa-exclamation-circle text-white text-5xl mb-4 opacity-20"></i>
             <p class="text-white mb-2 text-lg font-semibold">Failed to load dashboard</p>
             <p class="text-gray-500 text-sm mb-6" id="errorMessage"></p>

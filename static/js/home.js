@@ -1,3 +1,27 @@
+// toast notification
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type} show`;
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle'
+    };
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <i class="fas ${icons[type]} text-lg"></i>
+            <p class="text-sm text-white">${message}</p>
+        </div>
+    `;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
 // auth
 function checkAuth() {
     const token = localStorage.getItem('firebaseToken');
@@ -82,17 +106,19 @@ function updateProgressBars(problems, solvedProblems) {
         }
     });
     
-    ['Easy', 'Medium', 'Hard'].forEach(diff => {
-        const total = difficulties[diff] || 0;
-        const count = solved[diff] || 0;
-        const percent = total > 0 ? (count / total * 100) : 0;
-        
-        const progressEl = document.getElementById(`${diff.toLowerCase()}Progress`);
-        const barEl = document.getElementById(`${diff.toLowerCase()}Bar`);
-        
-        if (progressEl) progressEl.textContent = `${count}/${total}`;
-        if (barEl) barEl.style.width = `${percent}%`;
-    });
+    setTimeout(() => {
+        ['Easy', 'Medium', 'Hard'].forEach(diff => {
+            const total = difficulties[diff] || 0;
+            const count = solved[diff] || 0;
+            const percent = total > 0 ? (count / total * 100) : 0;
+            
+            const progressEl = document.getElementById(`${diff.toLowerCase()}Progress`);
+            const barEl = document.getElementById(`${diff.toLowerCase()}Bar`);
+            
+            if (progressEl) progressEl.textContent = `${count}/${total}`;
+            if (barEl) barEl.style.width = `${percent}%`;
+        });
+    }, 100);
 }
 
 //questions
@@ -118,7 +144,7 @@ function renderProblems(problems, solvedProblems = []) {
             'Hard': 'text-red-500'
         };
         return `
-            <div class="p-5 cursor-pointer problem-item" data-difficulty="${problem.difficulty}">
+            <div class="p-5 cursor-pointer problem-item" data-difficulty="${problem.difficulty}" data-slug="${problem.slug}" onclick="navigateToProblem('${problem.slug}')">
                 <div class="flex items-start gap-4">
                     <div class="flex items-center justify-center w-8 text-gray-500 font-medium text-sm flex-shrink-0 mt-0.5">
                         ${index + 1}
@@ -128,7 +154,7 @@ function renderProblems(problems, solvedProblems = []) {
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-4 mb-2">
-                            <h3 class="font-medium text-white text-base">${problem.title}</h3>
+                            <h3 class="font-medium text-white text-base hover:text-primary transition">${problem.title}</h3>
                             <span class="text-sm font-medium ${difficultyColors[problem.difficulty]} flex-shrink-0">${problem.difficulty}</span>
                         </div>
                         <p class="text-sm text-gray-400 leading-relaxed">${problem.description}</p>
@@ -137,6 +163,10 @@ function renderProblems(problems, solvedProblems = []) {
             </div>
         `;
     }).join('');
+}
+
+function navigateToProblem(slug) {
+    window.location.href = `/problem/${slug}`;
 }
 
 // leaderboard
@@ -164,7 +194,7 @@ function renderLeaderboard(leaderboard, currentUserId) {
         
         return `
             <a href="/profile/${user.uid}" class="block">
-                <div class="flex items-center gap-3 p-3 rounded-lg transition cursor-pointer ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
+                <div class="leaderboard-item flex items-center gap-3 p-3 rounded-lg transition cursor-pointer ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
                     <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
                         ${index < 3 ? '<i class="fas fa-medal"></i>' : `${index + 1}`}
                     </div>
@@ -172,7 +202,9 @@ function renderLeaderboard(leaderboard, currentUserId) {
                             ? `/proxy-image?url=${encodeURIComponent(user.picture)}` 
                             : 'https://via.placeholder.com/32'
                         }" 
-                        class="h-8 w-8 rounded-full border border-white border-opacity-10">
+                        class="h-8 w-8 rounded-full border border-white border-opacity-10 transition-transform hover:scale-110"
+                        loading="lazy"
+                        alt="${user.name}">
 
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium truncate text-white">${user.name}</p>
@@ -186,61 +218,78 @@ function renderLeaderboard(leaderboard, currentUserId) {
 }
 
 async function fetchUserData(uid, token) {
-    const response = await fetch(`/api/user/${uid}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    try {
+        const response = await fetch(`/api/user/${uid}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Session expired. Please login again.');
+            }
+            throw new Error('Failed to fetch user data');
         }
-    });
-    
-    if (!response.ok) {
-        if (response.status === 401) {
-            throw new Error('Session expired. Please login again.');
-        }
-        throw new Error('Failed to fetch user data');
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        throw error;
     }
-    
-    return await response.json();
 }
 
 async function fetchProblems(token) {
-    const response = await fetch('/api/problems', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    try {
+        const response = await fetch('/api/problems', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch problems');
         }
-    });
-    
-    if (!response.ok) {
-        throw new Error('Failed to fetch problems');
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching problems:', error);
+        throw error;
     }
-    
-    return await response.json();
 }
 
 async function fetchLeaderboard(token) {
-    const response = await fetch('/api/leaderboard', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    try {
+        const response = await fetch('/api/leaderboard', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch leaderboard');
         }
-    });
-    
-    if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard');
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        throw error;
     }
-    
-    return await response.json();
 }
 
 let allProblems = [];
 let currentFilter = 'all';
-
+let isFiltering = false;
 
 function filterProblems() {
+    if (isFiltering) return;
+    isFiltering = true;
     const searchTerm = document.getElementById('searchProblems').value.toLowerCase();
     const authData = checkAuth();
     const solvedProblems = authData.user.solved_problems || [];
@@ -256,7 +305,11 @@ function filterProblems() {
             p.description.toLowerCase().includes(searchTerm)
         );
     }
-    renderProblems(filtered, solvedProblems);
+    
+    setTimeout(() => {
+        renderProblems(filtered, solvedProblems);
+        isFiltering = false;
+    }, 50);
 }
 
 //logout
@@ -264,7 +317,10 @@ function filterProblems() {
 function handleLogout() {
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
-    window.location.href = '/';
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => {
+        window.location.href = '/';
+    }, 500);
 }
 
 //init
@@ -290,10 +346,12 @@ async function initHomePage() {
         updateProgressBars(allProblems, userData.solved_problems || []);
         renderLeaderboard(leaderboardData, userData.uid);
         showContent();
+        showToast(`Welcome back, ${userData.name}!`, 'success');
 
     } catch (error) {
         console.error('Error initializing home page:', error);
         showError(error.message || 'Failed to load your dashboard. Please try logging in again.');
+        showToast(error.message || 'Failed to load dashboard', 'error');
     }
 }
 
@@ -305,7 +363,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const searchInput = document.getElementById('searchProblems');
     if (searchInput) {
-        searchInput.addEventListener('input', filterProblems);
+        let debounceTimer;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterProblems, 300);
+        });
     }
     const filterButtons = document.querySelectorAll('.difficulty-filter');
     filterButtons.forEach(btn => {
@@ -317,3 +379,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+window.navigateToProblem = navigateToProblem;
