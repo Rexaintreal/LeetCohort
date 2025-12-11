@@ -1,3 +1,29 @@
+// Toast Notifications
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type} show`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle'
+    };
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <i class="fas ${icons[type]} text-lg"></i>
+            <p class="text-sm text-white">${message}</p>
+        </div>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
 // Auth
 function checkAuth() {
     const token = localStorage.getItem('firebaseToken');
@@ -36,34 +62,56 @@ function showError(message) {
 function handleLogout() {
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
-    window.location.href = '/';
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => {
+        window.location.href = '/';
+    }, 500);
 }
 
 // APIs
 async function fetchLeaderboard(token) {
-    const response = await fetch('/api/leaderboard', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    try {
+        const response = await fetch('/api/leaderboard', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Session expired. Please login again.');
+            }
+            throw new Error('Failed to fetch leaderboard');
         }
-    });
-    
-    if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard');
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        throw error;
     }
-    
-    return await response.json();
 }
 
-async function fetchUserProfile(uid) {
-    const response = await fetch(`/api/profile/${uid}`);
-    
-    if (!response.ok) {
-        throw new Error('Failed to fetch user profile');
+async function fetchUserProfile(uid, token) {
+    try {
+        const response = await fetch(`/api/profile/${uid}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch user profile');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        throw error;
     }
-    
-    return await response.json();
 }
 
 let allUsers = [];
@@ -125,7 +173,8 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
                                 : 'https://via.placeholder.com/64'
                             }" 
                             alt="${user.name}"
-                            class="h-16 w-16 rounded-full border-2 border-white border-opacity-10 flex-shrink-0">
+                            class="h-16 w-16 rounded-full border-2 border-white border-opacity-10 flex-shrink-0"
+                            loading="lazy">
                         
                         <div class="flex-1 min-w-0">
                             <h3 class="text-lg font-semibold text-white truncate flex items-center gap-2">
@@ -269,7 +318,7 @@ function updateNavbarProfile(userData) {
     const profilePic = document.getElementById('navProfilePic');
     const profileIcon = document.getElementById('navProfileIcon');
     
-    if (userData.picture) {
+    if (userData && userData.picture) {
         profilePic.src = `/proxy-image?url=${encodeURIComponent(userData.picture)}`;
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
@@ -292,7 +341,7 @@ async function initLeaderboardPage() {
         
         const [leaderboardData, userData] = await Promise.all([
             fetchLeaderboard(authData.token),
-            fetchUserProfile(currentUserId)
+            fetchUserProfile(currentUserId, authData.token)
         ]);
         
         allUsers = leaderboardData;
@@ -305,9 +354,11 @@ async function initLeaderboardPage() {
         loadMoreUsers();
         
         showContent();
+        showToast('Leaderboard loaded successfully', 'success');
         
     } catch (error) {
         showError(error.message || 'Failed to load leaderboard. Please try again.');
+        showToast(error.message || 'Failed to load leaderboard', 'error');
     }
 }
 
