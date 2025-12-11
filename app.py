@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, Response, render_template, request, jsonify
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 from functools import wraps
 import sqlite3
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -36,6 +37,21 @@ def get_db_connection():
     conn= sqlite3.connect('db/problems.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+
+
+@app.route("/proxy-image")
+def proxy_image():
+    url = request.args.get("url")
+    if not url:
+        return "Missing URL", 400
+
+    r = requests.get(url, stream=True)
+
+    return Response(
+        r.content,
+        content_type=r.headers.get("Content-Type", "image/jpeg")
+    )
 
 # API 
 @app.route('/api/problems', methods=['GET'])
@@ -339,6 +355,9 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return jsonify({'error': 'Internal server error'}), 500
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
