@@ -1,26 +1,22 @@
 // toast noti
-function showToast(message, type = 'info') {
+function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
-    toast.className = `toast`;
+    toast.className = `toast ${type}`;
     
-    const icons = {
-        success: 'fa-check-circle text-green-500',
-        error: 'fa-exclamation-circle text-red-500',
-        info: 'fa-info-circle text-blue-500'
-    };
-    
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
     toast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <i class="fas ${icons[type]} text-lg"></i>
-            <p class="text-sm text-white">${message}</p>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fas ${icon}" style="font-size: 18px;"></i>
+            <span style="font-size: 14px; font-weight: 500;">${message}</span>
         </div>
     `;
     
     container.appendChild(toast);
     
     setTimeout(() => {
-        toast.remove();
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
@@ -51,7 +47,7 @@ function initCodeEditor(boilerplateCode = '') {
         lineNumbers: true,
         indentUnit: 4,
         indentWithTabs: false,
-        lineWrapping: true,
+        lineWrapping: false,
         autoCloseBrackets: true,
         matchBrackets: true,
         extraKeys: {
@@ -112,73 +108,108 @@ async function fetchProblemDetail(slug) {
 // problem details
 function renderProblem(problem) {
     currentProblem = problem;
-    
     document.getElementById('problemTitle').textContent = problem.title;
     
     const difficultyBadge = document.getElementById('problemDifficulty');
     difficultyBadge.textContent = problem.difficulty;
-    difficultyBadge.className = `px-3 py-1 rounded-full text-sm font-semibold difficulty-${problem.difficulty.toLowerCase()}`;
+    difficultyBadge.className = `difficulty-${problem.difficulty.toLowerCase()} px-3 py-1 rounded-full text-xs font-semibold`;
     
-    document.getElementById('problemDescription').innerHTML = formatDescription(problem.description);
-    const hintsContainer = document.getElementById('hintsContainer');
-    if (problem.hint && problem.hint.length > 0) {
-        hintsContainer.innerHTML = problem.hint.map((h, idx) => `
-            <div class="hint-item p-4 rounded-lg">
-                <div class="flex items-start gap-3">
-                    <i class="fas fa-lightbulb text-primary mt-1"></i>
-                    <div>
-                        <p class="text-sm font-semibold text-white mb-1">Hint ${idx + 1}</p>
-                        <p class="text-sm text-gray-300">${h.hint}</p>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        hintsContainer.innerHTML = '<p class="text-gray-500 text-sm">No hints available for this problem</p>';
-    }
+    document.getElementById('problemDescription').innerHTML = formatDescription(problem.description); 
+    renderExamples(problem.test_cases);
+    renderHints(problem.hint);
     initCodeEditor(problem.boilerplate_code || '# Write your solution here\n');
 }
 
 function formatDescription(description) {
     const paragraphs = description.split('\n\n').filter(p => p.trim());
-    return paragraphs.map(p => `<p class="mb-3">${p.trim()}</p>`).join('');
+    return paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
 }
 
-//switching tab
-function initTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabName = btn.dataset.tab;
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            btn.classList.add('active');
-            document.getElementById(`${tabName}Tab`).classList.add('active');
-        });
-    });
+function renderExamples(testCases) {
+    const container = document.getElementById('examplesContainer');
     
-    document.querySelectorAll('.console-tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabName = btn.dataset.tab;
+    if (!testCases || testCases.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; font-size: 14px;">No examples available</p>';
+        return;
+    }
+    
+    const examples = testCases.slice(0, 3);
+    container.innerHTML = examples.map((tc, idx) => `
+        <div class="example-box">
+            <div class="example-label">Example ${idx + 1}:</div>
+            <div class="example-content"><strong>Input:</strong> ${tc.input}
+<strong>Output:</strong> ${tc.expected_output}</div>
+        </div>
+    `).join('');
+}
+
+function renderHints(hints) {
+    const container = document.getElementById('hintsContainer');
+    
+    if (!hints || hints.length === 0) {
+        document.getElementById('hintsSection').style.display = 'none';
+        return;
+    }
+    
+    container.innerHTML = hints.map((h, idx) => `
+        <div class="hint-item">
+            <p><strong>Hint ${idx + 1}:</strong> ${h.hint}</p>
+        </div>
+    `).join('');
+}
+
+function initResizer() {
+    const resizer = document.getElementById('resizer');
+    const leftPanel = document.getElementById('leftPanel');
+    let isResizing = false;
+
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        resizer.classList.add('resizing');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        
+        const containerWidth = document.querySelector('.split-container').offsetWidth;
+        const newWidth = (e.clientX / containerWidth) * 100;
+        
+        if (newWidth >= 25 && newWidth <= 60) {
+            leftPanel.style.width = `${newWidth}%`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            resizer.classList.remove('resizing');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+}
+
+// console
+function initConsoleTabs() {
+    const consoleTabs = document.querySelectorAll('.console-tab');
+    const consoleOutputs = document.querySelectorAll('.console-output');
+
+    consoleTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
             
-            document.querySelectorAll('.console-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.console-content').forEach(c => c.classList.add('hidden'));
+            consoleTabs.forEach(t => t.classList.remove('active'));
+            consoleOutputs.forEach(o => o.classList.remove('active'));
             
-            btn.classList.add('active');
-            document.getElementById(`${tabName}Console`).classList.remove('hidden');
+            tab.classList.add('active');
+            document.getElementById(`${tabName}Output`).classList.add('active');
         });
     });
 }
 
-// changeLang
-document.getElementById('languageSelect')?.addEventListener('change', (e) => {
-    const languageId = e.target.value;
-    const mode = languageModes[languageId] || 'python';
-    editor.setOption('mode', mode);
-});
-
-// runCode 
+// runCode
 async function runCode() {
     const authData = checkAuth();
     if (!authData) return;
@@ -205,7 +236,7 @@ async function runCode() {
             body: JSON.stringify({
                 code: code,
                 language_id: languageId,
-                input: '' 
+                input: ''
             })
         });
         
@@ -218,44 +249,73 @@ async function runCode() {
         displayRunResult(result);
         showToast('Code executed successfully', 'success');
         
+        document.querySelector('[data-tab="testcases"]').click();
+        
     } catch (error) {
         console.error('Error running code:', error);
         showToast(error.message || 'Failed to run code', 'error');
         displayRunError(error.message);
     } finally {
         runBtn.disabled = false;
-        runBtn.innerHTML = '<i class="fas fa-play"></i> <span>Run</span>';
+        runBtn.innerHTML = '<i class="fas fa-play"></i> <span>Run Code</span>';
     }
 }
 
 function displayRunResult(result) {
-    const testcasesConsole = document.getElementById('testcasesConsole');
+    const output = document.getElementById('testcasesOutput');
     
     if (result.error) {
-        testcasesConsole.innerHTML = `
-            <div class="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-20 rounded-lg p-4">
-                <p class="text-red-400 font-semibold mb-2">Error:</p>
-                <pre class="text-red-300 text-xs whitespace-pre-wrap">${result.error}</pre>
+        output.innerHTML = `
+            <div class="test-result failed">
+                <div class="result-header">
+                    <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
+                    <span class="result-status status-failed">
+                        <i class="fas fa-times-circle"></i>
+                        Failed
+                    </span>
+                </div>
+                <div class="result-details">
+                    <div class="result-label">Error:</div>
+                    <div class="result-value" style="color: #ef4444;">${result.error}</div>
+                </div>
             </div>
         `;
     } else {
-        testcasesConsole.innerHTML = `
-            <div class="bg-white bg-opacity-5 border border-white border-opacity-10 rounded-lg p-4">
-                <p class="text-gray-400 font-semibold mb-2">Output:</p>
-                <pre class="text-green-400 text-xs whitespace-pre-wrap">${result.output || '(empty output)'}</pre>
-                <p class="text-gray-500 text-xs mt-2">Status: ${result.status}</p>
+        output.innerHTML = `
+            <div class="test-result passed">
+                <div class="result-header">
+                    <span style="color: #9ca3af; font-size: 13px;">Custom Test Case</span>
+                    <span class="result-status status-passed">
+                        <i class="fas fa-check-circle"></i>
+                        Success
+                    </span>
+                </div>
+                <div class="result-details">
+                    <div class="result-label">Output:</div>
+                    <div class="result-value">${result.output || '(empty output)'}</div>
+                    <div class="result-label" style="margin-top: 12px;">Status:</div>
+                    <div class="result-value">${result.status}</div>
+                </div>
             </div>
         `;
     }
-    document.querySelector('[data-tab="testcases"]').click();
 }
 
 function displayRunError(error) {
-    const testcasesConsole = document.getElementById('testcasesConsole');
-    testcasesConsole.innerHTML = `
-        <div class="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-20 rounded-lg p-4">
-            <p class="text-red-400 font-semibold mb-2">Error:</p>
-            <pre class="text-red-300 text-xs whitespace-pre-wrap">${error}</pre>
+    const output = document.getElementById('testcasesOutput');
+    output.innerHTML = `
+        <div class="test-result failed">
+            <div class="result-header">
+                <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
+                <span class="result-status status-failed">
+                    <i class="fas fa-times-circle"></i>
+                    Failed
+                </span>
+            </div>
+            <div class="result-details">
+                <div class="result-label">Error:</div>
+                <div class="result-value" style="color: #ef4444;">${error}</div>
+            </div>
         </div>
     `;
 }
@@ -299,7 +359,7 @@ async function submitCode() {
         displaySubmitResults(result);
         
         if (result.all_passed) {
-            showToast('All test cases passed!', 'success');
+            showToast(`All test cases passed! +${result.total_points} points`, 'success');
             const userData = JSON.parse(localStorage.getItem('userData'));
             if (!userData.solved_problems.includes(currentProblem.id)) {
                 userData.solved_problems.push(currentProblem.id);
@@ -310,6 +370,7 @@ async function submitCode() {
         } else {
             showToast('Some test cases failed', 'error');
         }
+        document.querySelector('[data-tab="results"]').click();
         
     } catch (error) {
         console.error('Error submitting code:', error);
@@ -322,70 +383,79 @@ async function submitCode() {
 }
 
 function displaySubmitResults(result) {
-    const resultsConsole = document.getElementById('resultsConsole');
+    const output = document.getElementById('resultsOutput');
     
     const passedCount = result.results.filter(r => r.passed).length;
     const totalCount = result.results.length;
     
     let html = `
-        <div class="mb-4 p-4 rounded-lg ${result.all_passed ? 'bg-green-500 bg-opacity-10 border border-green-500 border-opacity-20' : 'bg-red-500 bg-opacity-10 border border-red-500 border-opacity-20'}">
-            <p class="font-semibold ${result.all_passed ? 'text-green-400' : 'text-red-400'}">
-                ${result.all_passed ? '✓ Accepted' : '✗ Wrong Answer'}
+        <div style="background: ${result.all_passed ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; 
+                    border: 1px solid ${result.all_passed ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; 
+                    border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <i class="fas ${result.all_passed ? 'fa-check-circle' : 'fa-times-circle'}" 
+                   style="color: ${result.all_passed ? '#22c55e' : '#ef4444'}; font-size: 20px;"></i>
+                <span style="color: ${result.all_passed ? '#22c55e' : '#ef4444'}; font-weight: 600; font-size: 16px;">
+                    ${result.all_passed ? 'Accepted' : 'Wrong Answer'}
+                </span>
+            </div>
+            <p style="color: #9ca3af; font-size: 13px;">
+                ${passedCount} / ${totalCount} test cases passed
+                ${result.all_passed ? ` • +${result.total_points} points` : ''}
             </p>
-            <p class="text-sm text-gray-400 mt-1">${passedCount} / ${totalCount} test cases passed</p>
-            ${result.all_passed ? `<p class="text-sm text-green-400 mt-1">+${result.total_points} points</p>` : ''}
         </div>
     `;
     
-    html += '<div class="space-y-3">';
-    
+    // tests
     result.results.forEach((test, idx) => {
         html += `
-            <div class="p-4 rounded-lg border border-white border-opacity-10 ${test.passed ? 'test-case-passed' : 'test-case-failed'}">
-                <div class="flex items-center justify-between mb-2">
-                    <p class="font-semibold text-sm ${test.passed ? 'text-green-400' : 'text-red-400'}">
-                        Test Case ${idx + 1}
-                    </p>
-                    <span class="text-xs ${test.passed ? 'text-green-400' : 'text-red-400'}">
-                        ${test.passed ? '✓ Passed' : '✗ Failed'}
+            <div class="test-result ${test.passed ? 'passed' : 'failed'}">
+                <div class="result-header">
+                    <span>Test Case ${idx + 1}</span>
+                    <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
+                        <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${test.passed ? 'Passed' : 'Failed'}
                     </span>
                 </div>
-                <div class="text-xs space-y-2">
-                    <div>
-                        <p class="text-gray-500 mb-1">Input:</p>
-                        <pre class="text-gray-300 bg-black bg-opacity-30 p-2 rounded">${test.input || '(empty)'}</pre>
+                <div class="result-details">
+                    <div class="result-label">Input:</div>
+                    <div class="result-value">${test.input || '(empty)'}</div>
+                    
+                    <div class="result-label">Expected Output:</div>
+                    <div class="result-value">${test.expected_output}</div>
+                    
+                    <div class="result-label">Your Output:</div>
+                    <div class="result-value" style="color: ${test.passed ? '#22c55e' : '#ef4444'};">
+                        ${test.actual_output || '(empty)'}
                     </div>
-                    <div>
-                        <p class="text-gray-500 mb-1">Expected Output:</p>
-                        <pre class="text-gray-300 bg-black bg-opacity-30 p-2 rounded">${test.expected_output}</pre>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 mb-1">Your Output:</p>
-                        <pre class="${test.passed ? 'text-green-400' : 'text-red-400'} bg-black bg-opacity-30 p-2 rounded">${test.actual_output || '(empty)'}</pre>
-                    </div>
+                    
                     ${test.error ? `
-                    <div>
-                        <p class="text-gray-500 mb-1">Error:</p>
-                        <pre class="text-red-400 bg-black bg-opacity-30 p-2 rounded">${test.error}</pre>
-                    </div>
+                        <div class="result-label">Error:</div>
+                        <div class="result-value" style="color: #ef4444;">${test.error}</div>
                     ` : ''}
                 </div>
             </div>
         `;
     });
     
-    html += '</div>';
-    
-    resultsConsole.innerHTML = html;
-    document.querySelector('[data-tab="results"]').click();
+    output.innerHTML = html;
 }
 
 function displaySubmitError(error) {
-    const resultsConsole = document.getElementById('resultsConsole');
-    resultsConsole.innerHTML = `
-        <div class="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-20 rounded-lg p-4">
-            <p class="text-red-400 font-semibold mb-2">Submission Error:</p>
-            <pre class="text-red-300 text-xs whitespace-pre-wrap">${error}</pre>
+    const output = document.getElementById('resultsOutput');
+    output.innerHTML = `
+        <div class="test-result failed">
+            <div class="result-header">
+                <span style="color: #9ca3af; font-size: 13px;">Submission Error</span>
+                <span class="result-status status-failed">
+                    <i class="fas fa-times-circle"></i>
+                    Failed
+                </span>
+            </div>
+            <div class="result-details">
+                <div class="result-label">Error:</div>
+                <div class="result-value" style="color: #ef4444;">${error}</div>
+            </div>
         </div>
     `;
 }
@@ -397,6 +467,15 @@ function handleLogout() {
     window.location.href = '/auth';
 }
 
+// change lang
+function initLanguageSelect() {
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+        const languageId = e.target.value;
+        const mode = languageModes[languageId] || 'python';
+        editor.setOption('mode', mode);
+    });
+}
+
 // init
 async function initProblemPage() {
     const authData = checkAuth();
@@ -406,21 +485,17 @@ async function initProblemPage() {
         const problem = await fetchProblemDetail(PROBLEM_SLUG);
         
         if (!problem) {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
-            return;
+            throw new Error('Problem not found');
         }
         
         renderProblem(problem);
-        initTabs();
-        
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('mainContent').classList.remove('hidden');
-        
+        initResizer();
+        initConsoleTabs();
+        initLanguageSelect();
+                
     } catch (error) {
         console.error('Error initializing problem page:', error);
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('errorState').classList.remove('hidden');
+        showToast(error.message || 'Failed to load problem', 'error');
     }
 }
 
