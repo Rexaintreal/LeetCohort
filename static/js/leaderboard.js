@@ -167,10 +167,7 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
                     
                     <!-- User Info -->
                     <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <img src="${user.picture 
-                                ? `/proxy-image?url=${encodeURIComponent(user.picture)}` 
-                                : 'https://via.placeholder.com/40'
-                            }" 
+                        <img src="${user.picture || 'https://via.placeholder.com/40'}" 
                             alt="${user.name}"
                             class="h-10 w-10 rounded-full border-2 border-white border-opacity-10 flex-shrink-0"
                             loading="lazy">
@@ -330,7 +327,7 @@ function updateNavbarProfile(userData) {
     const profileIcon = document.getElementById('navProfileIcon');
     
     if (userData && userData.picture) {
-        profilePic.src = `/proxy-image?url=${encodeURIComponent(userData.picture)}`;
+        profilePic.src = userData.picture;
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
     } else {
@@ -365,7 +362,6 @@ async function initLeaderboardPage() {
         loadMoreUsers();
         
         showContent();
-        showToast('Leaderboard loaded successfully', 'success');
         
     } catch (error) {
         showError(error.message || 'Failed to load leaderboard. Please try again.');

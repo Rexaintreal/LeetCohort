@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - LeetCohort</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7E1EE7',
+                        'primary-hover': '#6B19C7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #000000;
+            overflow-x: hidden;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-link {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+        }
+        
+        .nav-link.active {
+            color: white;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: white;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .profile-avatar:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text {
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .skeleton-title {
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .skeleton-circle {
+            border-radius: 50%;
+        }
+
+        .skeleton-avatar {
+            width: 128px;
+            height: 128px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 300px;
+            max-width: 500px;
+            z-index: 1000;
+            animation: slideDown 0.3s ease-out;
+            opacity: 0;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.hide {
+            animation: fadeOutUp 0.3s ease-in forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutUp {
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-100px);
+            }
+        }
+
+        .toast-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .toast-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .toast-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .avatar-preview {
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        .avatar-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .upload-area {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .upload-area.dragging {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .stat-item:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-100 min-h-screen">
+    <div id="toastContainer"></div>
+    <nav class="border-b border-white border-opacity-5 bg-black bg-opacity-80 sticky top-0 z-50 backdrop-blur-xl">
+        <div class="max-w-[1800px] mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center gap-3 text-lg font-bold hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-9 w-9 rounded-lg">
+                    <span>LeetCohort</span>
+                </a>
+                <div class="flex items-center gap-4">
+                    <a href="/home" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-code text-sm"></i>
+                        <span>Problems</span>
+                    </a>
+                    <a href="/leaderboard" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-trophy text-sm"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                    <div class="h-6 w-px bg-white bg-opacity-10"></div>
+                    <a href="#" id="profileLink" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <img id="navProfilePic" src="" alt="Profile" class="profile-avatar" style="display: none;">
+                        <i id="navProfileIcon" class="fas fa-user text-sm"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="/settings" class="nav-link active px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-cog text-sm"></i>
+                        <span>Settings</span>
+                    </a>
+                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt text-sm"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div id="loadingState" class="max-w-6xl mx-auto px-6 py-8">
+        <div class="glass-card rounded-xl p-8 mb-6">
+            <div class="skeleton skeleton-title w-32 mb-6"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="skeleton skeleton-circle skeleton-avatar"></div>
+                    <div class="skeleton skeleton-text w-32 h-10 rounded-lg"></div>
+                </div>
+                <div class="lg:col-span-2 space-y-4">
+                    <div>
+                        <div class="skeleton skeleton-text w-24 mb-2"></div>
+                        <div class="skeleton skeleton-text h-10 w-full rounded-lg"></div>
+                    </div>
+                    <div>
+                        <div class="skeleton skeleton-text w-24 mb-2"></div>
+                        <div class="skeleton skeleton-text h-10 w-full rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mainContent" class="hidden fade-in">
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <div class="glass-card rounded-xl p-8 mb-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <i class="fas fa-user-circle text-white text-2xl"></i>
+                    <h2 class="text-2xl font-bold">Profile Settings</h2>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="relative">
+                            <img id="avatarPreview" src="" alt="Profile" class="avatar-preview h-32 w-32 rounded-full border-4 border-white border-opacity-10 object-cover">
+                            <div id="avatarLoader" class="hidden absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+                                <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <div class="w-full">
+                            <label for="avatarUpload" class="upload-area block w-full p-4 border-2 border-dashed border-white border-opacity-10 rounded-lg text-center hover:border-opacity-20">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-400">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                            </label>
+                            <input type="file" id="avatarUpload" accept="image/png,image/jpeg,image/jpg" />
+                        </div>
+                        
+                        <button id="uploadBtn" class="btn-primary w-full px-4 py-2.5 rounded-lg text-sm font-medium text-white" disabled>
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload Picture
+                        </button>
+                    </div>
+                    <div class="lg:col-span-2 space-y-6">
+                        <div>
+                            <label for="displayName" class="block text-sm font-medium text-gray-400 mb-2">
+                                <i class="fas fa-user mr-2"></i>
+                                Display Name
+                            </label>
+                            <input 
+                                type="text" 
+                                id="displayName" 
+                                class="input-field w-full px-4 py-2.5 rounded-lg text-white"
+                                placeholder="Enter your display name"
+                                maxlength="50"
+                            />
+                            <p class="text-xs text-gray-500 mt-1.5">Maximum 50 characters</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="input-field w-full px-4 py-2.5 rounded-lg text-gray-400 cursor-not-allowed"
+                                disabled
+                                readonly
+                            />
+                            <p class="text-xs text-gray-500 mt-1.5">Email cannot be changed</p>
+                        </div>
+                        <button id="saveNameBtn" class="btn-primary w-full px-4 py-2.5 rounded-lg text-sm font-medium text-white" disabled>
+                            <i class="fas fa-save mr-2"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="section-divider mb-6"></div>
+            <div class="glass-card rounded-xl p-8 mb-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="fas fa-chart-bar text-white text-xl"></i>
+                    <h2 class="text-xl font-bold">Your Statistics</h2>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="stat-item rounded-lg p-4 text-center">
+                        <i class="fas fa-trophy text-white text-2xl mb-2"></i>
+                        <p class="text-xs text-gray-500 mb-1">Total Points</p>
+                        <p id="totalPoints" class="text-xl font-bold text-white">0</p>
+                    </div>
+                    
+                    <div class="stat-item rounded-lg p-4 text-center">
+                        <i class="fas fa-check-circle text-white text-2xl mb-2"></i>
+                        <p class="text-xs text-gray-500 mb-1">Problems Solved</p>
+                        <p id="problemsSolved" class="text-xl font-bold text-white">0</p>
+                    </div>
+                    
+                    <div class="stat-item rounded-lg p-4 text-center">
+                        <i class="fas fa-medal text-white text-2xl mb-2"></i>
+                        <p class="text-xs text-gray-500 mb-1">Global Rank</p>
+                        <p id="globalRank" class="text-xl font-bold text-white">-</p>
+                    </div>
+                    
+                    <div class="stat-item rounded-lg p-4 text-center">
+                        <i class="fas fa-calendar-check text-white text-2xl mb-2"></i>
+                        <p class="text-xs text-gray-500 mb-1">Member Since</p>
+                        <p id="memberSince" class="text-sm font-semibold text-white">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card rounded-xl p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="fas fa-info-circle text-white text-xl"></i>
+                    <h2 class="text-xl font-bold">Account Information</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 rounded-lg bg-white bg-opacity-5">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-id-badge text-gray-400"></i>
+                            <span class="text-sm text-gray-400">User ID</span>
+                        </div>
+                        <span id="userId" class="text-sm font-mono text-white">-</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-4 rounded-lg bg-white bg-opacity-5">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-clock text-gray-400"></i>
+                            <span class="text-sm text-gray-400">Last Active</span>
+                        </div>
+                        <span id="lastActive" class="text-sm text-white">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="errorState" class="hidden flex items-center justify-center min-h-[calc(100vh-73px)]">
+        <div class="text-center fade-in">
+            <i class="fas fa-exclamation-circle text-white text-5xl mb-4 opacity-20"></i>
+            <p class="text-white mb-2 text-lg font-semibold">Failed to load settings</p>
+            <p class="text-gray-500 text-sm mb-6" id="errorMessage"></p>
+            <a href="/home" class="inline-block bg-white bg-opacity-5 hover:bg-opacity-10 text-white font-semibold px-6 py-3 rounded-lg transition border border-white border-opacity-10">
+                Back to Home
+            </a>
+        </div>
+    </div>
+    <script type="module" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+</body>
+</html>

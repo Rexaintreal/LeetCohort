@@ -74,7 +74,7 @@ function updateNavbarProfile(currentUserData, isOwnProfile) {
     const profileLink = document.getElementById('profileLink');
     
     if (currentUserData && currentUserData.picture) {
-        profilePic.src = `/proxy-image?url=${encodeURIComponent(currentUserData.picture)}`;
+        profilePic.src = currentUserData.picture;
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
     } else {
@@ -123,10 +123,7 @@ function timeAgo(dateString) {
 }
 
 function updateProfile(data) {
-    document.getElementById('profileAvatar').src =
-        data.picture
-            ? `/proxy-image?url=${encodeURIComponent(data.picture)}`
-            : 'https://via.placeholder.com/128';
+    document.getElementById('profileAvatar').src = data.picture || 'https://via.placeholder.com/128';
     document.getElementById('profileName').textContent = data.name;
     document.getElementById('profileEmail').textContent = data.email;
     document.getElementById('profileRank').textContent = `#${data.rank || '-'}`;
@@ -363,11 +360,6 @@ async function initProfilePage() {
         const profileData = await fetchProfile(uid);
         updateProfile(profileData);
         showContent();
-        if (isOwnProfile) {
-            showToast(`Welcome to your profile!`, 'success');
-        } else {
-            showToast(`Viewing ${profileData.name}'s profile`, 'info');
-        }
         
     } catch (error) {
         console.error('Profile initialization error:', error);

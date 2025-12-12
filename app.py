@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template, request, jsonify
+from flask import Flask, Response, render_template, request, jsonify, url_for
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -8,12 +8,34 @@ import os
 from functools import wraps
 import sqlite3
 import requests
+from werkzeug.utils import secure_filename
+import uuid
+from PIL import Image
+import io
 
 app = Flask(__name__)
 CORS(app)
+
+# upload configs
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  
+MAX_IMAGE_DIMENSION = 500 
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 cred = credentials.Certificate('firebase-admin-sdk.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
+
+
+# Helper Functions
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def token_required(f):
     @wraps(f)
@@ -34,11 +56,12 @@ def token_required(f):
     return decorated_function
 
 def get_db_connection():
-    conn= sqlite3.connect('db/problems.db')
+    conn = sqlite3.connect('db/problems.db')
     conn.row_factory = sqlite3.Row
     return conn
 
 
+# image proxy route
 
 @app.route("/proxy-image")
 def proxy_image():
@@ -53,188 +76,7 @@ def proxy_image():
         content_type=r.headers.get("Content-Type", "image/jpeg")
     )
 
-# API 
-@app.route('/api/problems', methods=['GET'])
-@token_required
-def get_problems():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-
-        cur.execute("""
-            SELECT id, title, slug, description, difficulty, created_at
-            FROM problems
-            ORDER BY id ASC         
-        """)
-
-        problems = []
-        for row in cur.fetchall():
-            problems.append({
-                'id': row['id'],
-                'title': row['title'], 
-                'slug': row['slug'],   
-                'description': row['description'],
-                'difficulty': row['difficulty'],
-                'created_at': row['created_at']
-            })
-        conn.close()
-        return jsonify(problems), 200
-    
-    except Exception as e:
-        print(f"Error fetching problems: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/leaderboard', methods=['GET'])
-@token_required
-def get_leaderboard():
-    try:
-        users_ref = db.collection('users')
-        users = users_ref.order_by('points', direction=firestore.Query.DESCENDING).limit(100).stream()
-
-        leaderboard = []
-        for user in users:
-            user_data = user.to_dict()
-            leaderboard.append({
-                'uid': user_data.get('uid'),
-                'name':user_data.get('name'),
-                'email': user_data.get('email'),
-                'picture': user_data.get('picture'),
-                'points': user_data.get('points', 0),
-                'problems_solved': user_data.get('problems_solved', 0)
-            })
-        return jsonify(leaderboard), 200
-    
-    except Exception as e:
-        print(f"Error fetching leaderboard: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/problem/<slug>', methods=['GET'])
-@token_required
-def get_problem_detail(slug):
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("""
-            SELECT id, title, slug, description, difficulty, boilerplate_code, created_at
-            FROM problems
-            WHERE slug = ?
-        """, (slug,))
-
-        problem_row = cur.fetchone()
-        if not problem_row:
-            conn.close()
-            return jsonify({'error': 'Problem not found'}), 404
-        
-        problem = {
-            'id': problem_row['id'],
-            'title': problem_row['title'],
-            'slug': problem_row['slug'],
-            'description': problem_row['description'],
-            'difficulty': problem_row['difficulty'],
-            'boilerplate_code': problem_row['boilerplate_code'],
-            'created_at': problem_row['created_at']
-        }
-
-        cur.execute("""
-                    SELECT id, input, expected_output, points
-                    FROM test_cases
-                    WHERE problem_id = ?
-                    """, (problem['id'],))
-        test_cases = []
-        for tc in cur.fetchall():
-            test_cases.append({
-                'id': tc['id'],
-                'input': tc['input'],
-                'expected_output': tc['expected_output'],
-                'points': tc['points']
-            })
-
-        problem['test_cases'] = test_cases
-
-        cur.execute("""
-            SELECT id, hint
-            FROM hints
-            WHERE problem_id = ?
-        """, (problem['id'],))
-
-        hints = []
-        for hint in cur.fetchall():
-            hints.append({
-                'id': hint['id'],
-                'hint': hint['hint']
-            })
-
-        problem['hint'] = hints
-
-        conn.close()
-        return jsonify(problem), 200
-    
-    except Exception as e:
-        print(f"Error fetching problem detail: {e}")
-        return jsonify({'error': str(e)}), 500
-    
-
-
-
-    
-@app.route('/api/profile/<uid>', methods=['GET'])
-def get_public_profile(uid):
-    try:
-        user_ref = db.collection('users').document(uid)
-        user_doc = user_ref.get()
-        
-        if not user_doc.exists:
-            return jsonify({'error': 'User not found'}), 404
-        
-        user_data = user_doc.to_dict()
-        
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT id, difficulty FROM problems")
-        all_problems = cur.fetchall()
-        conn.close()
-        
-        solved_ids = user_data.get('solved_problems', [])
-        difficulty_stats = {'Easy': 0, 'Medium': 0, 'Hard': 0}
-        total_by_difficulty = {'Easy': 0, 'Medium': 0, 'Hard': 0}
-        
-        for problem in all_problems:
-            diff = problem['difficulty']
-            total_by_difficulty[diff] += 1
-            if problem['id'] in solved_ids:
-                difficulty_stats[diff] += 1
-        
-        profile_data = {
-            'uid': user_data['uid'],
-            'name': user_data['name'],
-            'email': user_data['email'],
-            'picture': user_data.get('picture'),
-            'points': user_data.get('points', 0),
-            'problems_solved': user_data.get('problems_solved', 0),
-            'solved_problems': user_data.get('solved_problems', []),
-            'difficulty_stats': difficulty_stats,
-            'total_by_difficulty': total_by_difficulty,
-            'created_at': user_data['created_at'].isoformat() if 'created_at' in user_data else None,
-            'last_active': user_data['last_active'].isoformat() if 'last_active' in user_data else None
-        }
-        
-        users_ref = db.collection('users').order_by('points', direction=firestore.Query.DESCENDING).stream()
-        rank = 1
-        for user in users_ref:
-            if user.id == uid:
-                profile_data['rank'] = rank
-                break
-            rank += 1
-        
-        return jsonify(profile_data), 200
-        
-    except Exception as e:
-        print(f"Error fetching public profile: {e}")
-        return jsonify({'error': str(e)}), 500
-
-
-
-#routes
+# Public Routes
 
 @app.route('/')
 def index():
@@ -256,6 +98,12 @@ def leaderboard():
 def profile(username):
     return render_template('profile.html', username=username)
 
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
+# API routes
+
 @app.route('/api/firebase-config')
 def firebase_config():
     config = {
@@ -269,17 +117,17 @@ def firebase_config():
     }
     return jsonify(config)
 
-#AUTH and Session mngmnt
+##auth
 
 @app.route('/api/auth/verify', methods=['POST'])
 def verify_and_create_user():
-
     try:
         data = request.json
         id_token = data.get('idToken')
         
         if not id_token:
             return jsonify({'error': 'No token provided'}), 400
+        
         decoded_token = firebase_auth.verify_id_token(id_token)
         uid = decoded_token['uid']
         user = firebase_auth.get_user(uid)
@@ -348,7 +196,296 @@ def get_user(uid):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+##settings
 
+@app.route('/api/user/<uid>/update-name', methods=['PUT'])
+@token_required
+def update_display_name(uid):
+    try:
+        if request.user['uid'] != uid:
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.json
+        new_name = data.get('name', '').strip()
+        
+        if not new_name:
+            return jsonify({'error': 'Name cannot be empty'}), 400
+        
+        if len(new_name) > 50:
+            return jsonify({'error': 'Name must be 50 characters or less'}), 400
+        
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+        
+        if not user_doc.exists:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_ref.update({
+            'name': new_name,
+            'last_active': datetime.now()
+        })
+        
+        return jsonify({
+            'success': True,
+            'name': new_name,
+            'message': 'Display name updated successfully'
+        }), 200
+        
+    except Exception as e:
+        print(f"Error updating display name: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user/<uid>/upload-picture', methods=['POST'])
+@token_required
+def upload_profile_picture(uid):
+    try:
+        if request.user['uid'] != uid:
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        if 'picture' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['picture']
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'error': 'Invalid file type. Only PNG and JPG are allowed'}), 400
+        
+        image = Image.open(file.stream)
+        
+        if image.mode in ('RGBA', 'LA', 'P'):
+            background = Image.new('RGB', image.size, (255, 255, 255))
+            if image.mode == 'P':
+                image = image.convert('RGBA')
+            background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+            image = background
+        
+        image.thumbnail((MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION), Image.Resampling.LANCZOS)
+        
+        file_ext = 'jpg'  
+        unique_filename = f"{uid}_{uuid.uuid4().hex[:8]}.{file_ext}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        image.save(filepath, 'JPEG', quality=85, optimize=True)
+        
+        picture_url = url_for('static', filename=f'uploads/{unique_filename}', _external=True)
+        
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+        
+        if not user_doc.exists:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_data = user_doc.to_dict()
+        old_picture = user_data.get('picture', '')
+        if old_picture and '/static/uploads/' in old_picture:
+            try:
+                old_filename = old_picture.split('/static/uploads/')[-1]
+                old_filepath = os.path.join(app.config['UPLOAD_FOLDER'], old_filename)
+                if os.path.exists(old_filepath):
+                    os.remove(old_filepath)
+            except Exception as e:
+                print(f"Error deleting old picture: {e}")
+        
+        user_ref.update({
+            'picture': picture_url,
+            'last_active': datetime.now()
+        })
+        
+        return jsonify({
+            'success': True,
+            'picture_url': picture_url,
+            'message': 'Profile picture updated successfully'
+        }), 200
+        
+    except Exception as e:
+        print(f"Error uploading profile picture: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/problems', methods=['GET'])
+@token_required
+def get_problems():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT id, title, slug, description, difficulty, created_at
+            FROM problems
+            ORDER BY id ASC         
+        """)
+
+        problems = []
+        for row in cur.fetchall():
+            problems.append({
+                'id': row['id'],
+                'title': row['title'], 
+                'slug': row['slug'],   
+                'description': row['description'],
+                'difficulty': row['difficulty'],
+                'created_at': row['created_at']
+            })
+        conn.close()
+        return jsonify(problems), 200
+    
+    except Exception as e:
+        print(f"Error fetching problems: {e}")
+        return jsonify({'error': str(e)}), 500
+
+##problems
+
+@app.route('/api/problem/<slug>', methods=['GET'])
+@token_required
+def get_problem_detail(slug):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, title, slug, description, difficulty, boilerplate_code, created_at
+            FROM problems
+            WHERE slug = ?
+        """, (slug,))
+
+        problem_row = cur.fetchone()
+        if not problem_row:
+            conn.close()
+            return jsonify({'error': 'Problem not found'}), 404
+        
+        problem = {
+            'id': problem_row['id'],
+            'title': problem_row['title'],
+            'slug': problem_row['slug'],
+            'description': problem_row['description'],
+            'difficulty': problem_row['difficulty'],
+            'boilerplate_code': problem_row['boilerplate_code'],
+            'created_at': problem_row['created_at']
+        }
+
+        cur.execute("""
+            SELECT id, input, expected_output, points
+            FROM test_cases
+            WHERE problem_id = ?
+        """, (problem['id'],))
+        test_cases = []
+        for tc in cur.fetchall():
+            test_cases.append({
+                'id': tc['id'],
+                'input': tc['input'],
+                'expected_output': tc['expected_output'],
+                'points': tc['points']
+            })
+
+        problem['test_cases'] = test_cases
+
+        cur.execute("""
+            SELECT id, hint
+            FROM hints
+            WHERE problem_id = ?
+        """, (problem['id'],))
+
+        hints = []
+        for hint in cur.fetchall():
+            hints.append({
+                'id': hint['id'],
+                'hint': hint['hint']
+            })
+
+        problem['hint'] = hints
+
+        conn.close()
+        return jsonify(problem), 200
+    
+    except Exception as e:
+        print(f"Error fetching problem detail: {e}")
+        return jsonify({'error': str(e)}), 500
+
+##leaderboards
+
+@app.route('/api/leaderboard', methods=['GET'])
+@token_required
+def get_leaderboard():
+    try:
+        users_ref = db.collection('users')
+        users = users_ref.order_by('points', direction=firestore.Query.DESCENDING).limit(100).stream()
+
+        leaderboard = []
+        for user in users:
+            user_data = user.to_dict()
+            leaderboard.append({
+                'uid': user_data.get('uid'),
+                'name': user_data.get('name'),
+                'email': user_data.get('email'),
+                'picture': user_data.get('picture'),
+                'points': user_data.get('points', 0),
+                'problems_solved': user_data.get('problems_solved', 0)
+            })
+        return jsonify(leaderboard), 200
+    
+    except Exception as e:
+        print(f"Error fetching leaderboard: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+##profile
+
+@app.route('/api/profile/<uid>', methods=['GET'])
+def get_public_profile(uid):
+    try:
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+        
+        if not user_doc.exists:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_data = user_doc.to_dict()
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, difficulty FROM problems")
+        all_problems = cur.fetchall()
+        conn.close()
+        
+        solved_ids = user_data.get('solved_problems', [])
+        difficulty_stats = {'Easy': 0, 'Medium': 0, 'Hard': 0}
+        total_by_difficulty = {'Easy': 0, 'Medium': 0, 'Hard': 0}
+        
+        for problem in all_problems:
+            diff = problem['difficulty']
+            total_by_difficulty[diff] += 1
+            if problem['id'] in solved_ids:
+                difficulty_stats[diff] += 1
+        
+        profile_data = {
+            'uid': user_data['uid'],
+            'name': user_data['name'],
+            'email': user_data['email'],
+            'picture': user_data.get('picture'),
+            'points': user_data.get('points', 0),
+            'problems_solved': user_data.get('problems_solved', 0),
+            'solved_problems': user_data.get('solved_problems', []),
+            'difficulty_stats': difficulty_stats,
+            'total_by_difficulty': total_by_difficulty,
+            'created_at': user_data['created_at'].isoformat() if 'created_at' in user_data else None,
+            'last_active': user_data['last_active'].isoformat() if 'last_active' in user_data else None
+        }
+        
+        users_ref = db.collection('users').order_by('points', direction=firestore.Query.DESCENDING).stream()
+        rank = 1
+        for user in users_ref:
+            if user.id == uid:
+                profile_data['rank'] = rank
+                break
+            rank += 1
+        
+        return jsonify(profile_data), 200
+        
+    except Exception as e:
+        print(f"Error fetching public profile: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+# Error Handlers
 
 @app.errorhandler(404)
 def not_found(e):
