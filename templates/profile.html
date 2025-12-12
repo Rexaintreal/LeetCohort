@@ -23,7 +23,13 @@
     <style>
         body {
             background: #000000;
+            overflow-x: hidden;
         }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -33,18 +39,18 @@
         .stat-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         
         .stat-card:hover {
-            border-color: rgba(126, 30, 231, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(126, 30, 231, 0.1);
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
         }
         
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
+        
         ::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.02);
         }
@@ -53,31 +59,46 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
         }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
 
         .nav-link {
             transition: all 0.2s ease;
+            position: relative;
         }
         
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
         }
         
         .nav-link.active {
-            background: rgba(126, 30, 231, 0.1);
             color: white;
-            border-bottom: 2px solid #7E1EE7;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: white;
         }
 
         .profile-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 2px solid rgba(126, 30, 231, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             transition: all 0.2s ease;
         }
 
         .profile-avatar:hover {
-            border-color: rgba(126, 30, 231, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
         }
 
         .skeleton {
@@ -116,7 +137,7 @@
         }
 
         .fade-in {
-            animation: fadeIn 0.4s ease-in;
+            animation: fadeIn 0.3s ease-in;
         }
 
         @keyframes fadeIn {
@@ -131,15 +152,16 @@
         .toast {
             position: fixed;
             top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 16px 20px;
             min-width: 300px;
+            max-width: 500px;
             z-index: 1000;
-            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+            animation: slideDown 0.3s ease-out, fadeOutUp 0.3s ease-in 2.7s;
             opacity: 0;
         }
 
@@ -147,34 +169,28 @@
             opacity: 1;
         }
 
-        @keyframes slideIn {
+        @keyframes slideDown {
             from {
-                transform: translateX(400px);
+                transform: translateX(-50%) translateY(-100px);
                 opacity: 0;
             }
             to {
-                transform: translateX(0);
+                transform: translateX(-50%) translateY(0);
                 opacity: 1;
             }
         }
 
-        @keyframes fadeOut {
+        @keyframes fadeOutUp {
             to {
                 opacity: 0;
-                transform: translateX(400px);
+                transform: translateX(-50%) translateY(-100px);
             }
         }
 
-        .toast-error {
-            border-left: 3px solid #ef4444;
-        }
-
-        .toast-success {
-            border-left: 3px solid #10b981;
-        }
-
+        .toast-error,
+        .toast-success,
         .toast-info {
-            border-left: 3px solid #3b82f6;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .badge-item {
@@ -182,7 +198,7 @@
         }
 
         .badge-item:hover {
-            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.08) !important;
         }
 
         .large-avatar {
@@ -191,7 +207,6 @@
 
         .large-avatar:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(126, 30, 231, 0.3);
         }
         .chart-container {
             opacity: 0;
@@ -207,29 +222,31 @@
 </head>
 <body class="bg-black text-gray-100 min-h-screen">
     <div id="toastContainer"></div>
-    <nav class="border-b border-white border-opacity-5 bg-black sticky top-0 z-50 backdrop-blur-lg">
-        <div class="max-w-[1800px] mx-auto px-6 py-4">
+    
+    <nav class="border-b border-white border-opacity-5 bg-black bg-opacity-80 sticky top-0 z-50 backdrop-blur-xl">
+        <div class="max-w-[1800px] mx-auto px-6 py-3">
             <div class="flex justify-between items-center">
-                <a href="/" class="flex items-center gap-3 text-xl font-bold hover:opacity-80 transition">
-                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg">
+                <a href="/" class="flex items-center gap-3 text-lg font-bold hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-9 w-9 rounded-lg">
                     <span>LeetCohort</span>
                 </a>
-                <div class="flex items-center gap-6">
-                    <a href="/home" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
-                        <i class="fas fa-home"></i>
+                <div class="flex items-center gap-4">
+                    <a href="/home" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-code text-sm"></i>
                         <span>Problems</span>
                     </a>
-                    <a href="/leaderboard" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
-                        <i class="fas fa-trophy"></i>
+                    <a href="/leaderboard" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-trophy text-sm"></i>
                         <span>Leaderboard</span>
                     </a>
-                    <a href="#" id="profileLink" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                    <div class="h-6 w-px bg-white bg-opacity-10"></div>
+                    <a href="#" id="profileLink" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
                         <img id="navProfilePic" src="" alt="Profile" class="profile-avatar" style="display: none;">
-                        <i id="navProfileIcon" class="fas fa-user"></i>
+                        <i id="navProfileIcon" class="fas fa-user text-sm"></i>
                         <span>Profile</span>
                     </a>
-                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt text-sm"></i>
                         <span>Logout</span>
                     </button>
                 </div>
@@ -304,16 +321,16 @@
                         <h1 id="profileName" class="text-3xl font-bold mb-2">Loading...</h1>
                         <p id="profileEmail" class="text-gray-400 mb-4">email@example.com</p>
                         <div class="flex flex-wrap gap-3 justify-center md:justify-start">
-                            <div class="badge-item flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5 hover:bg-opacity-10 transition">
-                                <i class="fas fa-medal text-yellow-400"></i>
+                            <div class="badge-item flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5 transition">
+                                <i class="fas fa-medal text-white text-sm"></i>
                                 <span class="text-sm">Rank <span id="profileRank" class="font-bold text-white">#-</span></span>
                             </div>
-                            <div class="badge-item flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5 hover:bg-opacity-10 transition">
-                                <i class="fas fa-trophy text-yellow-400"></i>
+                            <div class="badge-item flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5 transition">
+                                <i class="fas fa-trophy text-white text-sm"></i>
                                 <span class="text-sm"><span id="profilePoints" class="font-bold text-white">0</span> points</span>
                             </div>
-                            <div class="badge-item flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5 hover:bg-opacity-10 transition">
-                                <i class="fas fa-check-circle text-green-400"></i>
+                            <div class="badge-item flex items-center gap-2 px-4 py-2 rounded-lg bg-white bg-opacity-5 transition">
+                                <i class="fas fa-check-circle text-white text-sm"></i>
                                 <span class="text-sm"><span id="profileSolved" class="font-bold text-white">0</span> solved</span>
                             </div>
                         </div>

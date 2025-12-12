@@ -137,7 +137,6 @@ function updateUserStatsCard(userData, stats) {
     document.getElementById('topPercent').textContent = stats.topPercent;
     document.getElementById('userPoints').textContent = userData.points || 0;
     document.getElementById('userSolved').textContent = userData.problems_solved || 0;
-    document.getElementById('progressText').textContent = `Top ${stats.topPercent}% of all users`;
     
     setTimeout(() => {
         document.getElementById('percentileBar').style.width = `${stats.percentile}%`;
@@ -154,50 +153,49 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
     const displayRank = actualRank + 1;
     
     const rankIcon = actualRank < 3 
-        ? `<i class="fas fa-medal ${rankColors[actualRank]} text-3xl"></i>`
-        : `<span class="text-xl font-bold text-gray-500">#${displayRank}</span>`;
+        ? `<i class="fas fa-medal ${rankColors[actualRank]} text-2xl"></i>`
+        : `<span class="text-base font-bold text-gray-500">#${displayRank}</span>`;
     
     return `
         <a href="/profile/${user.uid}" class="block">
-            <div class="leaderboard-item p-6 ${isCurrentUser ? 'current-user-highlight' : ''}">
-                <div class="flex items-center gap-8">
+            <div class="leaderboard-item p-4 ${isCurrentUser ? 'current-user-highlight' : ''}">
+                <div class="flex items-center gap-3">
                     <!-- Rank -->
-                    <div class="flex items-center justify-center w-20 flex-shrink-0">
+                    <div class="flex items-center justify-center w-12 flex-shrink-0">
                         ${rankIcon}
                     </div>
                     
                     <!-- User Info -->
-                    <div class="flex items-center gap-5 flex-1 min-w-0">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
                         <img src="${user.picture 
                                 ? `/proxy-image?url=${encodeURIComponent(user.picture)}` 
-                                : 'https://via.placeholder.com/64'
+                                : 'https://via.placeholder.com/40'
                             }" 
                             alt="${user.name}"
-                            class="h-16 w-16 rounded-full border-2 border-white border-opacity-10 flex-shrink-0"
+                            class="h-10 w-10 rounded-full border-2 border-white border-opacity-10 flex-shrink-0"
                             loading="lazy">
                         
                         <div class="flex-1 min-w-0">
-                            <h3 class="text-lg font-semibold text-white truncate flex items-center gap-2">
-                                ${user.name}
-                                ${isCurrentUser ? '<span class="text-xs bg-purple-500 bg-opacity-20 text-purple-400 px-2 py-1 rounded-full border border-purple-500 border-opacity-30">You</span>' : ''}
-                            </h3>
-                            <p class="text-sm text-gray-400 truncate">${user.email}</p>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-sm font-semibold text-white truncate">${user.name}</h3>
+                                ${isCurrentUser ? '<span class="text-xs bg-white bg-opacity-10 text-white px-2 py-0.5 rounded-full flex-shrink-0">You</span>' : ''}
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Stats -->
-                    <div class="flex items-center gap-10 flex-shrink-0">
-                        <div class="text-center">
-                            <p class="text-xs text-gray-500 mb-1">Points</p>
-                            <p class="text-xl font-bold text-white">${user.points || 0}</p>
+                    <div class="flex items-center gap-4 flex-shrink-0">
+                        <div class="text-center hidden sm:block">
+                            <p class="text-xs text-gray-500">Points</p>
+                            <p class="text-sm font-bold text-white">${user.points || 0}</p>
                         </div>
                         
                         <div class="text-center">
-                            <p class="text-xs text-gray-500 mb-1">Solved</p>
-                            <p class="text-xl font-bold text-white">${user.problems_solved || 0}</p>
+                            <p class="text-xs text-gray-500">Solved</p>
+                            <p class="text-sm font-bold text-white">${user.problems_solved || 0}</p>
                         </div>
                         
-                        <i class="fas fa-chevron-right text-gray-600"></i>
+                        <i class="fas fa-chevron-right text-gray-600 text-xs hidden md:block"></i>
                     </div>
                 </div>
             </div>
@@ -210,9 +208,9 @@ function renderLeaderboard(users) {
     
     if (users.length === 0) {
         leaderboardList.innerHTML = `
-            <div class="p-16 text-center text-gray-500">
-                <i class="fas fa-users text-5xl mb-4 opacity-30"></i>
-                <p class="text-lg">No users found</p>
+            <div class="p-12 text-center text-gray-500">
+                <i class="fas fa-users text-4xl mb-3 opacity-30"></i>
+                <p class="text-sm">No users found</p>
             </div>
         `;
         return;
@@ -224,7 +222,24 @@ function renderLeaderboard(users) {
         return renderLeaderboardItem(user, actualRank, isCurrentUser);
     }).join('');
     
-    leaderboardList.innerHTML = html;
+    let footerHTML = '';
+    if (isLoading) {
+        footerHTML = `
+            <div class="p-6 text-center border-t border-white border-opacity-5">
+                <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white border-opacity-20"></div>
+                <p class="mt-3 text-xs text-gray-500">Loading more...</p>
+            </div>
+        `;
+    } else if (!hasMoreUsers && displayedUsers.length > 0) {
+        footerHTML = `
+            <div class="p-6 text-center text-gray-500 text-xs border-t border-white border-opacity-5">
+                <i class="fas fa-check-circle text-xl mb-2 opacity-30"></i>
+                <p>You've reached the end of the leaderboard</p>
+            </div>
+        `;
+    }
+    
+    leaderboardList.innerHTML = html + footerHTML;
 }
 
 function loadMoreUsers() {
@@ -235,24 +250,22 @@ function loadMoreUsers() {
     
     if (startIndex >= filteredUsers.length) {
         hasMoreUsers = false;
-        document.getElementById('endOfList').classList.remove('hidden');
+        renderLeaderboard(displayedUsers);
         return;
     }
     
     isLoading = true;
-    document.getElementById('loadingMore').classList.remove('hidden');
+    renderLeaderboard(displayedUsers);
     
     setTimeout(() => {
         const newUsers = filteredUsers.slice(startIndex, endIndex);
         displayedUsers = [...displayedUsers, ...newUsers];
-        renderLeaderboard(displayedUsers);
         isLoading = false;
-        document.getElementById('loadingMore').classList.add('hidden');
         
         if (endIndex >= filteredUsers.length) {
             hasMoreUsers = false;
-            document.getElementById('endOfList').classList.remove('hidden');
         }
+        renderLeaderboard(displayedUsers);
     }, 300);
 }
 
@@ -268,9 +281,7 @@ function filterLeaderboard() {
         const searchResults = [];
         
         allUsers.forEach((user, originalIndex) => {
-            const matchesSearch = 
-                user.name.toLowerCase().includes(searchTerm) || 
-                user.email.toLowerCase().includes(searchTerm);
+            const matchesSearch = user.name.toLowerCase().includes(searchTerm);
             
             if (matchesSearch) {
                 searchResults.push({
@@ -285,7 +296,7 @@ function filterLeaderboard() {
     
     displayedUsers = [];
     hasMoreUsers = true;
-    document.getElementById('endOfList').classList.add('hidden');
+    isLoading = false;
     loadMoreUsers();
 }
 

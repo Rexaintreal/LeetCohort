@@ -179,7 +179,6 @@ def get_problem_detail(slug):
     
 @app.route('/api/profile/<uid>', methods=['GET'])
 def get_public_profile(uid):
-    """Get public profile data for any user (no auth required)"""
     try:
         user_ref = db.collection('users').document(uid)
         user_doc = user_ref.get()
