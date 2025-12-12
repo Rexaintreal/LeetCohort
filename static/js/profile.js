@@ -125,7 +125,7 @@ function timeAgo(dateString) {
 function updateProfile(data) {
     document.getElementById('profileAvatar').src = data.picture || 'https://via.placeholder.com/128';
     document.getElementById('profileName').textContent = data.name;
-    document.getElementById('profileEmail').textContent = data.email;
+    document.getElementById('profileEmail').style.display = 'none';
     document.getElementById('profileRank').textContent = `#${data.rank || '-'}`;
     document.getElementById('profilePoints').textContent = data.points || 0;
     document.getElementById('profileSolved').textContent = data.problems_solved || 0;
