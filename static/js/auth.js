@@ -52,6 +52,23 @@ function setButtonState(isLoading) {
     }
 }
 
+// veriifying token (test api call)
+async function verifyStoredToken(token, userData) {
+    try {
+        const response = await fetch(`/api/user/${userData.uid}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-type': 'application/json'
+            }
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Token verification failed:', error);
+        return false;
+    }
+}
+
 //auth
 
 async function handleGoogleSignIn() {
@@ -106,10 +123,22 @@ async function handleGoogleSignIn() {
 async function initAuthPage() {
     try {
         const token = localStorage.getItem('firebaseToken');
-        if (token) {
-            window.location.href = '/home';
-            return;
+        const userDataStr = localStorage.getItem('userData');
+
+        if (token && userDataStr) {
+            const userData = JSON.parse(userDataStr);
+            const isValid = await verifyingStoredToken(token, userData);
+            if (isValid) {
+                window.location.href = '/home';
+                return;
+            } else {
+                // clear invalid tokens
+                console.log('Stored token is invalid, clearing...');
+                localStorage.removeItem('firebaseToken');
+                localStorage.removeItem('userData');
+            }
         }
+
         await initializeFirebase();
         const signInBtn = document.getElementById('googleSignInBtn');
         if (signInBtn) {

@@ -38,6 +38,17 @@ function checkAuth() {
     };
 }
 
+// clear invalid sessions 
+function clearSessionAndRedirect(message = 'Session expired. Please login again.') {
+    localStorage.removeItem('firebaseToken');
+    localStorage.removeItem('userData');
+    showToast(message, 'error');
+    setTimeout(() => {
+        window.location.href = '/auth';
+    }, 1000);
+}
+
+
 function showLoading() {
     document.getElementById('loadingState').classList.remove('hidden');
     document.getElementById('mainContent').classList.add('hidden');
@@ -229,7 +240,7 @@ async function fetchUserData(uid, token) {
         
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expired. Please login again.');
+                throw new Error('INVALID_TOKEN');
             }
             throw new Error('Failed to fetch user data');
         }
@@ -252,6 +263,9 @@ async function fetchProblems(token) {
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('INVALID_TOKEN');
+            }
             throw new Error('Failed to fetch problems');
         }
         
@@ -273,6 +287,9 @@ async function fetchLeaderboard(token) {
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('INVALID_TOKEN');
+            }
             throw new Error('Failed to fetch leaderboard');
         }
         
@@ -350,6 +367,12 @@ async function initHomePage() {
 
     } catch (error) {
         console.error('Error initializing home page:', error);
+        
+        if (error.message === 'INVALID_TOKEN') {
+            clearSessionAndRedirect('Session expired. Please login again.');
+            return;
+        }
+        
         showError(error.message || 'Failed to load your dashboard. Please try logging in again.');
         showToast(error.message || 'Failed to load dashboard', 'error');
     }
