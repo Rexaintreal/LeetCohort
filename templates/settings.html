@@ -324,63 +324,67 @@
                     <h2 class="text-2xl font-bold">Profile Settings</h2>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="flex flex-col items-center gap-4">
-                        <div class="relative">
+                    <div class="flex flex-col items-center justify-start h-full"> 
+                        <div class="relative mb-4">
                             <img id="avatarPreview" src="" alt="Profile" class="avatar-preview h-32 w-32 rounded-full border-4 border-white border-opacity-10 object-cover">
                             <div id="avatarLoader" class="hidden absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
                                 <i class="fas fa-spinner fa-spin text-white text-2xl"></i>
                             </div>
                         </div>
-                        <div class="w-full">
+                        
+                        <div class="w-full flex-grow flex flex-col justify-between space-y-4"> 
                             <label for="avatarUpload" class="upload-area block w-full p-4 border-2 border-dashed border-white border-opacity-10 rounded-lg text-center hover:border-opacity-20">
                                 <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
                                 <p class="text-sm text-gray-400">Click to upload or drag and drop</p>
                                 <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
                             </label>
                             <input type="file" id="avatarUpload" accept="image/png,image/jpeg,image/jpg" />
+                            
+                            <button id="uploadBtn" class="btn-primary w-full px-4 py-2.5 rounded-lg text-sm font-medium text-white mt-auto" disabled>
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload Picture
+                            </button>
                         </div>
-                        
-                        <button id="uploadBtn" class="btn-primary w-full px-4 py-2.5 rounded-lg text-sm font-medium text-white" disabled>
-                            <i class="fas fa-upload mr-2"></i>
-                            Upload Picture
-                        </button>
                     </div>
-                    <div class="lg:col-span-2 space-y-6">
-                        <div>
-                            <label for="displayName" class="block text-sm font-medium text-gray-400 mb-2">
-                                <i class="fas fa-user mr-2"></i>
-                                Display Name
-                            </label>
-                            <input 
-                                type="text" 
-                                id="displayName" 
-                                class="input-field w-full px-4 py-2.5 rounded-lg text-white"
-                                placeholder="Enter your display name"
-                                maxlength="50"
-                            />
-                            <p class="text-xs text-gray-500 mt-1.5">Maximum 50 characters</p>
+                    <div class="lg:col-span-2 flex flex-col h-full">
+                        <div class="flex-grow space-y-6">
+                            <div>
+                                <label for="displayName" class="block text-sm font-medium text-gray-400 mb-2">
+                                    <i class="fas fa-user mr-2"></i>
+                                    Display Name
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="displayName" 
+                                    class="input-field w-full px-4 py-2.5 rounded-lg text-white"
+                                    placeholder="Enter your display name"
+                                    maxlength="50"
+                                />
+                                <p class="text-xs text-gray-500 mt-1.5">Maximum 50 characters</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-2">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    Email Address
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    class="input-field w-full px-4 py-2.5 rounded-lg text-gray-400 cursor-not-allowed"
+                                    disabled
+                                    readonly
+                                />
+                                <p class="text-xs text-gray-500 mt-1.5">Email cannot be changed</p>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-400 mb-2">
-                                <i class="fas fa-envelope mr-2"></i>
-                                Email Address
-                            </label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                class="input-field w-full px-4 py-2.5 rounded-lg text-gray-400 cursor-not-allowed"
-                                disabled
-                                readonly
-                            />
-                            <p class="text-xs text-gray-500 mt-1.5">Email cannot be changed</p>
-                        </div>
-                        <button id="saveNameBtn" class="btn-primary w-full px-4 py-2.5 rounded-lg text-sm font-medium text-white" disabled>
+
+                        <button id="saveNameBtn" class="btn-primary w-full px-4 py-2.5 rounded-lg text-sm font-medium text-white mt-6" disabled>
                             <i class="fas fa-save mr-2"></i>
                             Save Changes
                         </button>
                     </div>
+                    </div>
                 </div>
-            </div>
             <div class="section-divider mb-6"></div>
             <div class="glass-card rounded-xl p-8 mb-6">
                 <div class="flex items-center gap-3 mb-6">

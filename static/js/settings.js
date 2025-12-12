@@ -119,7 +119,11 @@ function updateNavbarProfile(userData) {
 function formatDate(dateString) {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+    return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
 }
 
 function timeAgo(dateString) {
@@ -249,15 +253,31 @@ let selectedFile = null;
 let originalName = '';
 let currentUserData = null;
 
-
-
+function copyToClipboard(text, buttonElement) {
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+        setTimeout(() => {
+            buttonElement.innerHTML = originalHTML;
+        }, 2000);
+        showToast('Copied to clipboard!', 'success');
+    }).catch(err => {
+        showToast('Failed to copy', 'error');
+    });
+}
 
 function populateSettings(userData, userRank) {
     currentUserData = userData;
-    
+
     const avatarPreview = document.getElementById('avatarPreview');
     const avatarUrl = userData.picture || 'https://via.placeholder.com/128';
-    avatarPreview.src = avatarUrl + (userData.picture ? `?t=${Date.now()}` : '');
+    
+    if (userData.picture && userData.picture.includes('/static/uploads/')) {
+        avatarPreview.src = `${avatarUrl}?t=${Date.now()}`;
+    } else {
+        avatarPreview.src = avatarUrl;
+    }
+    
     document.getElementById('displayName').value = userData.name || '';
     document.getElementById('email').value = userData.email || '';
     originalName = userData.name || '';
@@ -265,7 +285,15 @@ function populateSettings(userData, userRank) {
     document.getElementById('problemsSolved').textContent = userData.problems_solved || 0;
     document.getElementById('globalRank').textContent = userRank ? `#${userRank}` : '-';
     document.getElementById('memberSince').textContent = formatDate(userData.created_at);
-    document.getElementById('userId').textContent = (userData.uid || '-').slice(0, 20) + '...';
+    const userIdElement = document.getElementById('userId');
+    const fullUid = userData.uid || '-';
+    userIdElement.innerHTML = `
+        <span class="mr-2">${fullUid}</span>
+        <button onclick="copyToClipboard('${fullUid}', this)" class="text-gray-400 hover:text-white transition">
+            <i class="fas fa-copy"></i>
+        </button>
+    `;
+    
     document.getElementById('lastActive').textContent = timeAgo(userData.last_active);
     updateNavbarProfile(userData);
     document.getElementById('profileLink').href = `/profile/${userData.uid}`;
@@ -323,8 +351,11 @@ function handleFileSelect(file) {
     };
     reader.readAsDataURL(file);
     
-    document.getElementById('uploadBtn').disabled = false;
-    showToast('Image ready to upload', 'info');
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = false;
+    uploadBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Profile Picture';
+    uploadBtn.classList.add('bg-primary', 'hover:bg-primary-hover');
+    showToast('Click "Save Profile Picture" to confirm', 'info');
 }
 
 async function handleSaveName() {
@@ -388,12 +419,13 @@ async function handleUploadPicture() {
         localStorage.setItem('userData', JSON.stringify(updatedUserData));
         currentUserData = updatedUserData;
         const avatarPreview = document.getElementById('avatarPreview');
-        avatarPreview.src = result.picture_url + `?t=${Date.now()}`;
+        avatarPreview.src = `${result.picture_url}?t=${Date.now()}`;
         
         updateNavbarProfile(updatedUserData);
         showToast('Profile picture updated successfully!', 'success');
         selectedFile = null;
         uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload Picture';
+        uploadBtn.classList.remove('bg-primary', 'hover:bg-primary-hover');
         uploadBtn.disabled = true;
         avatarLoader.classList.add('hidden');
         
@@ -401,7 +433,7 @@ async function handleUploadPicture() {
         console.error('Error uploading picture:', error);
         showToast(error.message || 'Failed to upload picture', 'error');
         uploadBtn.disabled = false;
-        uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload Picture';
+        uploadBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Profile Picture';
         avatarLoader.classList.add('hidden');
     }
 }
@@ -429,6 +461,8 @@ function setupDragAndDrop() {
         }
     });
 }
+
+window.copyToClipboard = copyToClipboard;
 
 // init
 async function initSettingsPage() {
