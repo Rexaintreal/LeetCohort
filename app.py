@@ -12,6 +12,8 @@ from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image
 import io
+import base64
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -61,6 +63,83 @@ def get_db_connection():
     return conn
 
 
+# EXECUTING CODE USING JUDGE0 API
+def execute_code_judge0(code, input_data, expected_output, language_id, is_run=False):
+
+    JUDGE0_URL = "https://judge0-ce.p.rapidapi.com"
+    RAPIDAPI_KEY = os.getenv('RAPIDAPI_KEY', '')  
+    
+    if not RAPIDAPI_KEY:
+        JUDGE0_URL = "https://judge0-ce.p.rapidapi.com"  
+    
+    headers = {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": RAPIDAPI_KEY,
+        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+    } if RAPIDAPI_KEY else {
+        "content-type": "application/json"
+    }
+    encoded_code = base64.b64encode(code.encode()).decode()
+    encoded_input = base64.b64encode(input_data.encode()).decode() if input_data else ""
+    
+    submission_data = {
+        "source_code": encoded_code,
+        "language_id": language_id,
+        "stdin": encoded_input,
+        "expected_output": base64.b64encode(expected_output.encode()).decode() if expected_output else None
+    }
+    
+    try:
+        submit_url = "https://ce.judge0.com/submissions?base64_encoded=true&wait=true"
+        
+        response = requests.post(submit_url, json=submission_data, timeout=10)
+        
+        if response.status_code != 201 and response.status_code != 200:
+            return {
+                'output': '',
+                'passed': False,
+                'status': 'Error',
+                'error': f'Judge0 API error: {response.status_code}'
+            }
+        
+        result = response.json()
+        
+        stdout = base64.b64decode(result.get('stdout', '')).decode() if result.get('stdout') else ''
+        stderr = base64.b64decode(result.get('stderr', '')).decode() if result.get('stderr') else ''
+        compile_output = base64.b64decode(result.get('compile_output', '')).decode() if result.get('compile_output') else ''
+        
+        output = stdout or stderr or compile_output or ''
+        status_id = result.get('status', {}).get('id')
+        status_desc = result.get('status', {}).get('description', 'Unknown')
+        
+        passed = False
+        if is_run:
+            passed = status_id == 3
+        elif expected_output:
+            passed = status_id == 3 and output.strip() == expected_output.strip()
+        
+        return {
+            'output': output,
+            'passed': passed,
+            'status': status_desc,
+            'error': stderr or compile_output if status_id != 3 else ''
+        }
+        
+    except requests.exceptions.Timeout:
+        return {
+            'output': '',
+            'passed': False,
+            'status': 'Timeout',
+            'error': 'Code execution timed out'
+        }
+    except Exception as e:
+        return {
+            'output': '',
+            'passed': False,
+            'status': 'Error',
+            'error': str(e)
+        }
+    
 # image proxy route
 
 @app.route("/proxy-image")
@@ -101,6 +180,10 @@ def profile(username):
 @app.route('/settings')
 def settings():
     return render_template('settings.html')
+
+@app.route('/problem/<slug>')
+def problem_detail(slug):
+    return render_template('problem.html', slug=slug)
 
 # API routes
 
@@ -194,6 +277,120 @@ def get_user(uid):
         return jsonify(user_data), 200
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+##problem
+
+@app.route('/api/problem/<slug>/submit', methods=['POST'])
+@token_required
+def submit_solution(slug):
+    try:
+        data = request.json
+        code = data.get('code', '')
+        language_id = data.get('language_id', 71) 
+
+        if not code:
+            return jsonify({'error': 'No code provided'}), 400
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, title FROM problems WHERE slug = ?
+        """, (slug,))
+        problem_row = cur.fetchone()
+
+        if not problem_row:
+            conn.close()
+            return jsonify({'error': 'Problem not found'}), 404
+        
+        problem_id = problem_row['id']
+
+        cur.execute("""
+            SELECT id, input, expected_output, points
+            FROM test_cases
+            WHERE problem_id = ?
+        """, (problem_id,))
+        test_cases = cur.fetchall()
+        conn.close()
+
+        if not test_cases:
+            return jsonify({'error': 'No test cases found'}), 404
+        
+        results = []
+        all_passed = True
+        total_points = 0
+
+        for tc in test_cases:
+            result = execute_code_judge0(code, tc['input'], tc['expected_output'], language_id)
+            results.append({
+                'test_case_id': tc['id'],
+                'input': tc['input'],
+                'expected_output': tc['expected_output'],
+                'actual_output': result['output'],
+                'passed': result['passed'],
+                'status': result['status'],
+                'error': result.get('error', ''),
+                'points': tc['points'] if result['passed'] else 0
+            })
+
+            if result['passed']:
+                total_points += tc['points']
+            else:
+                all_passed = False
+
+        if all_passed:
+            uid = request.user['uid']
+            user_ref = db.collection('users').document(uid)
+            user_doc = user_ref.get()
+
+            if user_doc.exists:
+                user_data = user_doc.to_dict()
+                solved_problems = user_data.get('solved_problems', [])
+                
+                if problem_id not in solved_problems:
+                    solved_problems.append(problem_id)
+                    user_ref.update({
+                        'solved_problems': solved_problems,
+                        'problems_solved': len(solved_problems),
+                        'points': user_data.get('points', 0) + total_points,
+                        'last_active': datetime.now()
+                    })
+        return jsonify({
+            'success': True,
+            'all_passed': all_passed,
+            'results': results,
+            'total_points': total_points,
+            'message': 'All test cases passed!' if all_passed else 'Some test cases failed'
+        }), 200
+    
+    except Exception as e:
+        print(f"Error submitting solution: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/problem/<slug>/run', methods=['POST'])
+@token_required
+def run_code(slug):
+    try:
+        data = request.json
+        code = data.get('code', '')
+        custom_input = data.get('input', '')
+        language_id = data.get('language_id', 71)
+
+        if not code:
+            return jsonify({'error': 'No code provided'}), 400
+        
+        result = execute_code_judge0(code, custom_input, None, language_id, is_run=True)
+
+        return jsonify({
+            'success': True,
+            'output': result['output'],
+            'status': result['status'],
+            'error': result.get('error', '')
+        }), 200
+        
+    except Exception as e:
+        print(f"Error running code: {e}")
         return jsonify({'error': str(e)}), 500
 
 ##settings

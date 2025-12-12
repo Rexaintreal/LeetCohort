@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem - LeetCohort</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7E1EE7',
+                        'primary-hover': '#6B19C7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #000000;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .split-pane {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+        
+        .left-pane {
+            width: 45%;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .right-pane {
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .difficulty-easy {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+        
+        .difficulty-medium {
+            background: rgba(234, 179, 8, 0.1);
+            color: #eab308;
+        }
+        
+        .difficulty-hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        
+        .tab-btn {
+            padding: 8px 16px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: #7E1EE7;
+        }
+        
+        .tab-btn:hover:not(.active) {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .CodeMirror {
+            height: 100% !important;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .editor-container {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .console-output {
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .test-case-item {
+            transition: all 0.2s ease;
+        }
+        
+        .test-case-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .test-case-passed {
+            border-left: 3px solid #22c55e;
+        }
+        
+        .test-case-failed {
+            border-left: 3px solid #ef4444;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .hint-item {
+            background: rgba(126, 30, 231, 0.05);
+            border-left: 3px solid rgba(126, 30, 231, 0.5);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 300px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-100">
+    <div id="toastContainer"></div>
+    
+    <nav class="border-b border-white border-opacity-5 bg-black bg-opacity-80 sticky top-0 z-50 backdrop-blur-xl">
+        <div class="max-w-[1800px] mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-6">
+                    <a href="/" class="flex items-center gap-3 text-lg font-bold hover:opacity-80 transition">
+                        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-9 w-9 rounded-lg">
+                        <span>LeetCohort</span>
+                    </a>
+                    <a href="/home" class="text-gray-400 hover:text-white transition text-sm flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Problems</span>
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="loadingState" class="flex items-center justify-center" style="height: calc(100vh - 73px);">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-primary mb-4"></i>
+            <p class="text-gray-400">Loading problem...</p>
+        </div>
+    </div>
+
+    <div id="mainContent" class="split-pane hidden">
+        <div class="left-pane">
+            <div class="p-6">
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <h1 id="problemTitle" class="text-2xl font-bold text-white">Problem Title</h1>
+                        <span id="problemDifficulty" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex gap-2 mb-4 border-b border-white border-opacity-10">
+                        <button class="tab-btn active text-gray-400" data-tab="description">
+                            <i class="fas fa-file-alt mr-2"></i>Description
+                        </button>
+                        <button class="tab-btn text-gray-400" data-tab="hints">
+                            <i class="fas fa-lightbulb mr-2"></i>Hints
+                        </button>
+                    </div>
+                    
+                    <div id="descriptionTab" class="tab-content active">
+                        <div id="problemDescription" class="text-gray-300 leading-relaxed prose prose-invert max-w-none">
+                        </div>
+                    </div>
+                    
+                    <div id="hintsTab" class="tab-content">
+                        <div id="hintsContainer" class="space-y-3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-pane">
+            <div class="border-b border-white border-opacity-10 p-4 flex items-center justify-between bg-black bg-opacity-30">
+                <div class="flex items-center gap-3">
+                    <label for="languageSelect" class="text-sm text-gray-400">Language:</label>
+                    <select id="languageSelect" class="bg-white bg-opacity-5 border border-white border-opacity-10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-opacity-20">
+                        <option value="71">Python 3</option>
+                        <option value="63">JavaScript</option>
+                        <option value="62">Java</option>
+                        <option value="50">C</option>
+                        <option value="54">C++</option>
+                        <option value="51">C#</option>
+                        <option value="68">PHP</option>
+                        <option value="72">Ruby</option>
+                        <option value="73">Rust</option>
+                        <option value="60">Go</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button id="runBtn" class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-white bg-opacity-10 hover:bg-opacity-15 transition flex items-center gap-2">
+                        <i class="fas fa-play"></i>
+                        <span>Run</span>
+                    </button>
+                    <button id="submitBtn" class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-primary hover:bg-primary-hover transition flex items-center gap-2">
+                        <i class="fas fa-check"></i>
+                        <span>Submit</span>
+                    </button>
+                </div>
+            </div>
+            <div class="editor-container">
+                <textarea id="codeEditor"></textarea>
+            </div>
+            <div class="border-t border-white border-opacity-10 bg-black bg-opacity-30">
+                <div class="flex gap-2 px-4 pt-3 border-b border-white border-opacity-10">
+                    <button class="console-tab-btn active px-3 py-1.5 text-sm text-gray-400" data-tab="testcases">
+                        Test Cases
+                    </button>
+                    <button class="console-tab-btn px-3 py-1.5 text-sm text-gray-400" data-tab="results">
+                        Results
+                    </button>
+                </div>
+                <div class="console-output p-4">
+                    <div id="testcasesConsole" class="console-content">
+                        <div class="text-gray-500 text-sm">Run or submit your code to see results</div>
+                    </div>
+                    <div id="resultsConsole" class="console-content hidden">
+                        <div class="text-gray-500 text-sm">Submit your code to see test results</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="errorState" class="hidden flex items-center justify-center" style="height: calc(100vh - 73px);">
+        <div class="text-center">
+            <i class="fas fa-exclamation-circle text-white text-5xl mb-4 opacity-20"></i>
+            <p class="text-white mb-2 text-lg font-semibold">Problem not found</p>
+            <a href="/home" class="inline-block bg-white bg-opacity-5 hover:bg-opacity-10 text-white font-semibold px-6 py-3 rounded-lg transition border border-white border-opacity-10 mt-4">
+                Back to Problems
+            </a>
+        </div>
+    </div>
+    <script>
+        const PROBLEM_SLUG = "{{ slug }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/problem.js') }}"></script>
+</body>
+</html>
