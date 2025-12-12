@@ -32,17 +32,56 @@
         
         .problem-item {
             transition: all 0.3s ease;
-            border-left: 2px solid transparent;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+        
+        .problem-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #7E1EE7, #6B19C7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .problem-item:hover::before {
+            opacity: 1;
         }
         
         .problem-item:hover {
             background: rgba(255, 255, 255, 0.02);
-            border-left-color: #7E1EE7;
-            transform: translateX(2px);
+            transform: translateX(4px);
         }
 
         .problem-item:active {
-            transform: translateX(2px) scale(0.99);
+            transform: translateX(4px) scale(0.99);
+        }
+
+        .difficulty-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        .difficulty-easy {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .difficulty-medium {
+            background: rgba(234, 179, 8, 0.1);
+            color: #eab308;
+        }
+
+        .difficulty-hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
         
         .filter-btn {
@@ -60,7 +99,7 @@
         }
         
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         
         ::-webkit-scrollbar-track {
@@ -76,6 +115,10 @@
             background: rgba(255, 255, 255, 0.15);
         }
         
+        * {
+            scroll-behavior: smooth;
+        }
+        
         .stat-item {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -89,28 +132,39 @@
 
         .nav-link {
             transition: all 0.2s ease;
+            position: relative;
         }
         
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
         }
         
         .nav-link.active {
-            background: rgba(126, 30, 231, 0.1);
             color: white;
-            border-bottom: 2px solid #7E1EE7;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: white;
         }
 
         .profile-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 2px solid rgba(126, 30, 231, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             transition: all 0.2s ease;
         }
 
         .profile-avatar:hover {
-            border-color: rgba(126, 30, 231, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
         }
 
         .skeleton {
@@ -153,29 +207,32 @@
         }
 
         .progress-bar {
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .leaderboard-item {
             transition: all 0.2s ease;
+            border-left: 2px solid transparent;
         }
 
         .leaderboard-item:hover {
             transform: translateX(4px);
+            border-left-color: #7E1EE7;
         }
 
         .toast {
             position: fixed;
             top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 16px 20px;
             min-width: 300px;
+            max-width: 500px;
             z-index: 1000;
-            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+            animation: slideDown 0.3s ease-out, fadeOutUp 0.3s ease-in 2.7s;
             opacity: 0;
         }
 
@@ -183,62 +240,75 @@
             opacity: 1;
         }
 
-        @keyframes slideIn {
+        @keyframes slideDown {
             from {
-                transform: translateX(400px);
+                transform: translateX(-50%) translateY(-100px);
                 opacity: 0;
             }
             to {
-                transform: translateX(0);
+                transform: translateX(-50%) translateY(0);
                 opacity: 1;
             }
         }
 
-        @keyframes fadeOut {
+        @keyframes fadeOutUp {
             to {
                 opacity: 0;
-                transform: translateX(400px);
+                transform: translateX(-50%) translateY(-100px);
             }
         }
 
-        .toast-error {
-            border-left: 3px solid #ef4444;
-        }
-
-        .toast-success {
-            border-left: 3px solid #10b981;
-        }
-
+        .toast-error,
+        .toast-success,
         .toast-info {
-            border-left: 3px solid #3b82f6;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-rank-badge {
+            background: linear-gradient(135deg, rgba(126, 30, 231, 0.2), rgba(126, 30, 231, 0.1));
+            border: 1px solid rgba(126, 30, 231, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .medal-icon {
+            font-size: 1.2rem;
+        }
+
+        #problemsList::-webkit-scrollbar {
+            width: 6px;
         }
     </style>
 </head>
 <body class="bg-black text-gray-100 min-h-screen">
     <div id="toastContainer"></div>
-    <nav class="border-b border-white border-opacity-5 bg-black sticky top-0 z-50 backdrop-blur-lg">
-        <div class="max-w-[1800px] mx-auto px-6 py-4">
+    <nav class="border-b border-white border-opacity-5 bg-black bg-opacity-80 sticky top-0 z-50 backdrop-blur-xl">
+        <div class="max-w-[1800px] mx-auto px-6 py-3">
             <div class="flex justify-between items-center">
-                <a href="/" class="flex items-center gap-3 text-xl font-bold hover:opacity-80 transition">
-                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg">
+                <a href="/" class="flex items-center gap-3 text-lg font-bold hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="LeetCohort" class="h-9 w-9 rounded-lg">
                     <span>LeetCohort</span>
                 </a>
-                <div class="flex items-center gap-6">
-                    <a href="/home" class="nav-link active px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
-                        <i class="fas fa-home"></i>
+                <div class="flex items-center gap-4">
+                    <a href="/home" class="nav-link active px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-code text-sm"></i>
                         <span>Problems</span>
                     </a>
-                    <a href="/leaderboard" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
-                        <i class="fas fa-trophy"></i>
+                    <a href="/leaderboard" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                        <i class="fas fa-trophy text-sm"></i>
                         <span>Leaderboard</span>
                     </a>
-                    <a href="#" id="profileLink" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
+                    <div class="h-6 w-px bg-white bg-opacity-10"></div>
+                    <a href="#" id="profileLink" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white flex items-center gap-2">
                         <img id="navProfilePic" src="" alt="Profile" class="profile-avatar" style="display: none;">
-                        <i id="navProfileIcon" class="fas fa-user"></i>
+                        <i id="navProfileIcon" class="fas fa-user text-sm"></i>
                         <span>Profile</span>
                     </a>
-                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <button id="logoutBtn" class="text-sm text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-5 transition flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt text-sm"></i>
                         <span>Logout</span>
                     </button>
                 </div>
@@ -371,8 +441,8 @@
                     <div class="glass-card rounded-xl p-6 sticky top-24">
                         <div class="text-center mb-6">
                             <img id="userAvatar" src="" alt="User" class="h-20 w-20 rounded-full mx-auto mb-3 border-2 border-white border-opacity-10 transition-transform hover:scale-105">
-                            <h2 id="userName" class="text-base font-semibold text-white">Loading...</h2>
-                            <p id="userEmail" class="text-xs text-gray-500 mt-1">user@email.com</p>
+                            <h2 id="userName" class="text-base font-semibold text-white mb-1">Loading...</h2>
+                            <p id="userEmail" class="text-xs text-gray-500">user@email.com</p>
                         </div>
                         
                         <div class="space-y-2 mb-6">
@@ -415,7 +485,7 @@
                                         <span class="text-gray-400 font-medium">Easy</span>
                                         <span id="easyProgress" class="text-gray-500">0/0</span>
                                     </div>
-                                    <div class="h-1.5 bg-white bg-opacity-5 rounded-full overflow-hidden">
+                                    <div class="h-2 bg-white bg-opacity-5 rounded-full overflow-hidden">
                                         <div id="easyBar" class="h-full bg-green-500 rounded-full progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
@@ -424,7 +494,7 @@
                                         <span class="text-gray-400 font-medium">Medium</span>
                                         <span id="mediumProgress" class="text-gray-500">0/0</span>
                                     </div>
-                                    <div class="h-1.5 bg-white bg-opacity-5 rounded-full overflow-hidden">
+                                    <div class="h-2 bg-white bg-opacity-5 rounded-full overflow-hidden">
                                         <div id="mediumBar" class="h-full bg-yellow-500 rounded-full progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
@@ -433,7 +503,7 @@
                                         <span class="text-gray-400 font-medium">Hard</span>
                                         <span id="hardProgress" class="text-gray-500">0/0</span>
                                     </div>
-                                    <div class="h-1.5 bg-white bg-opacity-5 rounded-full overflow-hidden">
+                                    <div class="h-2 bg-white bg-opacity-5 rounded-full overflow-hidden">
                                         <div id="hardBar" class="h-full bg-red-500 rounded-full progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
@@ -467,7 +537,7 @@
                                 <input type="text" id="searchProblems" placeholder="Search problems..." class="w-full bg-white bg-opacity-5 border border-white border-opacity-10 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-opacity-20 transition text-gray-300 placeholder-gray-600">
                             </div>
                         </div>
-                        <div id="problemsList" class="divide-y divide-white divide-opacity-5 max-h-[calc(100vh-280px)] overflow-y-auto">
+                        <div id="problemsList" class="max-h-[calc(100vh-280px)] overflow-y-auto overflow-x-hidden">
                         </div>
                     </div>
                 </main>
@@ -476,11 +546,19 @@
                     <div class="glass-card rounded-xl overflow-hidden sticky top-24">
                         <div class="p-6 border-b border-white border-opacity-5">
                             <h2 class="text-base font-semibold text-white flex items-center gap-2">
-                                <i class="fas fa-crown text-white text-sm"></i>
                                 <span>Leaderboard</span>
                             </h2>
                         </div>
                         <div id="leaderboardList" class="p-4 space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto">
+                        </div>
+                        <div id="userRankInfo" class="p-4 border-t border-white border-opacity-5 hidden">
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 mb-2">Your Rank</p>
+                                <div class="user-rank-badge mx-auto justify-center">
+                                    <i class="fas fa-medal text-primary"></i>
+                                    <span id="currentUserRank" class="text-lg font-bold text-white">-</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </aside>

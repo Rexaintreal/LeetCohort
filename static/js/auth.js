@@ -59,7 +59,7 @@ async function verifyStoredToken(token, userData) {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-type': 'application/json'
+                'Content-Type': 'application/json'
             }
         });
         return response.ok;
@@ -124,10 +124,11 @@ async function initAuthPage() {
     try {
         const token = localStorage.getItem('firebaseToken');
         const userDataStr = localStorage.getItem('userData');
-
+        
         if (token && userDataStr) {
             const userData = JSON.parse(userDataStr);
-            const isValid = await verifyingStoredToken(token, userData);
+            const isValid = await verifyStoredToken(token, userData);
+            
             if (isValid) {
                 window.location.href = '/home';
                 return;
@@ -138,7 +139,7 @@ async function initAuthPage() {
                 localStorage.removeItem('userData');
             }
         }
-
+        
         await initializeFirebase();
         const signInBtn = document.getElementById('googleSignInBtn');
         if (signInBtn) {

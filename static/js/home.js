@@ -155,7 +155,7 @@ function renderProblems(problems, solvedProblems = []) {
             'Hard': 'text-red-500'
         };
         return `
-            <div class="p-5 cursor-pointer problem-item" data-difficulty="${problem.difficulty}" data-slug="${problem.slug}" onclick="navigateToProblem('${problem.slug}')">
+            <div class="p-5 cursor-pointer problem-item border-b border-white border-opacity-5 last:border-b-0" data-difficulty="${problem.difficulty}" data-slug="${problem.slug}" onclick="navigateToProblem('${problem.slug}')">
                 <div class="flex items-start gap-4">
                     <div class="flex items-center justify-center w-8 text-gray-500 font-medium text-sm flex-shrink-0 mt-0.5">
                         ${index + 1}
@@ -183,6 +183,9 @@ function navigateToProblem(slug) {
 // leaderboard
 function renderLeaderboard(leaderboard, currentUserId) {
     const leaderboardList = document.getElementById('leaderboardList');
+    const userRankInfo = document.getElementById('userRankInfo');
+    const currentUserRank = document.getElementById('currentUserRank');
+    
     if (!leaderboardList) return;
     
     if (leaderboard.length === 0) {
@@ -195,7 +198,11 @@ function renderLeaderboard(leaderboard, currentUserId) {
         return;
     }
     
-    leaderboardList.innerHTML = leaderboard.map((user, index) => {
+    const currentUserIndex = leaderboard.findIndex(u => u.uid === currentUserId);
+    const isInTop10 = currentUserIndex < 10;
+    const top10 = leaderboard.slice(0, 10);
+    
+    leaderboardList.innerHTML = top10.map((user, index) => {
         const isCurrentUser = user.uid === currentUserId;
         const rankColors = {
             0: 'text-yellow-400',
@@ -207,13 +214,13 @@ function renderLeaderboard(leaderboard, currentUserId) {
             <a href="/profile/${user.uid}" class="block">
                 <div class="leaderboard-item flex items-center gap-3 p-3 rounded-lg transition cursor-pointer ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
                     <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
-                        ${index < 3 ? '<i class="fas fa-medal"></i>' : `${index + 1}`}
+                        ${index < 3 ? `<i class="fas fa-medal medal-icon"></i>` : `${index + 1}`}
                     </div>
                     <img src="${user.picture 
                             ? `/proxy-image?url=${encodeURIComponent(user.picture)}` 
                             : 'https://via.placeholder.com/32'
-                        }" 
-                        class="h-8 w-8 rounded-full border border-white border-opacity-10 transition-transform hover:scale-110"
+                        }"  
+                        class="h-8 w-8 rounded-full border-2 border-white border-opacity-10 transition-transform hover:scale-110"
                         loading="lazy"
                         alt="${user.name}">
 
@@ -226,6 +233,13 @@ function renderLeaderboard(leaderboard, currentUserId) {
             </a>
         `;
     }).join('');
+    
+    if (!isInTop10 && currentUserIndex !== -1) {
+        userRankInfo.classList.remove('hidden');
+        currentUserRank.textContent = `#${currentUserIndex + 1}`;
+    } else {
+        userRankInfo.classList.add('hidden');
+    }
 }
 
 async function fetchUserData(uid, token) {
