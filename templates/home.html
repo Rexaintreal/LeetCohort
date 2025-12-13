@@ -259,33 +259,48 @@
                             <div class="flex items-center justify-between mb-4">
                                 <h2 class="text-lg font-semibold text-white">Problems</h2>
                                 <div class="flex gap-2">
-                                    <button class="filter-btn difficulty-filter active px-3 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-400" data-difficulty="all">
+                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-white border-opacity-10 text-white transition-all hover:bg-white hover:bg-opacity-5" data-difficulty="all">
                                         All
                                     </button>
-                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-400" data-difficulty="Easy">
+                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-white border-opacity-10 text-green-400 transition-all hover:bg-green-900/20" data-difficulty="Easy">
                                         Easy
                                     </button>
-                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-400" data-difficulty="Medium">
+                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-white border-opacity-10 text-yellow-400 transition-all hover:bg-yellow-900/20" data-difficulty="Medium">
                                         Medium
                                     </button>
-                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-400" data-difficulty="Hard">
+                                    <button class="filter-btn difficulty-filter px-3 py-1.5 rounded-lg text-xs font-medium border border-white border-opacity-10 text-red-400 transition-all hover:bg-red-900/20" data-difficulty="Hard">
                                         Hard
                                     </button>
-                                </div>
+                                    </div>
                             </div>
                             <div class="flex gap-3">
                                 <div class="relative flex-1">
                                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"></i>
                                     <input type="text" id="searchProblems" placeholder="Search problems..." class="w-full bg-white bg-opacity-5 border border-white border-opacity-10 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-opacity-20 transition text-gray-300 placeholder-gray-600">
                                 </div>
-                                <div class="topic-filter-container">
-                                    <button id="topicFilterBtn" class="topic-filter-btn">
-                                        <i class="fas fa-filter"></i>
-                                        <span id="topicFilterText">Topic</span>
-                                        <i class="fas fa-chevron-down text-xs"></i>
+                                <div class="topic-filter-container relative">
+                                    <button id="topicFilterBtn" class="w-full h-full bg-white bg-opacity-5 border border-white border-opacity-10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-opacity-20 transition text-gray-300 flex items-center justify-center gap-2 hover:bg-opacity-10">
+                                        <i class="fas fa-filter text-primary"></i>
+                                        <span id="topicFilterText" class="font-medium text-gray-300">Topic</span>
+                                        <i class="fas fa-chevron-down text-xs ml-1 text-gray-400"></i>
                                     </button>
-                                    <div id="topicDropdown" class="topic-dropdown hidden">
-                                        </div>
+                                    <div id="topicDropdown" class="topic-dropdown hidden absolute right-0 mt-2 z-10 w-64 rounded-xl shadow-2xl bg-black/80 backdrop-blur-xl border border-white/10 p-2">
+                                    </div>
+                                </div>
+                                </div>
+                        </div>
+
+                        <div class="px-3 py-2 border-b border-white border-opacity-5 bg-white bg-opacity-[0.02] text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                                    <span class="pl-1" style="min-width: 35px;">#</span>
+                                    <span class="w-3"></span>
+                                    <span class="flex-1 truncate">Title</span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <span class="hidden md:inline-block text-center w-24 mr-2">Topic</span>
+                                    <span class="text-center w-[60px]">Diff</span>
+                                    <span class="text-center w-[50px]">Pts</span>
                                 </div>
                             </div>
                         </div>
