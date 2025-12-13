@@ -40,9 +40,9 @@ function checkAuth() {
 let editor;
 let currentProblem = null;
 
-function initCodeEditor(boilerplateCode = '') {
+function initCodeEditor(boilerplateCode = '', language = 'python') {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
-        mode: 'python',
+        mode: language,
         theme: 'yonce',
         lineNumbers: true,
         indentUnit: 4,
@@ -80,6 +80,13 @@ const languageModes = {
     '60': 'text/x-go'
 };
 
+const languageToBoilerplate = {
+    '71': 'python',
+    '63': 'javascript',
+    '62': 'java',
+    '54': 'cpp'
+};
+
 // getting problem details
 async function fetchProblemDetail(slug) {
     const authData = checkAuth();
@@ -114,31 +121,84 @@ function renderProblem(problem) {
     difficultyBadge.textContent = problem.difficulty;
     difficultyBadge.className = `difficulty-${problem.difficulty.toLowerCase()} px-3 py-1 rounded text-xs font-bold`;
     
-    document.getElementById('problemDescription').innerHTML = formatDescription(problem.description); 
-    renderExamples(problem.test_cases);
-    renderHints(problem.hint);
-    initCodeEditor(problem.boilerplate_code || '# Write your solution here\n');
+    document.getElementById('problemDescription').innerHTML = formatDescription(problem);
+    renderExamples(problem.sample_test_cases);
+    renderHints(problem.hints);
+    initCodeEditor(problem.boilerplate_code.python || '# Write your solution here\n', 'python');
 }
 
-function formatDescription(description) {
-    const paragraphs = description.split('\n\n').filter(p => p.trim());
-    return paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+function formatDescription(problem) {
+    let html = '';
+    
+    const paragraphs = problem.description.split('\n\n').filter(p => p.trim());
+    html += paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+    
+    if (problem.input_format) {
+        html += `
+            <div style="margin-top: 24px; padding: 16px; background: rgba(126, 30, 231, 0.05); border-radius: 8px; border-left: 3px solid #7E1EE7;">
+                <div style="font-weight: 600; color: #7E1EE7; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Input Format</div>
+                <div style="color: #cccccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${problem.input_format}</div>
+            </div>
+        `;
+    }
+    
+    if (problem.output_format) {
+        html += `
+            <div style="margin-top: 12px; padding: 16px; background: rgba(126, 30, 231, 0.05); border-radius: 8px; border-left: 3px solid #7E1EE7;">
+                <div style="font-weight: 600; color: #7E1EE7; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Output Format</div>
+                <div style="color: #cccccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${problem.output_format}</div>
+            </div>
+        `;
+    }
+    
+    if (problem.constraints) {
+        html += `
+            <div style="margin-top: 24px;">
+                <div style="font-weight: 600; color: #9ca3af; margin-bottom: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <i class="fas fa-info-circle" style="color: #7E1EE7;"></i> Constraints
+                </div>
+                <div style="color: #cccccc; font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${problem.constraints}</div>
+            </div>
+        `;
+    }
+    
+    if (problem.time_complexity || problem.space_complexity) {
+        html += `<div style="margin-top: 24px; display: flex; gap: 16px;">`;
+        if (problem.time_complexity) {
+            html += `
+                <div style="flex: 1; padding: 12px; background: rgba(34, 197, 94, 0.05); border-radius: 6px; border: 1px solid rgba(34, 197, 94, 0.2);">
+                    <div style="font-size: 11px; color: #22c55e; font-weight: 600; margin-bottom: 4px;">EXPECTED TIME</div>
+                    <div style="color: #cccccc; font-size: 14px; font-weight: 600;">${problem.time_complexity}</div>
+                </div>
+            `;
+        }
+        if (problem.space_complexity) {
+            html += `
+                <div style="flex: 1; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="font-size: 11px; color: #3b82f6; font-weight: 600; margin-bottom: 4px;">EXPECTED SPACE</div>
+                    <div style="color: #cccccc; font-size: 14px; font-weight: 600;">${problem.space_complexity}</div>
+                </div>
+            `;
+        }
+        html += `</div>`;
+    }
+    
+    return html;
 }
 
 function renderExamples(testCases) {
     const container = document.getElementById('examplesContainer');
     
     if (!testCases || testCases.length === 0) {
-        container.innerHTML = '<p style="color: #858585; font-size: 14px;">No examples available</p>';
+        container.innerHTML = '<p style="color: #9ca3af; font-size: 14px;">No examples available</p>';
         return;
     }
     
-    const examples = testCases.slice(0, 3);
-    container.innerHTML = examples.map((tc, idx) => `
+    container.innerHTML = testCases.map((tc, idx) => `
         <div class="example-box">
             <div class="example-label">Example ${idx + 1}</div>
             <div class="example-content"><strong>Input:</strong> ${tc.input}
-<strong>Output:</strong> ${tc.expected_output}</div>
+<strong>Output:</strong> ${tc.expected_output}${tc.explanation ? '\n\n<strong>Explanation:</strong> ' + tc.explanation : ''}</div>
         </div>
     `).join('');
 }
@@ -156,6 +216,286 @@ function renderHints(hints) {
             <p><strong>Hint ${idx + 1}:</strong> ${h.hint}</p>
         </div>
     `).join('');
+}
+
+function initLanguageSelect() {
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+        const languageId = e.target.value;
+        const mode = languageModes[languageId] || 'python';
+        editor.setOption('mode', mode);
+        const boilerplateKey = languageToBoilerplate[languageId];
+        if (boilerplateKey && currentProblem && currentProblem.boilerplate_code[boilerplateKey]) {
+            editor.setValue(currentProblem.boilerplate_code[boilerplateKey]);
+        }
+    });
+}
+
+// runCode
+async function runCode() {
+    const authData = checkAuth();
+    if (!authData) return;
+    
+    const code = editor.getValue();
+    const languageId = parseInt(document.getElementById('languageSelect').value);
+    const customInput = document.getElementById('customInput').value;
+    
+    if (!code.trim()) {
+        showToast('Please write some code first', 'error');
+        return;
+    }
+    
+    const runBtn = document.getElementById('runBtn');
+    runBtn.disabled = true;
+    runBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Running...</span>';
+    
+    try {
+        const response = await fetch(`/api/problem/${PROBLEM_SLUG}/run`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authData.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                code: code,
+                language_id: languageId,
+                input: customInput
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to run code');
+        }
+        
+        displayRunResult(result);
+        showToast('Code executed successfully', 'success');
+        document.querySelector('[data-tab="testcases"]').click();
+        
+    } catch (error) {
+        console.error('Error running code:', error);
+        showToast(error.message || 'Failed to run code', 'error');
+        displayRunError(error.message);
+    } finally {
+        runBtn.disabled = false;
+        runBtn.innerHTML = '<i class="fas fa-play"></i> <span>Run</span>';
+    }
+}
+
+function displayRunResult(result) {
+    const output = document.getElementById('testcasesOutput');
+    
+    const customInputSection = `
+        <div class="custom-input-section">
+            <div class="custom-input-label">Custom Input</div>
+            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
+        </div>
+    `;
+    
+    if (result.error) {
+        output.innerHTML = customInputSection + `
+            <div class="test-result failed">
+                <div class="result-header">
+                    <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
+                    <span class="result-status status-failed">
+                        <i class="fas fa-times-circle"></i>
+                        Failed
+                    </span>
+                </div>
+                <div class="result-details">
+                    <div class="result-label">Error:</div>
+                    <div class="result-value" style="color: #f87171;">${result.error}</div>
+                </div>
+            </div>
+        `;
+    } else {
+        output.innerHTML = customInputSection + `
+            <div class="test-result passed">
+                <div class="result-header">
+                    <span style="color: #9ca3af; font-size: 13px;">Execution Result</span>
+                    <span class="result-status status-passed">
+                        <i class="fas fa-check-circle"></i>
+                        Success
+                    </span>
+                </div>
+                <div class="result-details">
+                    <div class="result-label">Output:</div>
+                    <div class="result-value">${result.output || '(empty output)'}</div>
+                    <div class="result-label" style="margin-top: 12px;">Status:</div>
+                    <div class="result-value">${result.status}</div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function displayRunError(error) {
+    const output = document.getElementById('testcasesOutput');
+    const customInputSection = `
+        <div class="custom-input-section">
+            <div class="custom-input-label">Custom Input</div>
+            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
+        </div>
+    `;
+    output.innerHTML = customInputSection + `
+        <div class="test-result failed">
+            <div class="result-header">
+                <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
+                <span class="result-status status-failed">
+                    <i class="fas fa-times-circle"></i>
+                    Failed
+                </span>
+            </div>
+            <div class="result-details">
+                <div class="result-label">Error:</div>
+                <div class="result-value" style="color: #f87171;">${error}</div>
+            </div>
+        </div>
+    `;
+}
+
+// submit
+async function submitCode() {
+    const authData = checkAuth();
+    if (!authData) return;
+    
+    const code = editor.getValue();
+    const languageId = parseInt(document.getElementById('languageSelect').value);
+    
+    if (!code.trim()) {
+        showToast('Please write some code first', 'error');
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Submitting...</span>';
+    
+    try {
+        const response = await fetch(`/api/problem/${PROBLEM_SLUG}/submit`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authData.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                code: code,
+                language_id: languageId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to submit code');
+        }
+        
+        displaySubmitResults(result);
+        
+        if (result.all_passed) {
+            showToast(`🎉 All test cases passed! +${result.total_points} points`, 'success');
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData.solved_problems.includes(currentProblem.id)) {
+                userData.solved_problems.push(currentProblem.id);
+                userData.problems_solved++;
+                userData.points += result.total_points;
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
+        } else {
+            showToast('Some test cases failed', 'error');
+        }
+        document.querySelector('[data-tab="results"]').click();
+        
+    } catch (error) {
+        console.error('Error submitting code:', error);
+        showToast(error.message || 'Failed to submit code', 'error');
+        displaySubmitError(error.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Submit</span>';
+    }
+}
+
+function displaySubmitResults(result) {
+    const output = document.getElementById('resultsOutput');
+    
+    const passedCount = result.results.filter(r => r.passed).length;
+    const totalCount = result.results.length;
+    
+    let html = `
+        <div style="background: ${result.all_passed ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; 
+                    border: 1px solid ${result.all_passed ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; 
+                    border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                <i class="fas ${result.all_passed ? 'fa-check-circle' : 'fa-times-circle'}" 
+                   style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-size: 20px;"></i>
+                <span style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-weight: 700; font-size: 16px;">
+                    ${result.all_passed ? 'Accepted' : 'Wrong Answer'}
+                </span>
+            </div>
+            <p style="color: #9ca3af; font-size: 14px;">
+                ${passedCount} / ${totalCount} test cases passed
+                ${result.all_passed ? ` • +${result.total_points} points` : ''}
+            </p>
+        </div>
+    `;
+    result.results.forEach((test, idx) => {
+        html += `
+            <div class="test-result ${test.passed ? 'passed' : 'failed'}">
+                <div class="result-header">
+                    <span style="color: #d4d4d4;">Case ${idx + 1} ${test.is_sample ? '(Sample)' : '(Hidden)'}</span>
+                    <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
+                        <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${test.passed ? 'Passed' : 'Failed'}
+                    </span>
+                </div>
+                <div class="result-details">
+                    ${test.is_sample ? `
+                        <div class="result-label">Input:</div>
+                        <div class="result-value">${test.input || '(empty)'}</div>
+                        
+                        <div class="result-label">Expected:</div>
+                        <div class="result-value">${test.expected_output}</div>
+                        
+                        <div class="result-label">Output:</div>
+                        <div class="result-value" style="color: ${test.passed ? '#4ade80' : '#f87171'};">
+                            ${test.actual_output || '(empty)'}
+                        </div>
+                    ` : `
+                        <div style="color: #9ca3af; font-size: 13px; font-style: italic;">
+                            Hidden test case - details not shown
+                        </div>
+                    `}
+                    
+                    ${test.error ? `
+                        <div class="result-label">Error:</div>
+                        <div class="result-value" style="color: #f87171;">${test.error}</div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    output.innerHTML = html;
+}
+
+function displaySubmitError(error) {
+    const output = document.getElementById('resultsOutput');
+    output.innerHTML = `
+        <div class="test-result failed">
+            <div class="result-header">
+                <span style="color: #9ca3af; font-size: 13px;">Submission Error</span>
+                <span class="result-status status-failed">
+                    <i class="fas fa-times-circle"></i>
+                    Failed
+                </span>
+            </div>
+            <div class="result-details">
+                <div class="result-label">Error:</div>
+                <div class="result-value" style="color: #f87171;">${error}</div>
+            </div>
+        </div>
+    `;
 }
 
 function initResizer() {
@@ -248,294 +588,7 @@ function initConsoleTabs() {
     });
 }
 
-// runCode
-async function runCode() {
-    const authData = checkAuth();
-    if (!authData) return;
-    
-    const code = editor.getValue();
-    const languageId = parseInt(document.getElementById('languageSelect').value);
-    const customInput = document.getElementById('customInput').value;
-    
-    if (!code.trim()) {
-        showToast('Please write some code first', 'error');
-        return;
-    }
-    
-    const runBtn = document.getElementById('runBtn');
-    runBtn.disabled = true;
-    runBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Running...</span>';
-    
-    try {
-        if (customInput.trim()) {
-            const response = await fetch(`/api/problem/${PROBLEM_SLUG}/run`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authData.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    code: code,
-                    language_id: languageId,
-                    input: customInput
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to run code');
-            }
-            
-            displayRunResult(result, true);
-            showToast('Code executed successfully', 'success');
-        } else {
-            const response = await fetch(`/api/problem/${PROBLEM_SLUG}/submit`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authData.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    code: code,
-                    language_id: languageId,
-                    is_run: true
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to run code');
-            }
-            
-            displayRunResult(result, false);
-            showToast('Code executed on all test cases', 'success');
-        }
-        
-        document.querySelector('[data-tab="testcases"]').click();
-        
-    } catch (error) {
-        console.error('Error running code:', error);
-        showToast(error.message || 'Failed to run code', 'error');
-        displayRunError(error.message);
-    } finally {
-        runBtn.disabled = false;
-        runBtn.innerHTML = '<i class="fas fa-play"></i> <span>Run</span>';
-    }
-}
 
-function displayRunResult(result) {
-    const output = document.getElementById('testcasesOutput');
-    
-    const customInputSection = `
-        <div class="custom-input-section">
-            <div class="custom-input-label">Custom Input:</div>
-            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
-        </div>
-    `;
-    
-    if (result.error) {
-        output.innerHTML = customInputSection + `
-            <div class="test-result failed">
-                <div class="result-header">
-                    <span style="color: #858585; font-size: 13px;">Execution Error</span>
-                    <span class="result-status status-failed">
-                        <i class="fas fa-times-circle"></i>
-                        Failed
-                    </span>
-                </div>
-                <div class="result-details">
-                    <div class="result-label">Error:</div>
-                    <div class="result-value" style="color: #f87171;">${result.error}</div>
-                </div>
-            </div>
-        `;
-    } else {
-        output.innerHTML = customInputSection + `
-            <div class="test-result passed">
-                <div class="result-header">
-                    <span style="color: #858585; font-size: 13px;">Execution Result</span>
-                    <span class="result-status status-passed">
-                        <i class="fas fa-check-circle"></i>
-                        Success
-                    </span>
-                </div>
-                <div class="result-details">
-                    <div class="result-label">Output:</div>
-                    <div class="result-value">${result.output || '(empty output)'}</div>
-                    <div class="result-label" style="margin-top: 12px;">Status:</div>
-                    <div class="result-value">${result.status}</div>
-                </div>
-            </div>
-        `;
-    }
-}
-
-function displayRunError(error) {
-    const output = document.getElementById('testcasesOutput');
-    const customInputSection = `
-        <div class="custom-input-section">
-            <div class="custom-input-label">Custom Input:</div>
-            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
-        </div>
-    `;
-    output.innerHTML = customInputSection + `
-        <div class="test-result failed">
-            <div class="result-header">
-                <span style="color: #858585; font-size: 13px;">Execution Error</span>
-                <span class="result-status status-failed">
-                    <i class="fas fa-times-circle"></i>
-                    Failed
-                </span>
-            </div>
-            <div class="result-details">
-                <div class="result-label">Error:</div>
-                <div class="result-value" style="color: #f87171;">${error}</div>
-            </div>
-        </div>
-    `;
-}
-
-// submit function
-async function submitCode() {
-    const authData = checkAuth();
-    if (!authData) return;
-    
-    const code = editor.getValue();
-    const languageId = parseInt(document.getElementById('languageSelect').value);
-    
-    if (!code.trim()) {
-        showToast('Please write some code first', 'error');
-        return;
-    }
-    
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Submitting...</span>';
-    
-    try {
-        const response = await fetch(`/api/problem/${PROBLEM_SLUG}/submit`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${authData.token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                code: code,
-                language_id: languageId
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.error || 'Failed to submit code');
-        }
-        
-        displaySubmitResults(result);
-        
-        if (result.all_passed) {
-            showToast(`All test cases passed! +${result.total_points} points`, 'success');
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            if (!userData.solved_problems.includes(currentProblem.id)) {
-                userData.solved_problems.push(currentProblem.id);
-                userData.problems_solved++;
-                userData.points += result.total_points;
-                localStorage.setItem('userData', JSON.stringify(userData));
-            }
-        } else {
-            showToast('Some test cases failed', 'error');
-        }
-        document.querySelector('[data-tab="results"]').click();
-        
-    } catch (error) {
-        console.error('Error submitting code:', error);
-        showToast(error.message || 'Failed to submit code', 'error');
-        displaySubmitError(error.message);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Submit</span>';
-    }
-}
-
-function displaySubmitResults(result) {
-    const output = document.getElementById('resultsOutput');
-    
-    const passedCount = result.results.filter(r => r.passed).length;
-    const totalCount = result.results.length;
-    
-    let html = `
-        <div style="background: ${result.all_passed ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; 
-                    border: 1px solid ${result.all_passed ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; 
-                    border-radius: 6px; padding: 14px; margin-bottom: 14px;">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                <i class="fas ${result.all_passed ? 'fa-check-circle' : 'fa-times-circle'}" 
-                   style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-size: 18px;"></i>
-                <span style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-weight: 700; font-size: 15px;">
-                    ${result.all_passed ? 'Accepted' : 'Wrong Answer'}
-                </span>
-            </div>
-            <p style="color: #858585; font-size: 13px;">
-                ${passedCount} / ${totalCount} test cases passed
-                ${result.all_passed ? ` • +${result.total_points} points` : ''}
-            </p>
-        </div>
-    `;
-    
-    // tests
-    result.results.forEach((test, idx) => {
-        html += `
-            <div class="test-result ${test.passed ? 'passed' : 'failed'}">
-                <div class="result-header">
-                    <span style="color: #d4d4d4;">Case ${idx + 1}</span>
-                    <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
-                        <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                        ${test.passed ? 'Passed' : 'Failed'}
-                    </span>
-                </div>
-                <div class="result-details">
-                    <div class="result-label">Input:</div>
-                    <div class="result-value">${test.input || '(empty)'}</div>
-                    
-                    <div class="result-label">Expected:</div>
-                    <div class="result-value">${test.expected_output}</div>
-                    
-                    <div class="result-label">Output:</div>
-                    <div class="result-value" style="color: ${test.passed ? '#4ade80' : '#f87171'};">
-                        ${test.actual_output || '(empty)'}
-                    </div>
-                    
-                    ${test.error ? `
-                        <div class="result-label">Error:</div>
-                        <div class="result-value" style="color: #f87171;">${test.error}</div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    });
-    
-    output.innerHTML = html;
-}
-
-function displaySubmitError(error) {
-    const output = document.getElementById('resultsOutput');
-    output.innerHTML = `
-        <div class="test-result failed">
-            <div class="result-header">
-                <span style="color: #858585; font-size: 13px;">Submission Error</span>
-                <span class="result-status status-failed">
-                    <i class="fas fa-times-circle"></i>
-                    Failed
-                </span>
-            </div>
-            <div class="result-details">
-                <div class="result-label">Error:</div>
-                <div class="result-value" style="color: #f87171;">${error}</div>
-            </div>
-        </div>
-    `;
-}
 
 // logout
 function handleLogout() {
@@ -544,14 +597,7 @@ function handleLogout() {
     window.location.href = '/auth';
 }
 
-// change lang
-function initLanguageSelect() {
-    document.getElementById('languageSelect').addEventListener('change', (e) => {
-        const languageId = e.target.value;
-        const mode = languageModes[languageId] || 'python';
-        editor.setOption('mode', mode);
-    });
-}
+
 
 // init
 async function initProblemPage() {
@@ -570,7 +616,7 @@ async function initProblemPage() {
         initConsoleResizer();
         initConsoleTabs();
         initLanguageSelect();
-        document.getElementById('consoleContainer').style.height = '250px';
+        document.getElementById('consoleContainer').style.height = '280px';
                 
     } catch (error) {
         console.error('Error initializing problem page:', error);

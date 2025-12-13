@@ -1,1402 +1,852 @@
-[
-  {
-    "id": 1,
-    "title": "Letter Combinations of a Phone Number",
-    "slug": "letter-combinations-of-a-phone-number",
-    "difficulty": "Medium",
-    "description": "Given a string containing digits 2-9, return all possible letter combinations the number could represent.",
-    "test_cases": [
-      {"input": "digits=\"23\"", "expected_output": "[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]"},
-      {"input": "digits=\"\"", "expected_output": "[]"},
-      {"input": "digits=\"2\"", "expected_output": "[\"a\",\"b\",\"c\"]"}
-    ],
-    "hints": ["Backtracking", "Map digits to letters first."],
-    "boilerplate_code": "class Solution:\n    def letterCombinations(self, digits: str):\n        pass"
-  },
-  {
-    "id": 2,
-    "title": "Generate Parentheses",
-    "slug": "generate-parentheses",
-    "difficulty": "Medium",
-    "description": "Generate all combinations of well-formed parentheses given n pairs.",
-    "test_cases": [
-      {"input": "n=3", "expected_output": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]"},
-      {"input": "n=1", "expected_output": "[\"()\"]"},
-      {"input": "n=0", "expected_output": "[]"}
-    ],
-    "hints": ["Backtracking with counts of open/close parentheses."],
-    "boilerplate_code": "class Solution:\n    def generateParenthesis(self, n: int):\n        pass"
-  },
-  {
-    "id": 3,
-    "title": "Combination Sum",
-    "slug": "combination-sum",
-    "difficulty": "Medium",
-    "description": "Find all unique combinations in candidates where the numbers sum to target. Candidates may be chosen unlimited times.",
-    "test_cases": [
-      {"input": "candidates=[2,3,6,7], target=7", "expected_output": "[[7],[2,2,3]]"},
-      {"input": "candidates=[2], target=1", "expected_output": "[]"},
-      {"input": "candidates=[2,3,5], target=8", "expected_output": "[[2,2,2,2],[2,3,3],[3,5]]"}
-    ],
-    "hints": ["Backtracking, sort candidates, prune when sum exceeds target."],
-    "boilerplate_code": "class Solution:\n    def combinationSum(self, candidates, target):\n        pass"
-  },
-  {
-    "id": 4,
-    "title": "Permutations",
-    "slug": "permutations",
-    "difficulty": "Medium",
-    "description": "Return all possible permutations of a list of numbers (unique elements).",
-    "test_cases": [
-      {"input": "nums=[1,2,3]", "expected_output": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]"},
-      {"input": "nums=[0,1]", "expected_output": "[[0,1],[1,0]]"},
-      {"input": "nums=[1]", "expected_output": "[[1]]"}
-    ],
-    "hints": ["Backtracking, swap or track used indices."],
-    "boilerplate_code": "class Solution:\n    def permute(self, nums):\n        pass"
-  },
-  {
-    "id": 5,
-    "title": "N-Queens",
-    "slug": "n-queens",
-    "difficulty": "Hard",
-    "description": "Place n queens on an n×n chessboard so no two queens threaten each other; return all distinct board configurations.",
-    "test_cases": [
-      {"input": "n=4", "expected_output": "[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]"},
-      {"input": "n=1", "expected_output": "[[\"Q\"]]"},
-      {"input": "n=2", "expected_output": "[]"}
-    ],
-    "hints": ["Backtracking with columns and diagonal checks."],
-    "boilerplate_code": "class Solution:\n    def solveNQueens(self, n: int):\n        pass"
-  },
-  {
-    "id": 6,
-    "title": "Subsets",
-    "slug": "subsets",
-    "difficulty": "Medium",
-    "description": "Return all possible subsets (the power set) of a list of unique integers.",
-    "test_cases": [
-      {"input": "nums=[1,2,3]", "expected_output": "[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]"},
-      {"input": "nums=[]", "expected_output": "[[]]"},
-      {"input": "nums=[0]", "expected_output": "[[],[0]]"}
-    ],
-    "hints": ["Backtracking or iterative bitmask approach."],
-    "boilerplate_code": "class Solution:\n    def subsets(self, nums):\n        pass"
-  },
-  {
-    "id": 7,
-    "title": "Word Search",
-    "slug": "word-search",
-    "difficulty": "Medium",
-    "description": "Given a 2D board and a word, return true if the word exists in the grid by adjacent letters (horizontal/vertical), without reusing letters.",
-    "test_cases": [
-      {"input": "board=[[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word=\"ABCCED\"", "expected_output": "true"},
-      {"input": "board=[[\"a\",\"b\"],[\"c\",\"d\"]], word=\"abcd\"", "expected_output": "false"},
-      {"input": "board=[[\"A\"]], word=\"A\"", "expected_output": "true"}
-    ],
-    "hints": ["DFS with visited tracking and backtracking."],
-    "boilerplate_code": "class Solution:\n    def exist(self, board, word):\n        pass"
-  },
-  {
-    "id": 8,
-    "title": "Palindrome Partitioning",
-    "slug": "palindrome-partitioning",
-    "difficulty": "Medium",
-    "description": "Partition a string so that every substring of the partition is a palindrome; return all possible palindrome partitionings.",
-    "test_cases": [
-      {"input": "s=\"aab\"", "expected_output": "[[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]"},
-      {"input": "s=\"a\"", "expected_output": "[[\"a\"]]"},
-      {"input": "s=\"aba\"", "expected_output": "[[\"a\",\"b\",\"a\"],[\"aba\"]]"}
-    ],
-    "hints": ["Backtracking, precompute isPalindrome table for pruning."],
-    "boilerplate_code": "class Solution:\n    def partition(self, s: str):\n        pass"
-  },
-  {
-    "id": 9,
-    "title": "Median of Two Sorted Arrays",
-    "slug": "median-of-two-sorted-arrays",
-    "difficulty": "Hard",
-    "description": "Given two sorted arrays, find the median of the combined sorted array in O(log(m+n)) time.",
-    "test_cases": [
-      {"input": "nums1=[1,3], nums2=[2]", "expected_output": "2.0"},
-      {"input": "nums1=[1,2], nums2=[3,4]", "expected_output": "2.5"},
-      {"input": "nums1=[], nums2=[1]", "expected_output": "1.0"}
-    ],
-    "hints": ["Binary search on partition; ensure smaller array is used for searching."],
-    "boilerplate_code": "class Solution:\n    def findMedianSortedArrays(self, nums1, nums2):\n        pass"
-  },
-  {
-    "id": 10,
-    "title": "Search in Rotated Sorted Array",
-    "slug": "search-in-rotated-sorted-array",
-    "difficulty": "Medium",
-    "description": "Search target in rotated sorted array in O(log n), return index or -1.",
-    "test_cases": [
-      {"input": "nums=[4,5,6,7,0,1,2], target=0", "expected_output": "4"},
-      {"input": "nums=[4,5,6,7,0,1,2], target=3", "expected_output": "-1"},
-      {"input": "nums=[1], target=0", "expected_output": "-1"}
-    ],
-    "hints": ["Find sorted half at each step and binary search accordingly."],
-    "boilerplate_code": "class Solution:\n    def search(self, nums, target):\n        pass"
-  },
-  {
-    "id": 11,
-    "title": "Find First and Last Position of Element in Sorted Array",
-    "slug": "find-first-and-last-position",
-    "difficulty": "Medium",
-    "description": "Find start and end indices of a target value in sorted array; return [-1,-1] if not found.",
-    "test_cases": [
-      {"input": "nums=[5,7,7,8,8,10], target=8", "expected_output": "[3,4]"},
-      {"input": "nums=[5,7,7,8,8,10], target=6", "expected_output": "[-1,-1]"},
-      {"input": "nums=[], target=0", "expected_output": "[-1,-1]"}
-    ],
-    "hints": ["Use binary search twice for left and right boundaries."],
-    "boilerplate_code": "class Solution:\n    def searchRange(self, nums, target):\n        pass"
-  },
-  {
-    "id": 12,
-    "title": "Search Insert Position",
-    "slug": "search-insert-position",
-    "difficulty": "Easy",
-    "description": "Return the index where target should be inserted in sorted array.",
-    "test_cases": [
-      {"input": "nums=[1,3,5,6], target=5", "expected_output": "2"},
-      {"input": "nums=[1,3,5,6], target=2", "expected_output": "1"},
-      {"input": "nums=[1,3,5,6], target=7", "expected_output": "4"}
-    ],
-    "hints": ["Classic binary search for insertion point."],
-    "boilerplate_code": "class Solution:\n    def searchInsert(self, nums, target):\n        pass"
-  },
-  {
-    "id": 13,
-    "title": "Search a 2D Matrix",
-    "slug": "search-a-2d-matrix",
-    "difficulty": "Medium",
-    "description": "Treat 2D matrix as sorted list and search target in O(log(m*n)).",
-    "test_cases": [
-      {"input": "matrix=[[1,3,5,7],[10,11,16,20],[23,30,34,60]], target=3", "expected_output": "true"},
-      {"input": "matrix=[[1]], target=0", "expected_output": "false"},
-      {"input": "matrix=[], target=1", "expected_output": "false"}
-    ],
-    "hints": ["Map 1D index to 2D (row = idx / cols, col = idx % cols)."],
-    "boilerplate_code": "class Solution:\n    def searchMatrix(self, matrix, target):\n        pass"
-  },
-  {
-    "id": 14,
-    "title": "Find Minimum in Rotated Sorted Array",
-    "slug": "find-minimum-in-rotated-sorted-array",
-    "difficulty": "Medium",
-    "description": "Find minimum element in rotated sorted array (no duplicates) in O(log n).",
-    "test_cases": [
-      {"input": "nums=[3,4,5,1,2]", "expected_output": "1"},
-      {"input": "nums=[4,5,6,7,0,1,2]", "expected_output": "0"},
-      {"input": "nums=[1]", "expected_output": "1"}
-    ],
-    "hints": ["Binary search by comparing mid to rightmost element."],
-    "boilerplate_code": "class Solution:\n    def findMin(self, nums):\n        pass"
-  },
-  {
-    "id": 15,
-    "title": "Binary Tree Inorder Traversal",
-    "slug": "binary-tree-inorder-traversal",
-    "difficulty": "Easy",
-    "description": "Return inorder traversal of binary tree nodes' values.",
-    "test_cases": [
-      {"input": "root=[1,null,2,3]", "expected_output": "[1,3,2]"},
-      {"input": "root=[]", "expected_output": "[]"},
-      {"input": "root=[1]", "expected_output": "[1]"}
-    ],
-    "hints": ["Recursive or iterative with stack."],
-    "boilerplate_code": "class Solution:\n    def inorderTraversal(self, root):\n        pass"
-  },
-  {
-    "id": 16,
-    "title": "Validate Binary Search Tree",
-    "slug": "validate-binary-search-tree",
-    "difficulty": "Medium",
-    "description": "Check if a binary tree is a valid BST.",
-    "test_cases": [
-      {"input": "root=[2,1,3]", "expected_output": "true"},
-      {"input": "root=[5,1,4,null,null,3,6]", "expected_output": "false"},
-      {"input": "root=[]", "expected_output": "true"}
-    ],
-    "hints": ["Use DFS with value ranges (min/max) or inorder check for increasing values."],
-    "boilerplate_code": "class Solution:\n    def isValidBST(self, root):\n        pass"
-  },
-  {
-    "id": 17,
-    "title": "Symmetric Tree",
-    "slug": "symmetric-tree",
-    "difficulty": "Easy",
-    "description": "Check if a binary tree is symmetric around its center.",
-    "test_cases": [
-      {"input": "root=[1,2,2,3,4,4,3]", "expected_output": "true"},
-      {"input": "root=[1,2,2,null,3,null,3]", "expected_output": "false"},
-      {"input": "root=[]", "expected_output": "true"}
-    ],
-    "hints": ["Compare left and right subtrees recursively (mirror)."],
-    "boilerplate_code": "class Solution:\n    def isSymmetric(self, root):\n        pass"
-  },
-  {
-    "id": 18,
-    "title": "Binary Tree Level Order Traversal",
-    "slug": "binary-tree-level-order-traversal",
-    "difficulty": "Medium",
-    "description": "Return level order traversal (breadth-first) of a binary tree.",
-    "test_cases": [
-      {"input": "root=[3,9,20,null,null,15,7]", "expected_output": "[[3],[9,20],[15,7]]"},
-      {"input": "root=[]", "expected_output": "[]"},
-      {"input": "root=[1]", "expected_output": "[[1]]"}
-    ],
-    "hints": ["Use a queue (BFS)."],
-    "boilerplate_code": "class Solution:\n    def levelOrder(self, root):\n        pass"
-  },
-  {
-    "id": 19,
-    "title": "Maximum Depth of Binary Tree",
-    "slug": "maximum-depth-of-binary-tree",
-    "difficulty": "Easy",
-    "description": "Return the maximum depth (height) of a binary tree.",
-    "test_cases": [
-      {"input": "root=[3,9,20,null,null,15,7]", "expected_output": "3"},
-      {"input": "root=[]", "expected_output": "0"},
-      {"input": "root=[1,null,2]", "expected_output": "2"}
-    ],
-    "hints": ["Use recursion or iterative BFS counting levels."],
-    "boilerplate_code": "class Solution:\n    def maxDepth(self, root):\n        pass"
-  },
-  {
-    "id": 20,
-    "title": "Construct Binary Tree from Preorder and Inorder Traversal",
-    "slug": "construct-binary-tree-from-preorder-and-inorder",
-    "difficulty": "Medium",
-    "description": "Construct binary tree given preorder and inorder traversal arrays.",
-    "test_cases": [
-      {"input": "preorder=[3,9,20,15,7], inorder=[9,3,15,20,7]", "expected_output": "[3,9,20,null,null,15,7]"},
-      {"input": "preorder=[-1], inorder=[-1]", "expected_output": "[-1]"},
-      {"input": "preorder=[], inorder=[]", "expected_output": "[]"}
-    ],
-    "hints": ["Use hashmap for inorder index lookup; recurse on left/right subtree sizes."],
-    "boilerplate_code": "class Solution:\n    def buildTree(self, preorder, inorder):\n        pass"
-  },
-  {
-    "id": 21,
-    "title": "Convert Sorted Array to Binary Search Tree",
-    "slug": "convert-sorted-array-to-bst",
-    "difficulty": "Easy",
-    "description": "Convert sorted array into height-balanced BST (choose middle as root).",
-    "test_cases": [
-      {"input": "nums=[-10,-3,0,5,9]", "expected_output": "[0,-3,9,-10,null,5]"},
-      {"input": "nums=[1,3]", "expected_output": "[3,1] or [1,null,3]"},
-      {"input": "nums=[]", "expected_output": "[]"}
-    ],
-    "hints": ["Recursively choose mid element as root."],
-    "boilerplate_code": "class Solution:\n    def sortedArrayToBST(self, nums):\n        pass"
-  },
-  {
-    "id": 22,
-    "title": "Flatten Binary Tree to Linked List",
-    "slug": "flatten-binary-tree-to-linked-list",
-    "difficulty": "Medium",
-    "description": "Flatten tree to linked list in-place following preorder traversal.",
-    "test_cases": [
-      {"input": "root=[1,2,5,3,4,null,6]", "expected_output": "[1,null,2,null,3,null,4,null,5,null,6]"},
-      {"input": "root=[]", "expected_output": "[]"},
-      {"input": "root=[0]", "expected_output": "[0]"}
-    ],
-    "hints": ["Use recursion returning tail or iterative stack."],
-    "boilerplate_code": "class Solution:\n    def flatten(self, root):\n        pass"
-  },
-  {
-    "id": 23,
-    "title": "Binary Tree Right Side View",
-    "slug": "binary-tree-right-side-view",
-    "difficulty": "Medium",
-    "description": "Return values visible from the right side of the tree.",
-    "test_cases": [
-      {"input": "root=[1,2,3,null,5,null,4]", "expected_output": "[1,3,4]"},
-      {"input": "root=[]", "expected_output": "[]"},
-      {"input": "root=[1]", "expected_output": "[1]"}
-    ],
-    "hints": ["BFS and take last element of each level or do DFS prioritizing right child."],
-    "boilerplate_code": "class Solution:\n    def rightSideView(self, root):\n        pass"
-  },
-  {
-    "id": 24,
-    "title": "Invert Binary Tree",
-    "slug": "invert-binary-tree",
-    "difficulty": "Easy",
-    "description": "Invert a binary tree (mirror it).",
-    "test_cases": [
-      {"input": "root=[4,2,7,1,3,6,9]", "expected_output": "[4,7,2,9,6,3,1]"},
-      {"input": "root=[]", "expected_output": "[]"},
-      {"input": "root=[1]", "expected_output": "[1]"}
-    ],
-    "hints": ["Swap left and right recursively or using BFS."],
-    "boilerplate_code": "class Solution:\n    def invertTree(self, root):\n        pass"
-  },
-  {
-    "id": 25,
-    "title": "Kth Smallest Element in a BST",
-    "slug": "kth-smallest-element-in-a-bst",
-    "difficulty": "Medium",
-    "description": "Return k-th smallest element in a BST (1-indexed).",
-    "test_cases": [
-      {"input": "root=[3,1,4,null,2], k=1", "expected_output": "1"},
-      {"input": "root=[5,3,6,2,4,null,null,1], k=3", "expected_output": "3"},
-      {"input": "root=[1], k=1", "expected_output": "1"}
-    ],
-    "hints": ["Inorder traversal yields sorted order."],
-    "boilerplate_code": "class Solution:\n    def kthSmallest(self, root, k):\n        pass"
-  },
-  {
-    "id": 26,
-    "title": "Lowest Common Ancestor of a Binary Tree",
-    "slug": "lowest-common-ancestor-of-a-binary-tree",
-    "difficulty": "Medium",
-    "description": "Given a binary tree and two nodes, return their lowest common ancestor.",
-    "test_cases": [
-      {"input": "root=[3,5,1,6,2,0,8,null,null,7,4], p=5, q=1", "expected_output": "3"},
-      {"input": "root=[3,5,1,6,2,0,8,null,null,7,4], p=5, q=4", "expected_output": "5"},
-      {"input": "root=[1,2], p=1, q=2", "expected_output": "1"}
-    ],
-    "hints": ["DFS returning node if found, else combine left/right results."],
-    "boilerplate_code": "class Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        pass"
-  },
-  {
-    "id": 27,
-    "title": "Path Sum III",
-    "slug": "path-sum-iii",
-    "difficulty": "Medium",
-    "description": "Count number of paths that sum to target in binary tree (paths can start/end anywhere but must go downwards).",
-    "test_cases": [
-      {"input": "root=[10,5,-3,3,2,null,11,3,-2,null,1], target=8", "expected_output": "3"},
-      {"input": "root=[1], target=1", "expected_output": "1"},
-      {"input": "root=[], target=0", "expected_output": "0"}
-    ],
-    "hints": ["Use prefix sum hashmap across path from root to current node."],
-    "boilerplate_code": "class Solution:\n    def pathSum(self, root, targetSum):\n        pass"
-  },
-  {
-    "id": 28,
-    "title": "Diameter of Binary Tree",
-    "slug": "diameter-of-binary-tree",
-    "difficulty": "Easy",
-    "description": "Return diameter (number of nodes on longest path) of the binary tree — often defined as number of edges on longest path.",
-    "test_cases": [
-      {"input": "root=[1,2,3,4,5]", "expected_output": "3"},
-      {"input": "root=[]", "expected_output": "0"},
-      {"input": "root=[1]", "expected_output": "0"}
-    ],
-    "hints": ["Return height and update global diameter at each node."],
-    "boilerplate_code": "class Solution:\n    def diameterOfBinaryTree(self, root):\n        pass"
-  },
-  {
-    "id": 29,
-    "title": "Longest Palindromic Substring",
-    "slug": "longest-palindromic-substring",
-    "difficulty": "Medium",
-    "description": "Find the longest palindromic substring in given string s.",
-    "test_cases": [
-      {"input": "s=\"babad\"", "expected_output": "\"bab\" or \"aba\""},
-      {"input": "s=\"cbbd\"", "expected_output": "\"bb\""},
-      {"input": "s=\"a\",", "expected_output": "\"a\""}
-    ],
-    "hints": ["Expand around center or use DP/Manacher's algorithm for O(n)."],
-    "boilerplate_code": "class Solution:\n    def longestPalindrome(self, s: str):\n        pass"
-  },
-  {
-    "id": 30,
-    "title": "Longest Valid Parentheses",
-    "slug": "longest-valid-parentheses",
-    "difficulty": "Hard",
-    "description": "Given a string of '(' and ')', find the length of the longest valid (well-formed) parentheses substring.",
-    "test_cases": [
-      {"input": "s=\"(()\"", "expected_output": "2"},
-      {"input": "s=\")()())\"", "expected_output": "4"},
-      {"input": "s=\"\"", "expected_output": "0"}
-    ],
-    "hints": ["Use stack or DP, track last invalid index."],
-    "boilerplate_code": "class Solution:\n    def longestValidParentheses(self, s: str):\n        pass"
-  },
-  {
-    "id": 31,
-    "title": "Unique Paths",
-    "slug": "unique-paths",
-    "difficulty": "Medium",
-    "description": "Count unique paths from top-left to bottom-right in m×n grid, moving only right or down.",
-    "test_cases": [
-      {"input": "m=3, n=7", "expected_output": "28"},
-      {"input": "m=3, n=2", "expected_output": "3"},
-      {"input": "m=1, n=1", "expected_output": "1"}
-    ],
-    "hints": ["Use combinatorics (nCr) or DP."],
-    "boilerplate_code": "class Solution:\n    def uniquePaths(self, m: int, n: int):\n        pass"
-  },
-  {
-    "id": 32,
-    "title": "Minimum Path Sum",
-    "slug": "minimum-path-sum",
-    "difficulty": "Medium",
-    "description": "Given a grid of non-negative numbers, find a path from top-left to bottom-right which minimizes the sum of all numbers along its path.",
-    "test_cases": [
-      {"input": "grid=[[1,3,1],[1,5,1],[4,2,1]]", "expected_output": "7"},
-      {"input": "grid=[[1]]", "expected_output": "1"},
-      {"input": "grid=[[1,2],[1,1]]", "expected_output": "3"}
-    ],
-    "hints": ["DP: dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])."],
-    "boilerplate_code": "class Solution:\n    def minPathSum(self, grid):\n        pass"
-  },
-  {
-    "id": 33,
-    "title": "Climbing Stairs",
-    "slug": "climbing-stairs",
-    "difficulty": "Easy",
-    "description": "Count ways to climb n stairs when you can take 1 or 2 steps.",
-    "test_cases": [
-      {"input": "n=2", "expected_output": "2"},
-      {"input": "n=3", "expected_output": "3"},
-      {"input": "n=5", "expected_output": "8"}
-    ],
-    "hints": ["Fibonacci recurrence; use DP or constant-space iteration."],
-    "boilerplate_code": "class Solution:\n    def climbStairs(self, n: int):\n        pass"
-  },
-  {
-    "id": 34,
-    "title": "Edit Distance",
-    "slug": "edit-distance",
-    "difficulty": "Medium",
-    "description": "Compute minimum number of operations (insert, delete, replace) to convert word1 to word2.",
-    "test_cases": [
-      {"input": "word1=\"horse\", word2=\"ros\"", "expected_output": "3"},
-      {"input": "word1=\"intention\", word2=\"execution\"", "expected_output": "5"},
-      {"input": "word1=\"\", word2=\"a\"", "expected_output": "1"}
-    ],
-    "hints": ["Use DP table dp[i][j] representing first i and j characters."],
-    "boilerplate_code": "class Solution:\n    def minDistance(self, word1: str, word2: str):\n        pass"
-  },
-  {
-    "id": 35,
-    "title": "Pascal's Triangle",
-    "slug": "pascals-triangle",
-    "difficulty": "Easy",
-    "description": "Generate first numRows of Pascal's triangle.",
-    "test_cases": [
-      {"input": "numRows=5", "expected_output": "[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]"},
-      {"input": "numRows=1", "expected_output": "[[1]]"},
-      {"input": "numRows=0", "expected_output": "[]"}
-    ],
-    "hints": ["Each row built from previous row sums."],
-    "boilerplate_code": "class Solution:\n    def generate(self, numRows: int):\n        pass"
-  },
-  {
-    "id": 36,
-    "title": "Word Break",
-    "slug": "word-break",
-    "difficulty": "Medium",
-    "description": "Given s and wordDict, determine if s can be segmented into a sequence of one or more dictionary words.",
-    "test_cases": [
-      {"input": "s=\"leetcode\", wordDict=[\"leet\",\"code\"]", "expected_output": "true"},
-      {"input": "s=\"applepenapple\", wordDict=[\"apple\",\"pen\"]", "expected_output": "true"},
-      {"input": "s=\"catsandog\", wordDict=[\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]", "expected_output": "false"}
-    ],
-    "hints": ["DP where dp[i] means s[:i] can be segmented."],
-    "boilerplate_code": "class Solution:\n    def wordBreak(self, s: str, wordDict):\n        pass"
-  },
-  {
-    "id": 37,
-    "title": "Maximum Product Subarray",
-    "slug": "maximum-product-subarray",
-    "difficulty": "Medium",
-    "description": "Find largest product of a contiguous subarray within an array.",
-    "test_cases": [
-      {"input": "nums=[2,3,-2,4]", "expected_output": "6"},
-      {"input": "nums=[-2,0,-1]", "expected_output": "0"},
-      {"input": "nums=[-2,3,-4]", "expected_output": "24"}
-    ],
-    "hints": ["Track both max and min product at each position due to negative numbers."],
-    "boilerplate_code": "class Solution:\n    def maxProduct(self, nums):\n        pass"
-  },
-  {
-    "id": 38,
-    "title": "House Robber",
-    "slug": "house-robber",
-    "difficulty": "Medium",
-    "description": "Maximize amount robbed without robbing adjacent houses.",
-    "test_cases": [
-      {"input": "nums=[1,2,3,1]", "expected_output": "4"},
-      {"input": "nums=[2,7,9,3,1]", "expected_output": "12"},
-      {"input": "nums=[]", "expected_output": "0"}
-    ],
-    "hints": ["DP with two-state rolling variables (rob or skip)."],
-    "boilerplate_code": "class Solution:\n    def rob(self, nums):\n        pass"
-  },
-  {
-    "id": 39,
-    "title": "Perfect Squares",
-    "slug": "perfect-squares",
-    "difficulty": "Medium",
-    "description": "Find least number of perfect square numbers summing to n.",
-    "test_cases": [
-      {"input": "n=12", "expected_output": "3"},
-      {"input": "n=13", "expected_output": "2"},
-      {"input": "n=1", "expected_output": "1"}
-    ],
-    "hints": ["Use DP or BFS over remainders."],
-    "boilerplate_code": "class Solution:\n    def numSquares(self, n: int):\n        pass"
-  },
-  {
-    "id": 40,
-    "title": "Longest Increasing Subsequence",
-    "slug": "longest-increasing-subsequence",
-    "difficulty": "Medium",
-    "description": "Return length of longest strictly increasing subsequence.",
-    "test_cases": [
-      {"input": "nums=[10,9,2,5,3,7,101,18]", "expected_output": "4"},
-      {"input": "nums=[0,1,0,3,2,3]", "expected_output": "4"},
-      {"input": "nums=[7,7,7,7,7,7,7]", "expected_output": "1"}
-    ],
-    "hints": ["n log n patience sorting with binary search, or DP O(n^2)."],
-    "boilerplate_code": "class Solution:\n    def lengthOfLIS(self, nums):\n        pass"
-  },
-  {
-    "id": 41,
-    "title": "Coin Change",
-    "slug": "coin-change",
-    "difficulty": "Medium",
-    "description": "Given coins and amount, return fewest number of coins to make up amount or -1 if not possible.",
-    "test_cases": [
-      {"input": "coins=[1,2,5], amount=11", "expected_output": "3"},
-      {"input": "coins=[2], amount=3", "expected_output": "-1"},
-      {"input": "coins=[1], amount=0", "expected_output": "0"}
-    ],
-    "hints": ["DP on amount with min over coins."],
-    "boilerplate_code": "class Solution:\n    def coinChange(self, coins, amount):\n        pass"
-  },
-  {
-    "id": 42,
-    "title": "Partition Equal Subset Sum",
-    "slug": "partition-equal-subset-sum",
-    "difficulty": "Medium",
-    "description": "Determine if nums can be partitioned into two subsets with equal sum.",
-    "test_cases": [
-      {"input": "nums=[1,5,11,5]", "expected_output": "true"},
-      {"input": "nums=[1,2,3,5]", "expected_output": "false"},
-      {"input": "nums=[1,1]", "expected_output": "true"}
-    ],
-    "hints": ["Reduce to subset sum with target = total/2; use DP bitset/boolean DP."],
-    "boilerplate_code": "class Solution:\n    def canPartition(self, nums):\n        pass"
-  },
-  {
-    "id": 43,
-    "title": "Longest Common Subsequence",
-    "slug": "longest-common-subsequence",
-    "difficulty": "Medium",
-    "description": "Given two strings, return length of their longest common subsequence.",
-    "test_cases": [
-      {"input": "text1=\"abcde\", text2=\"ace\"", "expected_output": "3"},
-      {"input": "text1=\"abc\", text2=\"abc\"", "expected_output": "3"},
-      {"input": "text1=\"abc\", text2=\"def\"", "expected_output": "0"}
-    ],
-    "hints": ["2D DP: dp[i][j] = ... based on matching char or max of neighbors."],
-    "boilerplate_code": "class Solution:\n    def longestCommonSubsequence(self, text1: str, text2: str):\n        pass"
-  },
-  {
-    "id": 44,
-    "title": "Number of Islands",
-    "slug": "number-of-islands",
-    "difficulty": "Medium",
-    "description": "Given 2D grid of '1's (land) and '0's (water), count islands (connected components).",
-    "test_cases": [
-      {"input": "grid=[[\"1\",\"1\",\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"0\",\"0\"]]", "expected_output": "1"},
-      {"input": "grid=[[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"1\",\"1\"]]", "expected_output": "3"},
-      {"input": "grid=[]", "expected_output": "0"}
-    ],
-    "hints": ["Use DFS/BFS flood fill and mark visited."],
-    "boilerplate_code": "class Solution:\n    def numIslands(self, grid):\n        pass"
-  },
-  {
-    "id": 45,
-    "title": "Course Schedule",
-    "slug": "course-schedule",
-    "difficulty": "Medium",
-    "description": "Given number of courses and prerequisites pairs, determine if you can finish all courses (detect cycle in directed graph).",
-    "test_cases": [
-      {"input": "numCourses=2, prerequisites=[[1,0]]", "expected_output": "true"},
-      {"input": "numCourses=2, prerequisites=[[1,0],[0,1]]", "expected_output": "false"},
-      {"input": "numCourses=3, prerequisites=[[1,0],[2,0],[2,1]]", "expected_output": "true"}
-    ],
-    "hints": ["Use DFS cycle detection or Kahn's topological sort (BFS)."],
-    "boilerplate_code": "class Solution:\n    def canFinish(self, numCourses: int, prerequisites):\n        pass"
-  },
-  {
-    "id": 46,
-    "title": "Rotting Oranges",
-    "slug": "rotting-oranges",
-    "difficulty": "Medium",
-    "description": "Given grid of fresh and rotten oranges, return minutes until all fresh oranges rot or -1 if impossible.",
-    "test_cases": [
-      {"input": "grid=[[2,1,1],[1,1,0],[0,1,1]]", "expected_output": "4"},
-      {"input": "grid=[[2,1,1],[0,1,1],[1,0,1]]", "expected_output": "-1"},
-      {"input": "grid=[[0,2]]", "expected_output": "0"}
-    ],
-    "hints": ["Multi-source BFS starting from all rotten cells."],
-    "boilerplate_code": "class Solution:\n    def orangesRotting(self, grid):\n        pass"
-  },
-  {
-    "id": 47,
-    "title": "Jump Game II",
-    "slug": "jump-game-ii",
-    "difficulty": "Medium",
-    "description": "Given array of max jump lengths, return minimum number of jumps to reach last index.",
-    "test_cases": [
-      {"input": "nums=[2,3,1,1,4]", "expected_output": "2"},
-      {"input": "nums=[2,3,0,1,4]", "expected_output": "2"},
-      {"input": "nums=[0]", "expected_output": "0"}
-    ],
-    "hints": ["Greedy: track current_end and farthest reachable; increment jumps when reaching end."],
-    "boilerplate_code": "class Solution:\n    def jump(self, nums):\n        pass"
-  },
-  {
-    "id": 48,
-    "title": "Jump Game",
-    "slug": "jump-game",
-    "difficulty": "Medium",
-    "description": "Determine if you can reach the last index starting at first index given max jump lengths.",
-    "test_cases": [
-      {"input": "nums=[2,3,1,1,4]", "expected_output": "true"},
-      {"input": "nums=[3,2,1,0,4]", "expected_output": "false"},
-      {"input": "nums=[0]", "expected_output": "true"}
-    ],
-    "hints": ["Greedy: maintain farthest reachable index."],
-    "boilerplate_code": "class Solution:\n    def canJump(self, nums):\n        pass"
-  },
-  {
-    "id": 49,
-    "title": "Best Time to Buy and Sell Stock",
-    "slug": "best-time-to-buy-and-sell-stock",
-    "difficulty": "Easy",
-    "description": "Given prices, find max profit from a single buy and sell.",
-    "test_cases": [
-      {"input": "prices=[7,1,5,3,6,4]", "expected_output": "5"},
-      {"input": "prices=[7,6,4,3,1]", "expected_output": "0"},
-      {"input": "prices=[1,2]", "expected_output": "1"}
-    ],
-    "hints": ["Track minimum price and max profit so far."],
-    "boilerplate_code": "class Solution:\n    def maxProfit(self, prices):\n        pass"
-  },
-  {
-    "id": 50,
-    "title": "Partition Labels",
-    "slug": "partition-labels",
-    "difficulty": "Medium",
-    "description": "Partition a string into as many parts as possible so that each letter appears in at most one part.",
-    "test_cases": [
-      {"input": "S=\"ababcbacadefegdehijhklij\"", "expected_output": "[9,7,8]"},
-      {"input": "S=\"eccbbbbdec\"", "expected_output": "[10]"},
-      {"input": "S=\"a\"", "expected_output": "[1]"}
-    ],
-    "hints": ["Track last occurrence index for each char and greedily cut partitions."],
-    "boilerplate_code": "class Solution:\n    def partitionLabels(self, S: str):\n        pass"
-  },
-  {
-    "id": 51,
-    "title": "Two Sum",
-    "slug": "two-sum",
-    "difficulty": "Easy",
-    "description": "Given array nums and target, return indices of the two numbers such that they add up to the target.",
-    "test_cases": [
-      {"input": "nums=[2,7,11,15], target=9", "expected_output": "[0,1]"},
-      {"input": "nums=[3,2,4], target=6", "expected_output": "[1,2]"},
-      {"input": "nums=[3,3], target=6", "expected_output": "[0,1]"}
-    ],
-    "hints": ["Use a hashmap to store values and indices."],
-    "boilerplate_code": "class Solution:\n    def twoSum(self, nums, target):\n        pass"
-  },
-  {
-    "id": 52,
-    "title": "Group Anagrams",
-    "slug": "group-anagrams",
-    "difficulty": "Medium",
-    "description": "Group anagrams from list of strings.",
-    "test_cases": [
-      {"input": "strs=[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]", "expected_output": "[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]"},
-      {"input": "strs=[\"\"]", "expected_output": "[[\"\"]]"},
-      {"input": "strs=[\"a\"]", "expected_output": "[[\"a\"]]"}
-    ],
-    "hints": ["Use sorted string or character counts as hashmap key."],
-    "boilerplate_code": "class Solution:\n    def groupAnagrams(self, strs):\n        pass"
-  },
-  {
-    "id": 53,
-    "title": "Longest Consecutive Sequence",
-    "slug": "longest-consecutive-sequence",
-    "difficulty": "Medium",
-    "description": "Given unsorted array, find length of the longest consecutive elements sequence in O(n).",
-    "test_cases": [
-      {"input": "nums=[100,4,200,1,3,2]", "expected_output": "4"},
-      {"input": "nums=[0,3,7,2,5,8,4,6,0,1]", "expected_output": "9"},
-      {"input": "nums=[]", "expected_output": "0"}
-    ],
-    "hints": ["Use set and expand from sequence starts where num-1 not in set."],
-    "boilerplate_code": "class Solution:\n    def longestConsecutive(self, nums):\n        pass"
-  },
-  {
-    "id": 54,
-    "title": "Subarray Sum Equals K",
-    "slug": "subarray-sum-equals-k",
-    "difficulty": "Medium",
-    "description": "Count total continuous subarrays whose sum equals k.",
-    "test_cases": [
-      {"input": "nums=[1,1,1], k=2", "expected_output": "2"},
-      {"input": "nums=[1,2,3], k=3", "expected_output": "2"},
-      {"input": "nums=[-1,-1,1], k=0", "expected_output": "1"}
-    ],
-    "hints": ["Use prefix sum hashmap counting occurrences."],
-    "boilerplate_code": "class Solution:\n    def subarraySum(self, nums, k):\n        pass"
-  },
-  {
-    "id": 55,
-    "title": "Kth Largest Element in an Array",
-    "slug": "kth-largest-element-in-an-array",
-    "difficulty": "Medium",
-    "description": "Find kth largest element in an unsorted array (not kth distinct).",
-    "test_cases": [
-      {"input": "nums=[3,2,1,5,6,4], k=2", "expected_output": "5"},
-      {"input": "nums=[3,2,3,1,2,4,5,5,6], k=4", "expected_output": "4"},
-      {"input": "nums=[1], k=1", "expected_output": "1"}
-    ],
-    "hints": ["Use heap of size k or Quickselect expected O(n)."],
-    "boilerplate_code": "class Solution:\n    def findKthLargest(self, nums, k):\n        pass"
-  },
-  {
-    "id": 56,
-    "title": "Find Median from Data Stream",
-    "slug": "find-median-from-data-stream",
-    "difficulty": "Hard",
-    "description": "Data structure supports adding numbers and finding median in efficient time.",
-    "test_cases": [
-      {"input": "add(1), add(2), findMedian()", "expected_output": "1.5"},
-      {"input": "add(1), findMedian()", "expected_output": "1"},
-      {"input": "add(2), add(3), add(4), findMedian()", "expected_output": "3"}
-    ],
-    "hints": ["Use two heaps (max-heap for lower half, min-heap for upper half)."],
-    "boilerplate_code": "class MedianFinder:\n    def __init__(self):\n        pass\n    def addNum(self, num: int):\n        pass\n    def findMedian(self):\n        pass"
-  },
-  {
-    "id": 57,
-    "title": "Top K Frequent Elements",
-    "slug": "top-k-frequent-elements",
-    "difficulty": "Medium",
-    "description": "Return the k most frequent elements in the array.",
-    "test_cases": [
-      {"input": "nums=[1,1,1,2,2,3], k=2", "expected_output": "[1,2]"},
-      {"input": "nums=[1], k=1", "expected_output": "[1]"},
-      {"input": "nums=[1,2,3,3,3,2,2], k=2", "expected_output": "[2,3]"}
-    ],
-    "hints": ["Use hashmap for counts and heap or bucket sort by frequency."],
-    "boilerplate_code": "class Solution:\n    def topKFrequent(self, nums, k):\n        pass"
-  },
-  {
-    "id": 58,
-    "title": "Add Two Numbers",
-    "slug": "add-two-numbers",
-    "difficulty": "Medium",
-    "description": "Add two numbers represented by linked lists (digits stored in reverse) and return sum as linked list.",
-    "test_cases": [
-      {"input": "l1=[2,4,3], l2=[5,6,4]", "expected_output": "[7,0,8]"},
-      {"input": "l1=[0], l2=[0]", "expected_output": "[0]"},
-      {"input": "l1=[9,9,9,9,9,9,9], l2=[9,9,9,9]", "expected_output": "[8,9,9,9,0,0,0,1]"}
-    ],
-    "hints": ["Simulate addition with carry; traverse lists concurrently."],
-    "boilerplate_code": "class Solution:\n    def addTwoNumbers(self, l1, l2):\n        pass"
-  },
-  {
-    "id": 59,
-    "title": "Remove Nth Node From End of List",
-    "slug": "remove-nth-node-from-end-of-list",
-    "difficulty": "Medium",
-    "description": "Remove nth node from end of linked list and return head.",
-    "test_cases": [
-      {"input": "head=[1,2,3,4,5], n=2", "expected_output": "[1,2,3,5]"},
-      {"input": "head=[1], n=1", "expected_output": "[]"},
-      {"input": "head=[1,2], n=1", "expected_output": "[1]"}
-    ],
-    "hints": ["Two-pointer technique with dummy head; advance first by n steps."],
-    "boilerplate_code": "class Solution:\n    def removeNthFromEnd(self, head, n):\n        pass"
-  },
-  {
-    "id": 60,
-    "title": "Merge Two Sorted Lists",
-    "slug": "merge-two-sorted-lists",
-    "difficulty": "Easy",
-    "description": "Merge two sorted linked lists and return the new sorted list.",
-    "test_cases": [
-      {"input": "l1=[1,2,4], l2=[1,3,4]", "expected_output": "[1,1,2,3,4,4]"},
-      {"input": "l1=[], l2=[]", "expected_output": "[]"},
-      {"input": "l1=[], l2=[0]", "expected_output": "[0]"}
-    ],
-    "hints": ["Use dummy head and iterate merging nodes."],
-    "boilerplate_code": "class Solution:\n    def mergeTwoLists(self, l1, l2):\n        pass"
-  },
-  {
-    "id": 61,
-    "title": "Merge k Sorted Lists",
-    "slug": "merge-k-sorted-lists",
-    "difficulty": "Hard",
-    "description": "Merge k sorted linked lists and return it as one sorted list.",
-    "test_cases": [
-      {"input": "lists=[[1,4,5],[1,3,4],[2,6]]", "expected_output": "[1,1,2,3,4,4,5,6]"},
-      {"input": "lists=[]", "expected_output": "[]"},
-      {"input": "lists=[[]]", "expected_output": "[]"}
-    ],
-    "hints": ["Use min-heap (priority queue) or divide-and-conquer merging."],
-    "boilerplate_code": "class Solution:\n    def mergeKLists(self, lists):\n        pass"
-  },
-  {
-    "id": 62,
-    "title": "Swap Nodes in Pairs",
-    "slug": "swap-nodes-in-pairs",
-    "difficulty": "Medium",
-    "description": "Swap every two adjacent nodes in a linked list and return its head.",
-    "test_cases": [
-      {"input": "head=[1,2,3,4]", "expected_output": "[2,1,4,3]"},
-      {"input": "head=[]", "expected_output": "[]"},
-      {"input": "head=[1]", "expected_output": "[1]"}
-    ],
-    "hints": ["Iterative or recursive pair-wise swapping with dummy head."],
-    "boilerplate_code": "class Solution:\n    def swapPairs(self, head):\n        pass"
-  },
-  {
-    "id": 63,
-    "title": "Reverse Nodes in k-Group",
-    "slug": "reverse-nodes-in-k-group",
-    "difficulty": "Hard",
-    "description": "Reverse nodes of a linked list k at a time and return its modified list; keep remaining nodes as-is.",
-    "test_cases": [
-      {"input": "head=[1,2,3,4,5], k=2", "expected_output": "[2,1,4,3,5]"},
-      {"input": "head=[1,2,3,4,5], k=3", "expected_output": "[3,2,1,4,5]"},
-      {"input": "head=[1], k=1", "expected_output": "[1]"}
-    ],
-    "hints": ["Reverse in groups using iterative pointer manipulation; count nodes first."],
-    "boilerplate_code": "class Solution:\n    def reverseKGroup(self, head, k):\n        pass"
-  },
-  {
-    "id": 64,
-    "title": "Copy List with Random Pointer",
-    "slug": "copy-list-with-random-pointer",
-    "difficulty": "Medium",
-    "description": "Copy a linked list where each node has an extra random pointer in O(n) time and O(1) extra space.",
-    "test_cases": [
-      {"input": "head=[[7,null],[13,0],[11,4],[10,2],[1,0]]", "expected_output": "deep copy with same structure"},
-      {"input": "head=[]", "expected_output": "[]"},
-      {"input": "head=[[1,1],[2,1]]", "expected_output": "deep copy"}
-    ],
-    "hints": ["Interleave copied nodes, set randoms, then detach lists."],
-    "boilerplate_code": "class Solution:\n    def copyRandomList(self, head):\n        pass"
-  },
-  {
-    "id": 65,
-    "title": "Linked List Cycle",
-    "slug": "linked-list-cycle",
-    "difficulty": "Easy",
-    "description": "Detect whether a linked list has a cycle (true/false).",
-    "test_cases": [
-      {"input": "head=[3,2,0,-4], pos=1", "expected_output": "true"},
-      {"input": "head=[1,2], pos=0", "expected_output": "true"},
-      {"input": "head=[1], pos=-1", "expected_output": "false"}
-    ],
-    "hints": ["Floyd's tortoise and hare algorithm (slow/fast pointers)."],
-    "boilerplate_code": "class Solution:\n    def hasCycle(self, head):\n        pass"
-  },
-  {
-    "id": 66,
-    "title": "Linked List Cycle II",
-    "slug": "linked-list-cycle-ii",
-    "difficulty": "Medium",
-    "description": "Given linked list, return node where cycle begins or null if no cycle.",
-    "test_cases": [
-      {"input": "head=[3,2,0,-4], pos=1", "expected_output": "node at index 1"},
-      {"input": "head=[1,2], pos=0", "expected_output": "node at index 0"},
-      {"input": "head=[1], pos=-1", "expected_output": "null"}
-    ],
-    "hints": ["Use Floyd's cycle detection and then reset one pointer to head to find entry."],
-    "boilerplate_code": "class Solution:\n    def detectCycle(self, head):\n        pass"
-  },
-  {
-    "id": 67,
-    "title": "LRU Cache",
-    "slug": "lru-cache",
-    "difficulty": "Medium",
-    "description": "Implement LRU cache with get and put operations in O(1).",
-    "test_cases": [
-      {"input": "put(1,1), put(2,2), get(1), put(3,3) evicts key 2, get(2)", "expected_output": "[1,-1]"},
-      {"input": "put(2,1), put(2,2), get(2)", "expected_output": "[2]"},
-      {"input": "capacity=1, put(2,1), get(2)", "expected_output": "[1]"}
-    ],
-    "hints": ["Use ordered dict or hashmap + doubly-linked list."],
-    "boilerplate_code": "class LRUCache:\n    def __init__(self, capacity: int):\n        pass\n    def get(self, key: int):\n        pass\n    def put(self, key: int, value: int):\n        pass"
-  },
-  {
-    "id": 68,
-    "title": "Sort List",
-    "slug": "sort-list",
-    "difficulty": "Medium",
-    "description": "Sort linked list in O(n log n) time and constant space (merge sort on list).",
-    "test_cases": [
-      {"input": "head=[4,2,1,3]", "expected_output": "[1,2,3,4]"},
-      {"input": "head=[-1,5,3,4,0]", "expected_output": "[-1,0,3,4,5]"},
-      {"input": "head=[]", "expected_output": "[]"}
-    ],
-    "hints": ["Use divide and conquer (merge sort) using slow/fast pointers to split."],
-    "boilerplate_code": "class Solution:\n    def sortList(self, head):\n        pass"
-  },
-  {
-    "id": 69,
-    "title": "Intersection of Two Linked Lists",
-    "slug": "intersection-of-two-linked-lists",
-    "difficulty": "Easy",
-    "description": "Find node at which two singly linked lists intersect, or null if they do not.",
-    "test_cases": [
-      {"input": "listA=[4,1,8,4,5], listB=[5,6,1,8,4,5]", "expected_output": "node with value 8"},
-      {"input": "listA=[2,6,4], listB=[1,5]", "expected_output": "null"},
-      {"input": "listA=[], listB=[]", "expected_output": "null"}
-    ],
-    "hints": ["Two-pointer switching heads technique to equalize lengths."],
-    "boilerplate_code": "class Solution:\n    def getIntersectionNode(self, headA, headB):\n        pass"
-  },
-  {
-    "id": 70,
-    "title": "Reverse Linked List",
-    "slug": "reverse-linked-list",
-    "difficulty": "Easy",
-    "description": "Reverse a singly linked list and return new head.",
-    "test_cases": [
-      {"input": "head=[1,2,3,4,5]", "expected_output": "[5,4,3,2,1]"},
-      {"input": "head=[1,2]", "expected_output": "[2,1]"},
-      {"input": "head=[]", "expected_output": "[]"}
-    ],
-    "hints": ["Iterative (prev, curr) or recursive solution."],
-    "boilerplate_code": "class Solution:\n    def reverseList(self, head):\n        pass"
-  },
-  {
-    "id": 71,
-    "title": "Palindrome Linked List",
-    "slug": "palindrome-linked-list",
-    "difficulty": "Easy",
-    "description": "Check if linked list is a palindrome (O(n) time, O(1) space).",
-    "test_cases": [
-      {"input": "head=[1,2,2,1]", "expected_output": "true"},
-      {"input": "head=[1,2]", "expected_output": "false"},
-      {"input": "head=[1]", "expected_output": "true"}
-    ],
-    "hints": ["Find middle, reverse second half, compare halves."],
-    "boilerplate_code": "class Solution:\n    def isPalindrome(self, head):\n        pass"
-  },
-  {
-    "id": 72,
-    "title": "Rotate Image",
-    "slug": "rotate-image",
-    "difficulty": "Medium",
-    "description": "Rotate n×n 2D matrix by 90 degrees clockwise in-place.",
-    "test_cases": [
-      {"input": "matrix=[[1,2,3],[4,5,6],[7,8,9]]", "expected_output": "[[7,4,1],[8,5,2],[9,6,3]]"},
-      {"input": "matrix=[[1]]", "expected_output": "[[1]]"},
-      {"input": "matrix=[[1,2],[3,4]]", "expected_output": "[[3,1],[4,2]]"}
-    ],
-    "hints": ["Transpose then reverse each row, or swap 4-way for layers."],
-    "boilerplate_code": "class Solution:\n    def rotate(self, matrix):\n        pass"
-  },
-  {
-    "id": 73,
-    "title": "Spiral Matrix",
-    "slug": "spiral-matrix",
-    "difficulty": "Medium",
-    "description": "Return elements of matrix in spiral order.",
-    "test_cases": [
-      {"input": "matrix=[[1,2,3],[4,5,6],[7,8,9]]", "expected_output": "[1,2,3,6,9,8,7,4,5]"},
-      {"input": "matrix=[[1,2,3,4],[5,6,7,8],[9,10,11,12]]", "expected_output": "[1,2,3,4,8,12,11,10,9,5,6,7]"},
-      {"input": "matrix=[[1]]", "expected_output": "[1]"}
-    ],
-    "hints": ["Maintain four boundaries (top, bottom, left, right) and iterate."],
-    "boilerplate_code": "class Solution:\n    def spiralOrder(self, matrix):\n        pass"
-  },
-  {
-    "id": 74,
-    "title": "Set Matrix Zeroes",
-    "slug": "set-matrix-zeroes",
-    "difficulty": "Medium",
-    "description": "If an element is 0, set its entire row and column to 0 in-place.",
-    "test_cases": [
-      {"input": "matrix=[[1,1,1],[1,0,1],[1,1,1]]", "expected_output": "[[1,1,1],[1,0,1],[1,1,1]] with row/col zeroed => [[1,0,1],[0,0,0],[1,0,1]]"},
-      {"input": "matrix=[[0,1,2,0],[3,4,5,2],[1,3,1,5]]", "expected_output": "[[0,0,0,0],[0,4,5,0],[0,3,1,0]]"},
-      {"input": "matrix=[[1]]", "expected_output": "[[1]]"}
-    ],
-    "hints": ["Use first row/col as markers to achieve O(1) extra space."],
-    "boilerplate_code": "class Solution:\n    def setZeroes(self, matrix):\n        pass"
-  },
-  {
-    "id": 75,
-    "title": "Search a 2D Matrix II",
-    "slug": "search-a-2d-matrix-ii",
-    "difficulty": "Medium",
-    "description": "Search target in matrix where rows and columns are sorted ascending; return true if found.",
-    "test_cases": [
-      {"input": "matrix=[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target=5", "expected_output": "true"},
-      {"input": "matrix=[[1]], target=2", "expected_output": "false"},
-      {"input": "matrix=[], target=0", "expected_output": "false"}
-    ],
-    "hints": ["Start from top-right or bottom-left and eliminate row/column each step."],
-    "boilerplate_code": "class Solution:\n    def searchMatrix(self, matrix, target):\n        pass"
-  },
-  {
-    "id": 76,
-    "title": "Longest Substring Without Repeating Characters",
-    "slug": "longest-substring-without-repeating-characters",
-    "difficulty": "Medium",
-    "description": "Find length of longest substring without repeating characters.",
-    "test_cases": [
-      {"input": "s=\"abcabcbb\"", "expected_output": "3"},
-      {"input": "s=\"bbbbb\"", "expected_output": "1"},
-      {"input": "s=\"pwwkew\"", "expected_output": "3"}
-    ],
-    "hints": ["Sliding window with hashmap storing last indices."],
-    "boilerplate_code": "class Solution:\n    def lengthOfLongestSubstring(self, s: str):\n        pass"
-  },
-  {
-    "id": 77,
-    "title": "Minimum Window Substring",
-    "slug": "minimum-window-substring",
-    "difficulty": "Hard",
-    "description": "Given strings s and t, return smallest substring of s that contains all chars of t (including multiplicities).",
-    "test_cases": [
-      {"input": "s=\"ADOBECODEBANC\", t=\"ABC\"", "expected_output": "\"BANC\""},
-      {"input": "s=\"a\", t=\"a\"", "expected_output": "\"a\""},
-      {"input": "s=\"a\", t=\"aa\"", "expected_output": "\"\"\"\" (empty)\""}
-    ],
-    "hints": ["Sliding window with counts and formed/required counters."],
-    "boilerplate_code": "class Solution:\n    def minWindow(self, s: str, t: str):\n        pass"
-  },
-  {
-    "id": 78,
-    "title": "Sliding Window Maximum",
-    "slug": "sliding-window-maximum",
-    "difficulty": "Hard",
-    "description": "Given nums and sliding window size k, return max for each sliding window.",
-    "test_cases": [
-      {"input": "nums=[1,3,-1,-3,5,3,6,7], k=3", "expected_output": "[3,3,5,5,6,7]"},
-      {"input": "nums=[1], k=1", "expected_output": "[1]"},
-      {"input": "nums=[1,-1], k=1", "expected_output": "[1,-1]"}
-    ],
-    "hints": ["Use deque to keep candidates in decreasing order."],
-    "boilerplate_code": "class Solution:\n    def maxSlidingWindow(self, nums, k):\n        pass"
-  },
-  {
-    "id": 79,
-    "title": "Find All Anagrams in a String",
-    "slug": "find-all-anagrams-in-a-string",
-    "difficulty": "Medium",
-    "description": "Find starting indices of anagrams of p in s.",
-    "test_cases": [
-      {"input": "s=\"cbaebabacd\", p=\"abc\"", "expected_output": "[0,6]"},
-      {"input": "s=\"abab\", p=\"ab\"", "expected_output": "[0,1,2]"},
-      {"input": "s=\"\", p=\"a\"", "expected_output": "[]"}
-    ],
-    "hints": ["Sliding window with counts of characters, compare with target counts."],
-    "boilerplate_code": "class Solution:\n    def findAnagrams(self, s: str, p: str):\n        pass"
-  },
-  {
-    "id": 80,
-    "title": "Valid Parentheses",
-    "slug": "valid-parentheses",
-    "difficulty": "Easy",
-    "description": "Given string of brackets, determine if it is valid (properly closed and nested).",
-    "test_cases": [
-      {"input": "s=\"()\"", "expected_output": "true"},
-      {"input": "s=\"()[]{}\"", "expected_output": "true"},
-      {"input": "s=\"(]\"", "expected_output": "false"}
-    ],
-    "hints": ["Use a stack mapping closing to opening bracket."],
-    "boilerplate_code": "class Solution:\n    def isValid(self, s: str):\n        pass"
-  },
-  {
-    "id": 81,
-    "title": "Largest Rectangle in Histogram",
-    "slug": "largest-rectangle-in-histogram",
-    "difficulty": "Hard",
-    "description": "Given histogram bar heights, return area of largest rectangle.",
-    "test_cases": [
-      {"input": "heights=[2,1,5,6,2,3]", "expected_output": "10"},
-      {"input": "heights=[2,4]", "expected_output": "4"},
-      {"input": "heights=[1]", "expected_output": "1"}
-    ],
-    "hints": ["Use a monotonic stack to find nearest smaller on left/right."],
-    "boilerplate_code": "class Solution:\n    def largestRectangleArea(self, heights):\n        pass"
-  },
-  {
-    "id": 82,
-    "title": "Min Stack",
-    "slug": "min-stack",
-    "difficulty": "Medium",
-    "description": "Design stack that supports push, pop, top, and retrieving minimum element in O(1).",
-    "test_cases": [
-      {"input": "push(-2), push(0), push(-3), getMin(), pop(), top(), getMin()", "expected_output": "[-3,0,-2]"},
-      {"input": "push(1), getMin()", "expected_output": "[1]"},
-      {"input": "push(2), push(2), pop(), getMin()", "expected_output": "[2]"}
-    ],
-    "hints": ["Use auxiliary stack to track mins or store (val, current_min)."],
-    "boilerplate_code": "class MinStack:\n    def __init__(self):\n        pass\n    def push(self, val: int):\n        pass\n    def pop(self):\n        pass\n    def top(self):\n        pass\n    def getMin(self):\n        pass"
-  },
-  {
-    "id": 83,
-    "title": "Decode String",
-    "slug": "decode-string",
-    "difficulty": "Medium",
-    "description": "Decode strings like k[encoded_string], where encoded_string is repeated k times; nested encodings allowed.",
-    "test_cases": [
-      {"input": "s=\"3[a]2[bc]\"", "expected_output": "\"aaabcbc\""},
-      {"input": "s=\"3[a2[c]]\"", "expected_output": "\"accaccacc\""},
-      {"input": "s=\"2[abc]3[cd]ef\"", "expected_output": "\"abcabccdcdcdef\""}
-    ],
-    "hints": ["Use stacks to store current string and repeat counts."],
-    "boilerplate_code": "class Solution:\n    def decodeString(self, s: str):\n        pass"
-  },
-  {
-    "id": 84,
-    "title": "Daily Temperatures",
-    "slug": "daily-temperatures",
-    "difficulty": "Medium",
-    "description": "For each day, find number of days until a warmer temperature occurs; 0 if none.",
-    "test_cases": [
-      {"input": "temperatures=[73,74,75,71,69,72,76,73]", "expected_output": "[1,1,4,2,1,1,0,0]"},
-      {"input": "temperatures=[30,40,50,60]", "expected_output": "[1,1,1,0]"},
-      {"input": "temperatures=[30,60,90]", "expected_output": "[1,1,0]"}
-    ],
-    "hints": ["Use monotonic decreasing stack of indices."],
-    "boilerplate_code": "class Solution:\n    def dailyTemperatures(self, T):\n        pass"
-  },
-  {
-    "id": 85,
-    "title": "Container With Most Water",
-    "slug": "container-with-most-water",
-    "difficulty": "Medium",
-    "description": "Given heights, find two lines that together with x-axis form container with maximum area.",
-    "test_cases": [
-      {"input": "height=[1,8,6,2,5,4,8,3,7]", "expected_output": "49"},
-      {"input": "height=[1,1]", "expected_output": "1"},
-      {"input": "height=[4,3,2,1,4]", "expected_output": "16"}
-    ],
-    "hints": ["Two-pointer approach moving inward from ends, move pointer with smaller height."],
-    "boilerplate_code": "class Solution:\n    def maxArea(self, height):\n        pass"
-  },
-  {
-    "id": 86,
-    "title": "3Sum",
-    "slug": "3sum",
-    "difficulty": "Medium",
-    "description": "Find all unique triplets in array which gives sum zero.",
-    "test_cases": [
-      {"input": "nums=[-1,0,1,2,-1,-4]", "expected_output": "[[-1,-1,2],[-1,0,1]]"},
-      {"input": "nums=[]", "expected_output": "[]"},
-      {"input": "nums=[0,0,0]", "expected_output": "[[0,0,0]]"}
-    ],
-    "hints": ["Sort and use two pointers for each fixed first element."],
-    "boilerplate_code": "class Solution:\n    def threeSum(self, nums):\n        pass"
-  },
-  {
-    "id": 87,
-    "title": "Trapping Rain Water",
-    "slug": "trapping-rain-water",
-    "difficulty": "Hard",
-    "description": "Given heights, compute how much water it is able to trap after raining.",
-    "test_cases": [
-      {"input": "height=[0,1,0,2,1,0,1,3,2,1,2,1]", "expected_output": "6"},
-      {"input": "height=[4,2,0,3,2,5]", "expected_output": "9"},
-      {"input": "height=[1,0,2]", "expected_output": "1"}
-    ],
-    "hints": ["Use two-pointer technique with left_max and right_max, or stack."],
-    "boilerplate_code": "class Solution:\n    def trap(self, height):\n        pass"
-  },
-  {
-    "id": 88,
-    "title": "Move Zeroes",
-    "slug": "move-zeroes",
-    "difficulty": "Easy",
-    "description": "Move all zeroes in array to the end while preserving relative order of non-zero elements.",
-    "test_cases": [
-      {"input": "nums=[0,1,0,3,12]", "expected_output": "[1,3,12,0,0]"},
-      {"input": "nums=[0]", "expected_output": "[0]"},
-      {"input": "nums=[1,2,3]", "expected_output": "[1,2,3]"}
-    ],
-    "hints": ["Two-pointer approach: place non-zeros at next write position."],
-    "boilerplate_code": "class Solution:\n    def moveZeroes(self, nums):\n        pass"
-  },
-  {
-    "id": 89,
-    "title": "Implement Trie (Prefix Tree)",
-    "slug": "implement-trie-prefix-tree",
-    "difficulty": "Medium",
-    "description": "Implement Trie with insert, search, and startsWith methods.",
-    "test_cases": [
-      {"input": "insert(\"apple\"), search(\"apple\"), search(\"app\"), startsWith(\"app\")", "expected_output": "[null,true,false,true]"},
-      {"input": "insert(\"a\"), search(\"a\")", "expected_output": "[null,true]"},
-      {"input": "search(\"a\"), startsWith(\"a\") without insert", "expected_output": "[false,false]"}
-    ],
-    "hints": ["Use nested dicts or node objects with children array of size 26."],
-    "boilerplate_code": "class Trie:\n    def __init__(self):\n        pass\n    def insert(self, word: str):\n        pass\n    def search(self, word: str):\n        pass\n    def startsWith(self, prefix: str):\n        pass"
-  },
-  {
-    "id": 90,
-    "title": "Next Permutation",
-    "slug": "next-permutation",
-    "difficulty": "Medium",
-    "description": "Rearrange numbers into the lexicographically next greater permutation; if none, transform to lowest possible order.",
-    "test_cases": [
-      {"input": "nums=[1,2,3]", "expected_output": "[1,3,2]"},
-      {"input": "nums=[3,2,1]", "expected_output": "[1,2,3]"},
-      {"input": "nums=[1,1,5]", "expected_output": "[1,5,1]"}
-    ],
-    "hints": ["Find pivot by scanning from right, swap with next larger and reverse suffix."],
-    "boilerplate_code": "class Solution:\n    def nextPermutation(self, nums):\n        pass"
-  },
-  {
-    "id": 91,
-    "title": "First Missing Positive",
-    "slug": "first-missing-positive",
-    "difficulty": "Hard",
-    "description": "Find smallest missing positive integer in unsorted array in O(n) time and O(1) extra space.",
-    "test_cases": [
-      {"input": "nums=[1,2,0]", "expected_output": "3"},
-      {"input": "nums=[3,4,-1,1]", "expected_output": "2"},
-      {"input": "nums=[7,8,9,11,12]", "expected_output": "1"}
-    ],
-    "hints": ["Place each number in its index (nums[i] -> position nums[i]-1) if possible, then scan."],
-    "boilerplate_code": "class Solution:\n    def firstMissingPositive(self, nums):\n        pass"
-  },
-  {
-    "id": 92,
-    "title": "Maximum Subarray",
-    "slug": "maximum-subarray",
-    "difficulty": "Medium",
-    "description": "Find contiguous subarray with largest sum and return its sum.",
-    "test_cases": [
-      {"input": "nums=[-2,1,-3,4,-1,2,1,-5,4]", "expected_output": "6"},
-      {"input": "nums=[1]", "expected_output": "1"},
-      {"input": "nums=[5,4,-1,7,8]", "expected_output": "23"}
-    ],
-    "hints": ["Kadane's algorithm tracking local max and global max."],
-    "boilerplate_code": "class Solution:\n    def maxSubArray(self, nums):\n        pass"
-  },
-  {
-    "id": 93,
-    "title": "Merge Intervals",
-    "slug": "merge-intervals",
-    "difficulty": "Medium",
-    "description": "Merge all overlapping intervals and return the merged list.",
-    "test_cases": [
-      {"input": "intervals=[[1,3],[2,6],[8,10],[15,18]]", "expected_output": "[[1,6],[8,10],[15,18]]"},
-      {"input": "intervals=[[1,4],[4,5]]", "expected_output": "[[1,5]]"},
-      {"input": "intervals=[]", "expected_output": "[]"}
-    ],
-    "hints": ["Sort intervals by start and merge sequentially."],
-    "boilerplate_code": "class Solution:\n    def merge(self, intervals):\n        pass"
-  },
-  {
-    "id": 94,
-    "title": "Sort Colors",
-    "slug": "sort-colors",
-    "difficulty": "Medium",
-    "description": "Sort array with values 0,1,2 in-place (Dutch National Flag problem).",
-    "test_cases": [
-      {"input": "nums=[2,0,2,1,1,0]", "expected_output": "[0,0,1,1,2,2]"},
-      {"input": "nums=[2,0,1]", "expected_output": "[0,1,2]"},
-      {"input": "nums=[]", "expected_output": "[]"}
-    ],
-    "hints": ["Use three pointers: low, mid, high."],
-    "boilerplate_code": "class Solution:\n    def sortColors(self, nums):\n        pass"
-  },
-  {
-    "id": 95,
-    "title": "Single Number",
-    "slug": "single-number",
-    "difficulty": "Easy",
-    "description": "Given non-empty array where every element appears twice except one, find that single one.",
-    "test_cases": [
-      {"input": "nums=[2,2,1]", "expected_output": "1"},
-      {"input": "nums=[4,1,2,1,2]", "expected_output": "4"},
-      {"input": "nums=[1]", "expected_output": "1"}
-    ],
-    "hints": ["Use XOR of all elements."],
-    "boilerplate_code": "class Solution:\n    def singleNumber(self, nums):\n        pass"
-  },
-  {
-    "id": 96,
-    "title": "Majority Element",
-    "slug": "majority-element",
-    "difficulty": "Easy",
-    "description": "Find element that appears more than n/2 times in array.",
-    "test_cases": [
-      {"input": "nums=[3,2,3]", "expected_output": "3"},
-      {"input": "nums=[2,2,1,1,1,2,2]", "expected_output": "2"},
-      {"input": "nums=[1]", "expected_output": "1"}
-    ],
-    "hints": ["Boyer-Moore Voting Algorithm or hashmap counts."],
-    "boilerplate_code": "class Solution:\n    def majorityElement(self, nums):\n        pass"
-  },
-  {
-    "id": 97,
-    "title": "Rotate Array",
-    "slug": "rotate-array",
-    "difficulty": "Medium",
-    "description": "Rotate array to the right by k steps in-place.",
-    "test_cases": [
-      {"input": "nums=[1,2,3,4,5,6,7], k=3", "expected_output": "[5,6,7,1,2,3,4]"},
-      {"input": "nums=[-1,-100,3,99], k=2", "expected_output": "[3,99,-1,-100]"},
-      {"input": "nums=[1], k=0", "expected_output": "[1]"}
-    ],
-    "hints": ["Reverse whole array, reverse first k, reverse remaining; or use cyclic replacements."],
-    "boilerplate_code": "class Solution:\n    def rotate(self, nums, k: int):\n        pass"
-  },
-  {
-    "id": 98,
-    "title": "Product of Array Except Self",
-    "slug": "product-of-array-except-self",
-    "difficulty": "Medium",
-    "description": "Return array where each element is product of all other elements except itself, without using division in O(n).",
-    "test_cases": [
-      {"input": "nums=[1,2,3,4]", "expected_output": "[24,12,8,6]"},
-      {"input": "nums=[-1,1,0,-3,3]", "expected_output": "[0,0,9,0,0]"},
-      {"input": "nums=[1]", "expected_output": "[1]"}
-    ],
-    "hints": ["Compute prefix products and suffix products in two passes."],
-    "boilerplate_code": "class Solution:\n    def productExceptSelf(self, nums):\n        pass"
-  },
-  {
-    "id": 99,
-    "title": "Find the Duplicate Number",
-    "slug": "find-the-duplicate-number",
-    "difficulty": "Medium",
-    "description": "Given array of n+1 integers where each integer is between 1 and n inclusive, find duplicate number; do not modify array and use O(1) extra space.",
-    "test_cases": [
-      {"input": "nums=[1,3,4,2,2]", "expected_output": "2"},
-      {"input": "nums=[3,1,3,4,2]", "expected_output": "3"},
-      {"input": "nums=[1,1]", "expected_output": "1"}
-    ],
-    "hints": ["Treat as linked list cycle detection (Floyd's algorithm), or binary search on values."],
-    "boilerplate_code": "class Solution:\n    def findDuplicate(self, nums):\n        pass"
-  },
-  {
-    "id": 100,
-    "title": "First Missing Positive (Alternate common top100 pick)",
-    "slug": "first-missing-positive-duplicate-entry",
-    "difficulty": "Hard",
-    "description": "Alternate placement for top-100 completeness: same as First Missing Positive problem — find smallest missing positive.",
-    "test_cases": [
-      {"input": "nums=[1,2,0]", "expected_output": "3"},
-      {"input": "nums=[3,4,-1,1]", "expected_output": "2"},
-      {"input": "nums=[7,8,9,11,12]", "expected_output": "1"}
-    ],
-    "hints": ["Index placement trick; swap numbers to their correct positions."],
-    "boilerplate_code": "class Solution:\n    def firstMissingPositive(self, nums):\n        pass"
-  }
-]
+{
+  "problems": [
+    {
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.",
+      "input_format": "nums: List[int] - An array of integers\ntarget: int - The target sum",
+      "output_format": "List[int] - Array of two indices [i, j] where nums[i] + nums[j] == target",
+      "difficulty": "Easy",
+      "topic_tags": ["Array", "Hash Table"],
+      "company_tags": ["Google", "Amazon", "Microsoft"],
+      "constraints": "2 ≤ nums.length ≤ 10⁴\n-10⁹ ≤ nums[i] ≤ 10⁹\n-10⁹ ≤ target ≤ 10⁹\nOnly one valid answer exists",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        \n    }\n};",
+      "boilerplate_javascript": "var twoSum = function(nums, target) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "nums = [2,7,11,15], target = 9",
+          "expected_output": "[0,1]",
+          "is_sample": true,
+          "explanation": "Because nums[0] + nums[1] == 9, we return [0, 1]."
+        },
+        {
+          "input": "nums = [3,2,4], target = 6",
+          "expected_output": "[1,2]",
+          "is_sample": true,
+          "explanation": "nums[1] + nums[2] == 6"
+        },
+        {
+          "input": "nums = [3,3], target = 6",
+          "expected_output": "[0,1]",
+          "is_sample": true,
+          "explanation": "nums[0] + nums[1] == 6"
+        },
+        {
+          "input": "nums = [-1,-2,-3,-4,-5], target = -8",
+          "expected_output": "[2,4]",
+          "is_sample": false,
+          "explanation": "Testing with negative numbers"
+        }
+      ],
+      "hints": [
+        "Try using a hash map to store numbers you've already seen",
+        "For each number, check if (target - number) exists in your hash map",
+        "The solution can be done in a single pass through the array"
+      ]
+    },
+    {
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "description": "Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.\n3. Every close bracket has a corresponding open bracket of the same type.",
+      "input_format": "s: str - A string containing only bracket characters",
+      "output_format": "bool - True if the string is valid, False otherwise",
+      "difficulty": "Easy",
+      "topic_tags": ["String", "Stack"],
+      "company_tags": ["Amazon", "Microsoft", "Facebook"],
+      "constraints": "1 ≤ s.length ≤ 10⁴\ns consists of parentheses only '()[]{}'",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def isValid(self, s: str) -> bool:\n        pass",
+      "boilerplate_java": "class Solution {\n    public boolean isValid(String s) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    bool isValid(string s) {\n        \n    }\n};",
+      "boilerplate_javascript": "var isValid = function(s) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "s = \"()\"",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "Simple valid pair of parentheses"
+        },
+        {
+          "input": "s = \"()[]{}\"",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "Multiple valid bracket pairs"
+        },
+        {
+          "input": "s = \"(]\"",
+          "expected_output": "false",
+          "is_sample": true,
+          "explanation": "Mismatched bracket types"
+        },
+        {
+          "input": "s = \"([)]\"",
+          "expected_output": "false",
+          "is_sample": false,
+          "explanation": "Incorrect nesting order"
+        }
+      ],
+      "hints": [
+        "Use a stack data structure to keep track of opening brackets",
+        "When you see a closing bracket, check if it matches the most recent opening bracket",
+        "The string is valid only if the stack is empty at the end"
+      ]
+    },
+    {
+      "title": "Best Time to Buy and Sell Stock",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "description": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `i-th` day.\n\nYou want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.\n\nReturn the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return `0`.",
+      "input_format": "prices: List[int] - Array where prices[i] is the price on day i",
+      "output_format": "int - Maximum profit possible (or 0 if no profit can be made)",
+      "difficulty": "Easy",
+      "topic_tags": ["Array", "Dynamic Programming"],
+      "company_tags": ["Amazon", "Google", "Microsoft"],
+      "constraints": "1 ≤ prices.length ≤ 10⁵\n0 ≤ prices[i] ≤ 10⁴",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def maxProfit(self, prices: List[int]) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int maxProfit(int[] prices) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int maxProfit(vector<int>& prices) {\n        \n    }\n};",
+      "boilerplate_javascript": "var maxProfit = function(prices) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "prices = [7,1,5,3,6,4]",
+          "expected_output": "5",
+          "is_sample": true,
+          "explanation": "Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5"
+        },
+        {
+          "input": "prices = [7,6,4,3,1]",
+          "expected_output": "0",
+          "is_sample": true,
+          "explanation": "No transactions are done and the max profit = 0"
+        },
+        {
+          "input": "prices = [2,4,1]",
+          "expected_output": "2",
+          "is_sample": false,
+          "explanation": "Buy on day 1 (price = 2) and sell on day 2 (price = 4), profit = 2"
+        }
+      ],
+      "hints": [
+        "Track the minimum price seen so far as you iterate through the array",
+        "For each price, calculate the profit if you sold at that price",
+        "Keep track of the maximum profit seen"
+      ]
+    },
+    {
+      "title": "Contains Duplicate",
+      "slug": "contains-duplicate",
+      "description": "Given an integer array `nums`, return `true` if any value appears at least twice in the array, and return `false` if every element is distinct.",
+      "input_format": "nums: List[int] - An array of integers",
+      "output_format": "bool - True if any value appears twice, False otherwise",
+      "difficulty": "Easy",
+      "topic_tags": ["Array", "Hash Table", "Sorting"],
+      "company_tags": ["Amazon", "Apple", "Google"],
+      "constraints": "1 ≤ nums.length ≤ 10⁵\n-10⁹ ≤ nums[i] ≤ 10⁹",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def containsDuplicate(self, nums: List[int]) -> bool:\n        pass",
+      "boilerplate_java": "class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    bool containsDuplicate(vector<int>& nums) {\n        \n    }\n};",
+      "boilerplate_javascript": "var containsDuplicate = function(nums) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "nums = [1,2,3,1]",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "The element 1 appears twice"
+        },
+        {
+          "input": "nums = [1,2,3,4]",
+          "expected_output": "false",
+          "is_sample": true,
+          "explanation": "All elements are distinct"
+        },
+        {
+          "input": "nums = [1,1,1,3,3,4,3,2,4,2]",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "Multiple duplicates exist"
+        }
+      ],
+      "hints": [
+        "Use a hash set to track numbers you've seen",
+        "If you encounter a number already in the set, return true",
+        "If you finish the loop without finding duplicates, return false"
+      ]
+    },
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "description": "Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.\n\nA subarray is a contiguous part of an array.",
+      "input_format": "nums: List[int] - An array of integers",
+      "output_format": "int - The sum of the maximum subarray",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Dynamic Programming", "Divide and Conquer"],
+      "company_tags": ["Amazon", "Microsoft", "LinkedIn"],
+      "constraints": "1 ≤ nums.length ≤ 10⁵\n-10⁴ ≤ nums[i] ≤ 10⁴",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "points": 15,
+      "boilerplate_python": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int maxSubArray(int[] nums) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int maxSubArray(vector<int>& nums) {\n        \n    }\n};",
+      "boilerplate_javascript": "var maxSubArray = function(nums) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "nums = [-2,1,-3,4,-1,2,1,-5,4]",
+          "expected_output": "6",
+          "is_sample": true,
+          "explanation": "The subarray [4,-1,2,1] has the largest sum of 6"
+        },
+        {
+          "input": "nums = [1]",
+          "expected_output": "1",
+          "is_sample": true,
+          "explanation": "Single element array"
+        },
+        {
+          "input": "nums = [5,4,-1,7,8]",
+          "expected_output": "23",
+          "is_sample": true,
+          "explanation": "The entire array is the maximum subarray"
+        }
+      ],
+      "hints": [
+        "This is a classic dynamic programming problem (Kadane's Algorithm)",
+        "Keep track of the maximum sum ending at the current position",
+        "At each position, decide whether to extend the previous subarray or start a new one"
+      ]
+    },
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "description": "You are given the heads of two sorted linked lists `list1` and `list2`.\n\nMerge the two lists into one sorted list. The list should be made by splicing together the nodes of the first two lists.\n\nReturn the head of the merged linked list.",
+      "input_format": "list1: Optional[ListNode] - Head of first sorted linked list\nlist2: Optional[ListNode] - Head of second sorted linked list",
+      "output_format": "Optional[ListNode] - Head of the merged sorted linked list",
+      "difficulty": "Easy",
+      "topic_tags": ["Linked List", "Recursion"],
+      "company_tags": ["Amazon", "Microsoft", "Adobe"],
+      "constraints": "The number of nodes in both lists is in the range [0, 50]\n-100 ≤ Node.val ≤ 100\nBoth list1 and list2 are sorted in non-decreasing order",
+      "time_complexity": "O(n + m)",
+      "space_complexity": "O(1)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {\n        \n    }\n};",
+      "boilerplate_javascript": "var mergeTwoLists = function(list1, list2) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "list1 = [1,2,4], list2 = [1,3,4]",
+          "expected_output": "[1,1,2,3,4,4]",
+          "is_sample": true,
+          "explanation": "Merge both lists maintaining sorted order"
+        },
+        {
+          "input": "list1 = [], list2 = []",
+          "expected_output": "[]",
+          "is_sample": true,
+          "explanation": "Both lists are empty"
+        },
+        {
+          "input": "list1 = [], list2 = [0]",
+          "expected_output": "[0]",
+          "is_sample": true,
+          "explanation": "One list is empty"
+        }
+      ],
+      "hints": [
+        "Use a dummy node to simplify edge cases",
+        "Compare the current nodes of both lists and append the smaller one",
+        "Move the pointer forward in the list from which you took the node"
+      ]
+    },
+    {
+      "title": "Reverse Linked List",
+      "slug": "reverse-linked-list",
+      "description": "Given the `head` of a singly linked list, reverse the list, and return the reversed list.",
+      "input_format": "head: Optional[ListNode] - The head of the linked list",
+      "output_format": "Optional[ListNode] - The head of the reversed linked list",
+      "difficulty": "Easy",
+      "topic_tags": ["Linked List", "Recursion"],
+      "company_tags": ["Amazon", "Microsoft", "Facebook"],
+      "constraints": "The number of nodes in the list is the range [0, 5000]\n-5000 ≤ Node.val ≤ 5000",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public ListNode reverseList(ListNode head) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    ListNode* reverseList(ListNode* head) {\n        \n    }\n};",
+      "boilerplate_javascript": "var reverseList = function(head) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "head = [1,2,3,4,5]",
+          "expected_output": "[5,4,3,2,1]",
+          "is_sample": true,
+          "explanation": "Reverse the entire list"
+        },
+        {
+          "input": "head = [1,2]",
+          "expected_output": "[2,1]",
+          "is_sample": true,
+          "explanation": "Reverse a two-node list"
+        },
+        {
+          "input": "head = []",
+          "expected_output": "[]",
+          "is_sample": true,
+          "explanation": "Empty list remains empty"
+        }
+      ],
+      "hints": [
+        "Keep track of three pointers: previous, current, and next",
+        "Reverse the link direction as you traverse the list",
+        "Can also be solved elegantly using recursion"
+      ]
+    },
+    {
+      "title": "Invert Binary Tree",
+      "slug": "invert-binary-tree",
+      "description": "Given the `root` of a binary tree, invert the tree, and return its root.\n\nInverting a binary tree means swapping the left and right children of all nodes in the tree.",
+      "input_format": "root: Optional[TreeNode] - The root of the binary tree",
+      "output_format": "Optional[TreeNode] - The root of the inverted tree",
+      "difficulty": "Easy",
+      "topic_tags": ["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"],
+      "company_tags": ["Google", "Amazon", "Microsoft"],
+      "constraints": "The number of nodes in the tree is in the range [0, 100]\n-100 ≤ Node.val ≤ 100",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(h)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    TreeNode* invertTree(TreeNode* root) {\n        \n    }\n};",
+      "boilerplate_javascript": "var invertTree = function(root) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "root = [4,2,7,1,3,6,9]",
+          "expected_output": "[4,7,2,9,6,3,1]",
+          "is_sample": true,
+          "explanation": "Invert the tree by swapping left and right subtrees"
+        },
+        {
+          "input": "root = [2,1,3]",
+          "expected_output": "[2,3,1]",
+          "is_sample": true,
+          "explanation": "Simple tree inversion"
+        },
+        {
+          "input": "root = []",
+          "expected_output": "[]",
+          "is_sample": true,
+          "explanation": "Empty tree"
+        }
+      ],
+      "hints": [
+        "Use recursion to swap left and right children of each node",
+        "Can also use BFS or DFS iteratively with a queue/stack",
+        "Remember to recursively invert both subtrees"
+      ]
+    },
+    {
+      "title": "Binary Search",
+      "slug": "binary-search",
+      "description": "Given an array of integers `nums` which is sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`.\n\nIf `target` exists, then return its index. Otherwise, return `-1`.\n\nYou must write an algorithm with `O(log n)` runtime complexity.",
+      "input_format": "nums: List[int] - Sorted array of integers\ntarget: int - The target value to search for",
+      "output_format": "int - Index of target if found, -1 otherwise",
+      "difficulty": "Easy",
+      "topic_tags": ["Array", "Binary Search"],
+      "company_tags": ["Amazon", "Google", "Facebook"],
+      "constraints": "1 ≤ nums.length ≤ 10⁴\n-10⁴ < nums[i], target < 10⁴\nAll integers in nums are unique\nnums is sorted in ascending order",
+      "time_complexity": "O(log n)",
+      "space_complexity": "O(1)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def search(self, nums: List[int], target: int) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int search(int[] nums, int target) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int search(vector<int>& nums, int target) {\n        \n    }\n};",
+      "boilerplate_javascript": "var search = function(nums, target) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "nums = [-1,0,3,5,9,12], target = 9",
+          "expected_output": "4",
+          "is_sample": true,
+          "explanation": "9 exists in nums and its index is 4"
+        },
+        {
+          "input": "nums = [-1,0,3,5,9,12], target = 2",
+          "expected_output": "-1",
+          "is_sample": true,
+          "explanation": "2 does not exist in nums so return -1"
+        },
+        {
+          "input": "nums = [5], target = 5",
+          "expected_output": "0",
+          "is_sample": false,
+          "explanation": "Single element array"
+        }
+      ],
+      "hints": [
+        "Use two pointers (left and right) to define the search space",
+        "Compare the middle element with the target",
+        "Eliminate half of the search space in each iteration"
+      ]
+    },
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "description": "You are climbing a staircase. It takes `n` steps to reach the top.\n\nEach time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+      "input_format": "n: int - Number of steps to reach the top",
+      "output_format": "int - Number of distinct ways to climb to the top",
+      "difficulty": "Easy",
+      "topic_tags": ["Math", "Dynamic Programming", "Memoization"],
+      "company_tags": ["Amazon", "Adobe", "Google"],
+      "constraints": "1 ≤ n ≤ 45",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int climbStairs(int n) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int climbStairs(int n) {\n        \n    }\n};",
+      "boilerplate_javascript": "var climbStairs = function(n) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "n = 2",
+          "expected_output": "2",
+          "is_sample": true,
+          "explanation": "Two ways: 1. 1 step + 1 step, 2. 2 steps"
+        },
+        {
+          "input": "n = 3",
+          "expected_output": "3",
+          "is_sample": true,
+          "explanation": "Three ways: 1+1+1, 1+2, 2+1"
+        },
+        {
+          "input": "n = 5",
+          "expected_output": "8",
+          "is_sample": false,
+          "explanation": "Eight distinct ways to climb 5 stairs"
+        }
+      ],
+      "hints": [
+        "This is similar to the Fibonacci sequence",
+        "To reach step n, you could come from step n-1 or step n-2",
+        "Use dynamic programming or space-optimized approach with two variables"
+      ]
+    },
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "description": "Given a string `s`, find the length of the longest substring without repeating characters.\n\nA substring is a contiguous non-empty sequence of characters within a string.",
+      "input_format": "s: str - Input string",
+      "output_format": "int - Length of the longest substring without repeating characters",
+      "difficulty": "Medium",
+      "topic_tags": ["Hash Table", "String", "Sliding Window"],
+      "company_tags": ["Amazon", "Google", "Facebook"],
+      "constraints": "0 ≤ s.length ≤ 5 * 10⁴\ns consists of English letters, digits, symbols and spaces",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(min(n, m))",
+      "points": 15,
+      "boilerplate_python": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int lengthOfLongestSubstring(string s) {\n        \n    }\n};",
+      "boilerplate_javascript": "var lengthOfLongestSubstring = function(s) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "s = \"abcabcbb\"",
+          "expected_output": "3",
+          "is_sample": true,
+          "explanation": "The answer is 'abc', with length 3"
+        },
+        {
+          "input": "s = \"bbbbb\"",
+          "expected_output": "1",
+          "is_sample": true,
+          "explanation": "The answer is 'b', with length 1"
+        },
+        {
+          "input": "s = \"pwwkew\"",
+          "expected_output": "3",
+          "is_sample": true,
+          "explanation": "The answer is 'wke', with length 3"
+        },
+        {
+          "input": "s = \"\"",
+          "expected_output": "0",
+          "is_sample": false,
+          "explanation": "Empty string"
+        }
+      ],
+      "hints": [
+        "Use the sliding window technique with two pointers",
+        "Keep a hash set or hash map to track characters in the current window",
+        "When you find a duplicate, shrink the window from the left"
+      ]
+    },
+    {
+      "title": "3Sum",
+      "slug": "3sum",
+      "description": "Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`.\n\nNotice that the solution set must not contain duplicate triplets.",
+      "input_format": "nums: List[int] - Array of integers",
+      "output_format": "List[List[int]] - List of unique triplets that sum to zero",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Two Pointers", "Sorting"],
+      "company_tags": ["Amazon", "Facebook", "Microsoft"],
+      "constraints": "3 ≤ nums.length ≤ 3000\n-10⁵ ≤ nums[i] ≤ 10⁵",
+      "time_complexity": "O(n²)",
+      "space_complexity": "O(1)",
+      "points": 20,
+      "boilerplate_python": "class Solution:\n    def threeSum(self, nums: List[int]) -> List[List[int]]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    vector<vector<int>> threeSum(vector<int>& nums) {\n        \n    }\n};",
+      "boilerplate_javascript": "var threeSum = function(nums) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "nums = [-1,0,1,2,-1,-4]",
+          "expected_output": "[[-1,-1,2],[-1,0,1]]",
+          "is_sample": true,
+          "explanation": "The distinct triplets that sum to 0"
+        },
+        {
+          "input": "nums = [0,1,1]",
+          "expected_output": "[]",
+          "is_sample": true,
+          "explanation": "No triplets sum to 0"
+        },
+        {
+          "input": "nums = [0,0,0]",
+          "expected_output": "[[0,0,0]]",
+          "is_sample": false,
+          "explanation": "All zeros"
+        }
+      ],
+      "hints": [
+        "Sort the array first to make it easier to avoid duplicates",
+        "Fix one element and use two pointers for the remaining two",
+        "Skip duplicate values to avoid duplicate triplets"
+      ]
+    },
+    {
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "description": "Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`.\n\nThe product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.\n\nYou must write an algorithm that runs in O(n) time and without using the division operation.",
+      "input_format": "nums: List[int] - Array of integers",
+      "output_format": "List[int] - Array where answer[i] = product of all elements except nums[i]",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Prefix Sum"],
+      "company_tags": ["Amazon", "Microsoft", "Facebook"],
+      "constraints": "2 ≤ nums.length ≤ 10⁵\n-30 ≤ nums[i] ≤ 30\nThe product of any prefix or suffix is guaranteed to fit in a 32-bit integer",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "points": 20,
+      "boilerplate_python": "class Solution:\n    def productExceptSelf(self, nums: List[int]) -> List[int]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    vector<int> productExceptSelf(vector<int>& nums) {\n        \n    }\n};",
+      "boilerplate_javascript": "var productExceptSelf = function(nums) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "nums = [1,2,3,4]",
+          "expected_output": "[24,12,8,6]",
+          "is_sample": true,
+          "explanation": "Product except self: [2*3*4, 1*3*4, 1*2*4, 1*2*3]"
+        },
+        {
+          "input": "nums = [-1,1,0,-3,3]",
+          "expected_output": "[0,0,9,0,0]",
+          "is_sample": true,
+          "explanation": "When 0 is present in array"
+        }
+      ],
+      "hints": [
+        "Calculate prefix products (product of all elements before i)",
+        "Calculate suffix products (product of all elements after i)",
+        "Multiply prefix and suffix for each position"
+      ]
+    },
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "description": "Given an array of `intervals` where `intervals[i] = [starti, endi]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.",
+      "input_format": "intervals: List[List[int]] - Array of intervals",
+      "output_format": "List[List[int]] - Array of merged non-overlapping intervals",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Sorting"],
+      "company_tags": ["Google", "Facebook", "Amazon"],
+      "constraints": "1 ≤ intervals.length ≤ 10⁴\nintervals[i].length == 2\n0 ≤ starti ≤ endi ≤ 10⁴",
+      "time_complexity": "O(n log n)",
+      "space_complexity": "O(n)",
+      "points": 20,
+      "boilerplate_python": "class Solution:\n    def merge(self, intervals: List[List[int]]) -> List[List[int]]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int[][] merge(int[][] intervals) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    vector<vector<int>> merge(vector<vector<int>>& intervals) {\n        \n    }\n};",
+      "boilerplate_javascript": "var merge = function(intervals) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "intervals = [[1,3],[2,6],[8,10],[15,18]]",
+          "expected_output": "[[1,6],[8,10],[15,18]]",
+          "is_sample": true,
+          "explanation": "Intervals [1,3] and [2,6] overlap, merge to [1,6]"
+        },
+        {
+          "input": "intervals = [[1,4],[4,5]]",
+          "expected_output": "[[1,5]]",
+          "is_sample": true,
+          "explanation": "Intervals touch at 4, merge to [1,5]"
+        }
+      ],
+      "hints": [
+        "Sort intervals by their start time",
+        "Iterate through sorted intervals and merge when they overlap",
+        "Two intervals overlap if start of second ≤ end of first"
+      ]
+    },
+    {
+      "title": "Group Anagrams",
+      "slug": "group-anagrams",
+      "description": "Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.\n\nAn Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.",
+      "input_format": "strs: List[str] - Array of strings",
+      "output_format": "List[List[str]] - Grouped anagrams",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Hash Table", "String", "Sorting"],
+      "company_tags": ["Amazon", "Microsoft", "Facebook"],
+      "constraints": "1 ≤ strs.length ≤ 10⁴\n0 ≤ strs[i].length ≤ 100\nstrs[i] consists of lowercase English letters",
+      "time_complexity": "O(n * k log k)",
+      "space_complexity": "O(n * k)",
+      "points": 15,
+      "boilerplate_python": "class Solution:\n    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:\n        pass",
+      "boilerplate_java": "class Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    vector<vector<string>> groupAnagrams(vector<string>& strs) {\n        \n    }\n};",
+      "boilerplate_javascript": "var groupAnagrams = function(strs) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+          "expected_output": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]",
+          "is_sample": true,
+          "explanation": "Group words that are anagrams of each other"
+        },
+        {
+          "input": "strs = [\"\"]",
+          "expected_output": "[[\"\"]]",
+          "is_sample": true,
+          "explanation": "Empty string"
+        },
+        {
+          "input": "strs = [\"a\"]",
+          "expected_output": "[[\"a\"]]",
+          "is_sample": true,
+          "explanation": "Single character"
+        }
+      ],
+      "hints": [
+        "Use sorted string as a key in a hash map",
+        "All anagrams will have the same sorted string",
+        "Group strings with the same key together"
+      ]
+    },
+    {
+      "title": "Valid Palindrome",
+      "slug": "valid-palindrome",
+      "description": "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers.\n\nGiven a string `s`, return `true` if it is a palindrome, or `false` otherwise.",
+      "input_format": "s: str - Input string",
+      "output_format": "bool - True if palindrome, False otherwise",
+      "difficulty": "Easy",
+      "topic_tags": ["Two Pointers", "String"],
+      "company_tags": ["Facebook", "Amazon", "Microsoft"],
+      "constraints": "1 ≤ s.length ≤ 2 * 10⁵\ns consists only of printable ASCII characters",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "points": 10,
+      "boilerplate_python": "class Solution:\n    def isPalindrome(self, s: str) -> bool:\n        pass",
+      "boilerplate_java": "class Solution {\n    public boolean isPalindrome(String s) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    bool isPalindrome(string s) {\n        \n    }\n};",
+      "boilerplate_javascript": "var isPalindrome = function(s) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "s = \"A man, a plan, a canal: Panama\"",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "After processing: 'amanaplanacanalpanama' is a palindrome"
+        },
+        {
+          "input": "s = \"race a car\"",
+          "expected_output": "false",
+          "is_sample": true,
+          "explanation": "'raceacar' is not a palindrome"
+        },
+        {
+          "input": "s = \" \"",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "Empty string after processing is considered palindrome"
+        }
+      ],
+      "hints": [
+        "Use two pointers from both ends",
+        "Skip non-alphanumeric characters",
+        "Compare characters in lowercase"
+      ]
+    },
+    {
+      "title": "Longest Palindromic Substring",
+      "slug": "longest-palindromic-substring",
+      "description": "Given a string `s`, return the longest palindromic substring in `s`.\n\nA string is palindromic if it reads the same forward and backward.",
+      "input_format": "s: str - Input string",
+      "output_format": "str - The longest palindromic substring",
+      "difficulty": "Medium",
+      "topic_tags": ["String", "Dynamic Programming"],
+      "company_tags": ["Amazon", "Microsoft", "Adobe"],
+      "constraints": "1 ≤ s.length ≤ 1000\ns consist of only digits and English letters",
+      "time_complexity": "O(n²)",
+      "space_complexity": "O(1)",
+      "points": 20,
+      "boilerplate_python": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        pass",
+      "boilerplate_java": "class Solution {\n    public String longestPalindrome(String s) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    string longestPalindrome(string s) {\n        \n    }\n};",
+      "boilerplate_javascript": "var longestPalindrome = function(s) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "s = \"babad\"",
+          "expected_output": "\"bab\"",
+          "is_sample": true,
+          "explanation": "'aba' is also a valid answer"
+        },
+        {
+          "input": "s = \"cbbd\"",
+          "expected_output": "\"bb\"",
+          "is_sample": true,
+          "explanation": "The longest palindrome is 'bb'"
+        }
+      ],
+      "hints": [
+        "Expand around each possible center (character or between characters)",
+        "For each center, expand while characters match",
+        "Keep track of the longest palindrome found"
+      ]
+    },
+    {
+      "title": "Course Schedule",
+      "slug": "course-schedule",
+      "description": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you must take course `bi` first if you want to take course `ai`.\n\nReturn `true` if you can finish all courses. Otherwise, return `false`.",
+      "input_format": "numCourses: int - Total number of courses\nprerequisites: List[List[int]] - Prerequisites array",
+      "output_format": "bool - True if can finish all courses, False otherwise",
+      "difficulty": "Medium",
+      "topic_tags": ["Depth-First Search", "Breadth-First Search", "Graph", "Topological Sort"],
+      "company_tags": ["Amazon", "Microsoft", "Google"],
+      "constraints": "1 ≤ numCourses ≤ 2000\n0 ≤ prerequisites.length ≤ 5000\nprerequisites[i].length == 2\n0 ≤ ai, bi < numCourses\nAll pairs are unique",
+      "time_complexity": "O(V + E)",
+      "space_complexity": "O(V + E)",
+      "points": 25,
+      "boilerplate_python": "class Solution:\n    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:\n        pass",
+      "boilerplate_java": "class Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {\n        \n    }\n};",
+      "boilerplate_javascript": "var canFinish = function(numCourses, prerequisites) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "numCourses = 2, prerequisites = [[1,0]]",
+          "expected_output": "true",
+          "is_sample": true,
+          "explanation": "Take course 0 first, then course 1"
+        },
+        {
+          "input": "numCourses = 2, prerequisites = [[1,0],[0,1]]",
+          "expected_output": "false",
+          "is_sample": true,
+          "explanation": "Circular dependency - cannot finish"
+        }
+      ],
+      "hints": [
+        "This is a cycle detection problem in a directed graph",
+        "Use DFS with color marking (white, gray, black)",
+        "Or use topological sort (Kahn's algorithm) with BFS"
+      ]
+    },
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "description": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return the number of islands.\n\nAn island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.",
+      "input_format": "grid: List[List[str]] - 2D grid of '1's and '0's",
+      "output_format": "int - Number of islands",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Depth-First Search", "Breadth-First Search", "Union Find", "Matrix"],
+      "company_tags": ["Amazon", "Facebook", "Google"],
+      "constraints": "m == grid.length\nn == grid[i].length\n1 ≤ m, n ≤ 300\ngrid[i][j] is '0' or '1'",
+      "time_complexity": "O(m * n)",
+      "space_complexity": "O(m * n)",
+      "points": 20,
+      "boilerplate_python": "class Solution:\n    def numIslands(self, grid: List[List[str]]) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int numIslands(char[][] grid) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int numIslands(vector<vector<char>>& grid) {\n        \n    }\n};",
+      "boilerplate_javascript": "var numIslands = function(grid) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "grid = [[\"1\",\"1\",\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"0\",\"0\"]]",
+          "expected_output": "1",
+          "is_sample": true,
+          "explanation": "All connected 1's form one island"
+        },
+        {
+          "input": "grid = [[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"1\",\"1\"]]",
+          "expected_output": "3",
+          "is_sample": true,
+          "explanation": "Three separate islands"
+        }
+      ],
+      "hints": [
+        "Use DFS or BFS to explore each island",
+        "Mark visited cells to avoid counting the same island twice",
+        "Increment counter for each new island found"
+      ]
+    },
+    {
+      "title": "Coin Change",
+      "slug": "coin-change",
+      "description": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`.\n\nYou may assume that you have an infinite number of each kind of coin.",
+      "input_format": "coins: List[int] - Array of coin denominations\namount: int - Target amount",
+      "output_format": "int - Minimum number of coins needed, or -1 if impossible",
+      "difficulty": "Medium",
+      "topic_tags": ["Array", "Dynamic Programming", "Breadth-First Search"],
+      "company_tags": ["Amazon", "Google", "Microsoft"],
+      "constraints": "1 ≤ coins.length ≤ 12\n1 ≤ coins[i] ≤ 2³¹ - 1\n0 ≤ amount ≤ 10⁴",
+      "time_complexity": "O(amount * n)",
+      "space_complexity": "O(amount)",
+      "points": 25,
+      "boilerplate_python": "class Solution:\n    def coinChange(self, coins: List[int], amount: int) -> int:\n        pass",
+      "boilerplate_java": "class Solution {\n    public int coinChange(int[] coins, int amount) {\n        \n    }\n}",
+      "boilerplate_cpp": "class Solution {\npublic:\n    int coinChange(vector<int>& coins, int amount) {\n        \n    }\n};",
+      "boilerplate_javascript": "var coinChange = function(coins, amount) {\n    \n};",
+      "test_cases": [
+        {
+          "input": "coins = [1,2,5], amount = 11",
+          "expected_output": "3",
+          "is_sample": true,
+          "explanation": "11 = 5 + 5 + 1 (3 coins)"
+        },
+        {
+          "input": "coins = [2], amount = 3",
+          "expected_output": "-1",
+          "is_sample": true,
+          "explanation": "Cannot make amount 3 with only coin of 2"
+        },
+        {
+          "input": "coins = [1], amount = 0",
+          "expected_output": "0",
+          "is_sample": true,
+          "explanation": "0 coins needed for amount 0"
+        }
+      ],
+      "hints": [
+        "Use dynamic programming with dp[i] = minimum coins needed for amount i",
+        "For each amount, try all coin denominations",
+        "dp[i] = min(dp[i], dp[i - coin] + 1) for each coin"
+      ]
+    }
+  ]
+}

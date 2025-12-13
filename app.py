@@ -14,6 +14,7 @@ from PIL import Image
 import io
 import base64
 import time
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -296,7 +297,7 @@ def submit_solution(slug):
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT id, title FROM problems WHERE slug = ?
+            SELECT id, title, points FROM problems WHERE slug = ?
         """, (slug,))
         problem_row = cur.fetchone()
 
@@ -305,11 +306,13 @@ def submit_solution(slug):
             return jsonify({'error': 'Problem not found'}), 404
         
         problem_id = problem_row['id']
+        problem_points = problem_row['points']
 
         cur.execute("""
-            SELECT id, input, expected_output, points
+            SELECT id, input, expected_output, points, is_sample
             FROM test_cases
             WHERE problem_id = ?
+            ORDER BY display_order
         """, (problem_id,))
         test_cases = cur.fetchall()
         conn.close()
@@ -331,7 +334,8 @@ def submit_solution(slug):
                 'passed': result['passed'],
                 'status': result['status'],
                 'error': result.get('error', ''),
-                'points': tc['points'] if result['passed'] else 0
+                'points': tc['points'] if result['passed'] else 0,
+                'is_sample': bool(tc['is_sample'])
             })
 
             if result['passed']:
@@ -353,14 +357,14 @@ def submit_solution(slug):
                     user_ref.update({
                         'solved_problems': solved_problems,
                         'problems_solved': len(solved_problems),
-                        'points': user_data.get('points', 0) + total_points,
+                        'points': user_data.get('points', 0) + problem_points,
                         'last_active': datetime.now()
-                    })
+                    })  
         return jsonify({
             'success': True,
             'all_passed': all_passed,
             'results': results,
-            'total_points': total_points,
+            'total_points': problem_points if all_passed else 0,
             'message': 'All test cases passed!' if all_passed else 'Some test cases failed'
         }), 200
     
@@ -509,7 +513,10 @@ def get_problems():
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT id, title, slug, description, difficulty, created_at
+            SELECT 
+                id, title, slug, difficulty, 
+                topic_tags, company_tags, points,
+                acceptance_rate, created_at
             FROM problems
             ORDER BY id ASC         
         """)
@@ -520,8 +527,11 @@ def get_problems():
                 'id': row['id'],
                 'title': row['title'], 
                 'slug': row['slug'],   
-                'description': row['description'],
                 'difficulty': row['difficulty'],
+                'topic_tags': json.loads(row['topic_tags']) if row['topic_tags'] else [],
+                'company_tags': json.loads(row['company_tags']) if row['company_tags'] else [],
+                'points': row['points'],
+                'acceptance_rate': row['acceptance_rate'],
                 'created_at': row['created_at']
             })
         conn.close()
@@ -540,7 +550,11 @@ def get_problem_detail(slug):
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT id, title, slug, description, difficulty, boilerplate_code, created_at
+            SELECT 
+                id, title, slug, description, input_format, output_format,
+                difficulty, topic_tags, company_tags, constraints,
+                boilerplate_python, boilerplate_java, boilerplate_cpp, boilerplate_javascript,
+                time_complexity, space_complexity, points, acceptance_rate, created_at
             FROM problems
             WHERE slug = ?
         """, (slug,))
@@ -555,31 +569,50 @@ def get_problem_detail(slug):
             'title': problem_row['title'],
             'slug': problem_row['slug'],
             'description': problem_row['description'],
+            'input_format': problem_row['input_format'],
+            'output_format': problem_row['output_format'],
             'difficulty': problem_row['difficulty'],
-            'boilerplate_code': problem_row['boilerplate_code'],
+            'topic_tags': json.loads(problem_row['topic_tags']) if problem_row['topic_tags'] else [],
+            'company_tags': json.loads(problem_row['company_tags']) if problem_row['company_tags'] else [],
+            'constraints': problem_row['constraints'],
+            'boilerplate_code': {
+                'python': problem_row['boilerplate_python'],
+                'java': problem_row['boilerplate_java'],
+                'cpp': problem_row['boilerplate_cpp'],
+                'javascript': problem_row['boilerplate_javascript']
+            },
+            'time_complexity': problem_row['time_complexity'],
+            'space_complexity': problem_row['space_complexity'],
+            'points': problem_row['points'],
+            'acceptance_rate': problem_row['acceptance_rate'],
             'created_at': problem_row['created_at']
         }
 
         cur.execute("""
-            SELECT id, input, expected_output, points
+            SELECT id, input, expected_output, is_sample, explanation, points, display_order
             FROM test_cases
-            WHERE problem_id = ?
+            WHERE problem_id = ? AND is_sample = 1
+            ORDER BY display_order
         """, (problem['id'],))
-        test_cases = []
+        
+        sample_test_cases = []
         for tc in cur.fetchall():
-            test_cases.append({
+            sample_test_cases.append({
                 'id': tc['id'],
                 'input': tc['input'],
                 'expected_output': tc['expected_output'],
+                'is_sample': bool(tc['is_sample']),
+                'explanation': tc['explanation'],
                 'points': tc['points']
             })
 
-        problem['test_cases'] = test_cases
+        problem['sample_test_cases'] = sample_test_cases
 
         cur.execute("""
-            SELECT id, hint
+            SELECT id, hint, display_order
             FROM hints
             WHERE problem_id = ?
+            ORDER BY display_order
         """, (problem['id'],))
 
         hints = []
@@ -589,7 +622,7 @@ def get_problem_detail(slug):
                 'hint': hint['hint']
             })
 
-        problem['hint'] = hints
+        problem['hints'] = hints
 
         conn.close()
         return jsonify(problem), 200

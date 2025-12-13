@@ -131,42 +131,74 @@ function updateProgressBars(problems, solvedProblems) {
 }
 
 //questions
-function renderProblems(problems, solvedProblems = []) {
-    const problemsList = document.getElementById('problemsList');
-    if (!problemsList) return;
+async function loadProblems() {
+    const authData = checkAuth();
+    if (!authData) return;
+    
+    try {
+        const response = await fetch('/api/problems', {
+            headers: {
+                'Authorization': `Bearer ${authData.token}`
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch problems');
+        
+        const problems = await response.json();
+        renderProblems(problems, authData.user);
+        
+    } catch (error) {
+        console.error('Error loading problems:', error);
+        showError('Failed to load problems');
+    }
+}
+
+function renderProblems(problems, solvedProblems) {
+    const container = document.getElementById('problemsList');
+    
+    if (!container) {
+        console.error('Problems container not found!');
+        return;
+    }
+    
+    const solvedIds = Array.isArray(solvedProblems) 
+        ? solvedProblems 
+        : (solvedProblems?.solved_problems || []);
     
     if (problems.length === 0) {
-        problemsList.innerHTML = `
-            <div class="p-12 text-center text-gray-500">
-                <i class="fas fa-inbox text-3xl mb-3 opacity-30"></i>
-                <p class="text-sm">No problems found</p>
+        container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                <i class="fas fa-inbox" style="font-size: 64px; opacity: 0.2; margin-bottom: 20px;"></i>
+                <p style="font-size: 18px; font-weight: 600;">No problems available</p>
             </div>
         `;
         return;
     }
     
-    problemsList.innerHTML = problems.map((problem, index) => {
-        const isSolved = solvedProblems.includes(problem.id);
-        const difficultyColors = {
-            'Easy': 'text-green-500',
-            'Medium': 'text-yellow-500',
-            'Hard': 'text-red-500'
-        };
+    container.innerHTML = problems.map(problem => {
+        const isSolved = solvedIds.includes(problem.id);
+        const difficultyClass = `difficulty-${problem.difficulty.toLowerCase()}`;
+        const topics = problem.topic_tags || [];
+        const topicsHTML = topics.slice(0, 2).map(tag => 
+            `<span class="topic-tag">${tag}</span>`
+        ).join('');
+        
         return `
-            <div class="p-5 cursor-pointer problem-item border-b border-white border-opacity-5 last:border-b-0" data-difficulty="${problem.difficulty}" data-slug="${problem.slug}" onclick="navigateToProblem('${problem.slug}')">
-                <div class="flex items-start gap-4">
-                    <div class="flex items-center justify-center w-8 text-gray-500 font-medium text-sm flex-shrink-0 mt-0.5">
-                        ${index + 1}
+            <div class="problem-item p-3 cursor-pointer" onclick="window.location.href='/problem/${problem.slug}'">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <span class="text-gray-400 text-sm font-semibold" style="min-width: 35px;">#${problem.id}</span>
+                        ${isSolved ? '<i class="fas fa-check-circle text-green-500 text-xs flex-shrink-0"></i>' : '<span class="w-3"></span>'}
+                        <h3 class="text-sm font-medium text-white truncate flex-1">${problem.title}</h3>
                     </div>
-                    <div class="flex items-center justify-center w-5 flex-shrink-0 mt-0.5">
-                        ${isSolved ? '<i class="fas fa-check-circle text-white text-sm"></i>' : '<i class="far fa-circle text-gray-600 text-sm"></i>'}
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-4 mb-2">
-                            <h3 class="font-medium text-white text-base hover:text-primary transition">${problem.title}</h3>
-                            <span class="text-sm font-medium ${difficultyColors[problem.difficulty]} flex-shrink-0">${problem.difficulty}</span>
-                        </div>
-                        <p class="text-sm text-gray-400 leading-relaxed">${problem.description}</p>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        ${topics.length > 0 ? topicsHTML : ''}
+                        ${topics.length > 2 ? `<span class="topic-tag">+${topics.length - 2}</span>` : ''}
+                        <span class="difficulty-badge ${difficultyClass}">${problem.difficulty}</span>
+                        <span class="points-badge">
+                            <i class="fas fa-star"></i>
+                            ${problem.points}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -197,7 +229,7 @@ function renderLeaderboard(leaderboard, currentUserId) {
     }
     
     const currentUserIndex = leaderboard.findIndex(u => u.uid === currentUserId);
-    const isInTop10 = currentUserIndex < 10;
+    const isInTop10 = currentUserIndex < 10 && currentUserIndex !== -1;
     const top10 = leaderboard.slice(0, 10);
     
     leaderboardList.innerHTML = top10.map((user, index) => {
@@ -311,7 +343,89 @@ async function fetchLeaderboard(token) {
 
 let allProblems = [];
 let currentFilter = 'all';
+let selectedTopics = new Set();
 let isFiltering = false;
+
+function getAllTopics(problems) {
+    const topicsSet = new Set();
+    problems.forEach(problem => {
+        const topics = problem.topic_tags || [];
+        topics.forEach(topic => topicsSet.add(topic));
+    });
+    return Array.from(topicsSet).sort();
+}
+
+function renderTopicFilter() {
+    const topics = getAllTopics(allProblems);
+    const dropdown = document.getElementById('topicDropdown');
+    const filterBtnText = document.getElementById('topicFilterText');
+    
+    if (selectedTopics.size > 0) {
+        filterBtnText.textContent = `Topics (${selectedTopics.size})`;
+        document.getElementById('topicFilterBtn').classList.add('has-filter');
+    } else {
+        filterBtnText.textContent = 'Topic';
+        document.getElementById('topicFilterBtn').classList.remove('has-filter');
+    }
+
+    dropdown.innerHTML = `
+        <div class="topic-filter-header">
+            <span>Filter by Topic</span>
+            ${selectedTopics.size > 0 ? 
+                `<span class="clear-filters-btn" id="clearTopicsBtn">Clear All</span>` 
+                : ''}
+        </div>
+        ${topics.map(topic => {
+            const isActive = selectedTopics.has(topic);
+            return `
+            <button class="topic-filter-item ${isActive ? 'active' : ''}" data-topic="${topic}">
+                <span>${topic}</span>
+                <div class="topic-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </button>
+            `;
+        }).join('')}
+    `;
+    
+    dropdown.querySelectorAll('.topic-filter-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            
+            const topic = btn.dataset.topic;
+            if (selectedTopics.has(topic)) {
+                selectedTopics.delete(topic);
+            } else {
+                selectedTopics.add(topic);
+            }
+            renderTopicFilter();
+            filterProblems();
+        });
+    });
+
+    const clearBtn = document.getElementById('clearTopicsBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedTopics.clear();
+            renderTopicFilter();
+            filterProblems();
+        });
+    }
+}
+
+function toggleTopicDropdown() {
+    const dropdown = document.getElementById('topicDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('topicDropdown');
+    const toggleBtn = document.getElementById('topicFilterBtn');
+    if (dropdown && toggleBtn && !dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
 
 function filterProblems() {
     if (isFiltering) return;
@@ -325,10 +439,16 @@ function filterProblems() {
     if (currentFilter !== 'all') {
         filtered = filtered.filter(p => p.difficulty === currentFilter);
     }
+    if (selectedTopics.size > 0) {
+        filtered = filtered.filter(p => {
+            const problemTopics = p.topic_tags || [];
+            return Array.from(selectedTopics).every(selected => problemTopics.includes(selected));
+        });
+    }
     if (searchTerm) {
         filtered = filtered.filter(p => 
             p.title.toLowerCase().includes(searchTerm) || 
-            p.description.toLowerCase().includes(searchTerm)
+            (p.description && p.description.toLowerCase().includes(searchTerm))
         );
     }
     
@@ -371,6 +491,7 @@ async function initHomePage() {
         renderProblems(allProblems, userData.solved_problems || []);
         updateProgressBars(allProblems, userData.solved_problems || []);
         renderLeaderboard(leaderboardData, userData.uid);
+        renderTopicFilter(); 
         showContent();
 
     } catch (error) {
@@ -409,6 +530,13 @@ document.addEventListener('DOMContentLoaded', () => {
             filterProblems();
         });
     });
+    
+    const topicFilterBtn = document.getElementById('topicFilterBtn');
+    if (topicFilterBtn) {
+        topicFilterBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleTopicDropdown();
+        });
+    }
 });
-
 window.navigateToProblem = navigateToProblem;
