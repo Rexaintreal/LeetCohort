@@ -7,8 +7,8 @@ function showToast(message, type = 'success') {
     const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
     toast.innerHTML = `
         <div style="display: flex; align-items: center; gap: 12px;">
-            <i class="fas ${icon}" style="font-size: 18px;"></i>
-            <span style="font-size: 14px; font-weight: 500;">${message}</span>
+            <i class="fas ${icon}" style="font-size: 16px; color: ${type === 'success' ? '#4ade80' : '#f87171'};"></i>
+            <span style="font-size: 14px; font-weight: 500; color: #d4d4d4;">${message}</span>
         </div>
     `;
     
@@ -43,7 +43,7 @@ let currentProblem = null;
 function initCodeEditor(boilerplateCode = '') {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
         mode: 'python',
-        theme: 'dracula',
+        theme: 'yonce',
         lineNumbers: true,
         indentUnit: 4,
         indentWithTabs: false,
@@ -112,7 +112,7 @@ function renderProblem(problem) {
     
     const difficultyBadge = document.getElementById('problemDifficulty');
     difficultyBadge.textContent = problem.difficulty;
-    difficultyBadge.className = `difficulty-${problem.difficulty.toLowerCase()} px-3 py-1 rounded-full text-xs font-semibold`;
+    difficultyBadge.className = `difficulty-${problem.difficulty.toLowerCase()} px-3 py-1 rounded text-xs font-bold`;
     
     document.getElementById('problemDescription').innerHTML = formatDescription(problem.description); 
     renderExamples(problem.test_cases);
@@ -129,14 +129,14 @@ function renderExamples(testCases) {
     const container = document.getElementById('examplesContainer');
     
     if (!testCases || testCases.length === 0) {
-        container.innerHTML = '<p style="color: #6b7280; font-size: 14px;">No examples available</p>';
+        container.innerHTML = '<p style="color: #858585; font-size: 14px;">No examples available</p>';
         return;
     }
     
     const examples = testCases.slice(0, 3);
     container.innerHTML = examples.map((tc, idx) => `
         <div class="example-box">
-            <div class="example-label">Example ${idx + 1}:</div>
+            <div class="example-label">Example ${idx + 1}</div>
             <div class="example-content"><strong>Input:</strong> ${tc.input}
 <strong>Output:</strong> ${tc.expected_output}</div>
         </div>
@@ -191,6 +191,45 @@ function initResizer() {
     });
 }
 
+function initConsoleResizer() {
+    const consoleResizer = document.getElementById('consoleResizer');
+    const consoleContainer = document.getElementById('consoleContainer');
+    let isResizing = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    consoleResizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startY = e.clientY;
+        startHeight = consoleContainer.offsetHeight;
+        consoleResizer.classList.add('resizing');
+        document.body.style.cursor = 'row-resize';
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        
+        const delta = startY - e.clientY;
+        const newHeight = startHeight + delta;
+        const rightPanel = document.querySelector('.right-panel');
+        const maxHeight = rightPanel.offsetHeight - 200;
+        
+        if (newHeight >= 150 && newHeight <= maxHeight) {
+            consoleContainer.style.height = `${newHeight}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            consoleResizer.classList.remove('resizing');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+}
+
 // console
 function initConsoleTabs() {
     const consoleTabs = document.querySelectorAll('.console-tab');
@@ -216,6 +255,7 @@ async function runCode() {
     
     const code = editor.getValue();
     const languageId = parseInt(document.getElementById('languageSelect').value);
+    const customInput = document.getElementById('customInput').value;
     
     if (!code.trim()) {
         showToast('Please write some code first', 'error');
@@ -227,27 +267,51 @@ async function runCode() {
     runBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Running...</span>';
     
     try {
-        const response = await fetch(`/api/problem/${PROBLEM_SLUG}/run`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${authData.token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                code: code,
-                language_id: languageId,
-                input: ''
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.error || 'Failed to run code');
+        if (customInput.trim()) {
+            const response = await fetch(`/api/problem/${PROBLEM_SLUG}/run`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authData.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    code: code,
+                    language_id: languageId,
+                    input: customInput
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to run code');
+            }
+            
+            displayRunResult(result, true);
+            showToast('Code executed successfully', 'success');
+        } else {
+            const response = await fetch(`/api/problem/${PROBLEM_SLUG}/submit`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authData.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    code: code,
+                    language_id: languageId,
+                    is_run: true
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to run code');
+            }
+            
+            displayRunResult(result, false);
+            showToast('Code executed on all test cases', 'success');
         }
-        
-        displayRunResult(result);
-        showToast('Code executed successfully', 'success');
         
         document.querySelector('[data-tab="testcases"]').click();
         
@@ -257,18 +321,25 @@ async function runCode() {
         displayRunError(error.message);
     } finally {
         runBtn.disabled = false;
-        runBtn.innerHTML = '<i class="fas fa-play"></i> <span>Run Code</span>';
+        runBtn.innerHTML = '<i class="fas fa-play"></i> <span>Run</span>';
     }
 }
 
 function displayRunResult(result) {
     const output = document.getElementById('testcasesOutput');
     
+    const customInputSection = `
+        <div class="custom-input-section">
+            <div class="custom-input-label">Custom Input:</div>
+            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
+        </div>
+    `;
+    
     if (result.error) {
-        output.innerHTML = `
+        output.innerHTML = customInputSection + `
             <div class="test-result failed">
                 <div class="result-header">
-                    <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
+                    <span style="color: #858585; font-size: 13px;">Execution Error</span>
                     <span class="result-status status-failed">
                         <i class="fas fa-times-circle"></i>
                         Failed
@@ -276,15 +347,15 @@ function displayRunResult(result) {
                 </div>
                 <div class="result-details">
                     <div class="result-label">Error:</div>
-                    <div class="result-value" style="color: #ef4444;">${result.error}</div>
+                    <div class="result-value" style="color: #f87171;">${result.error}</div>
                 </div>
             </div>
         `;
     } else {
-        output.innerHTML = `
+        output.innerHTML = customInputSection + `
             <div class="test-result passed">
                 <div class="result-header">
-                    <span style="color: #9ca3af; font-size: 13px;">Custom Test Case</span>
+                    <span style="color: #858585; font-size: 13px;">Execution Result</span>
                     <span class="result-status status-passed">
                         <i class="fas fa-check-circle"></i>
                         Success
@@ -303,10 +374,16 @@ function displayRunResult(result) {
 
 function displayRunError(error) {
     const output = document.getElementById('testcasesOutput');
-    output.innerHTML = `
+    const customInputSection = `
+        <div class="custom-input-section">
+            <div class="custom-input-label">Custom Input:</div>
+            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
+        </div>
+    `;
+    output.innerHTML = customInputSection + `
         <div class="test-result failed">
             <div class="result-header">
-                <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
+                <span style="color: #858585; font-size: 13px;">Execution Error</span>
                 <span class="result-status status-failed">
                     <i class="fas fa-times-circle"></i>
                     Failed
@@ -314,7 +391,7 @@ function displayRunError(error) {
             </div>
             <div class="result-details">
                 <div class="result-label">Error:</div>
-                <div class="result-value" style="color: #ef4444;">${error}</div>
+                <div class="result-value" style="color: #f87171;">${error}</div>
             </div>
         </div>
     `;
@@ -391,15 +468,15 @@ function displaySubmitResults(result) {
     let html = `
         <div style="background: ${result.all_passed ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; 
                     border: 1px solid ${result.all_passed ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; 
-                    border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                    border-radius: 6px; padding: 14px; margin-bottom: 14px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                 <i class="fas ${result.all_passed ? 'fa-check-circle' : 'fa-times-circle'}" 
-                   style="color: ${result.all_passed ? '#22c55e' : '#ef4444'}; font-size: 20px;"></i>
-                <span style="color: ${result.all_passed ? '#22c55e' : '#ef4444'}; font-weight: 600; font-size: 16px;">
+                   style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-size: 18px;"></i>
+                <span style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-weight: 700; font-size: 15px;">
                     ${result.all_passed ? 'Accepted' : 'Wrong Answer'}
                 </span>
             </div>
-            <p style="color: #9ca3af; font-size: 13px;">
+            <p style="color: #858585; font-size: 13px;">
                 ${passedCount} / ${totalCount} test cases passed
                 ${result.all_passed ? ` • +${result.total_points} points` : ''}
             </p>
@@ -411,7 +488,7 @@ function displaySubmitResults(result) {
         html += `
             <div class="test-result ${test.passed ? 'passed' : 'failed'}">
                 <div class="result-header">
-                    <span>Test Case ${idx + 1}</span>
+                    <span style="color: #d4d4d4;">Case ${idx + 1}</span>
                     <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
                         <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
                         ${test.passed ? 'Passed' : 'Failed'}
@@ -421,17 +498,17 @@ function displaySubmitResults(result) {
                     <div class="result-label">Input:</div>
                     <div class="result-value">${test.input || '(empty)'}</div>
                     
-                    <div class="result-label">Expected Output:</div>
+                    <div class="result-label">Expected:</div>
                     <div class="result-value">${test.expected_output}</div>
                     
-                    <div class="result-label">Your Output:</div>
-                    <div class="result-value" style="color: ${test.passed ? '#22c55e' : '#ef4444'};">
+                    <div class="result-label">Output:</div>
+                    <div class="result-value" style="color: ${test.passed ? '#4ade80' : '#f87171'};">
                         ${test.actual_output || '(empty)'}
                     </div>
                     
                     ${test.error ? `
                         <div class="result-label">Error:</div>
-                        <div class="result-value" style="color: #ef4444;">${test.error}</div>
+                        <div class="result-value" style="color: #f87171;">${test.error}</div>
                     ` : ''}
                 </div>
             </div>
@@ -446,7 +523,7 @@ function displaySubmitError(error) {
     output.innerHTML = `
         <div class="test-result failed">
             <div class="result-header">
-                <span style="color: #9ca3af; font-size: 13px;">Submission Error</span>
+                <span style="color: #858585; font-size: 13px;">Submission Error</span>
                 <span class="result-status status-failed">
                     <i class="fas fa-times-circle"></i>
                     Failed
@@ -454,7 +531,7 @@ function displaySubmitError(error) {
             </div>
             <div class="result-details">
                 <div class="result-label">Error:</div>
-                <div class="result-value" style="color: #ef4444;">${error}</div>
+                <div class="result-value" style="color: #f87171;">${error}</div>
             </div>
         </div>
     `;
@@ -490,8 +567,10 @@ async function initProblemPage() {
         
         renderProblem(problem);
         initResizer();
+        initConsoleResizer();
         initConsoleTabs();
         initLanguageSelect();
+        document.getElementById('consoleContainer').style.height = '250px';
                 
     } catch (error) {
         console.error('Error initializing problem page:', error);
