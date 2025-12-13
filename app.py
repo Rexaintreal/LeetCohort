@@ -378,19 +378,60 @@ def run_code(slug):
     try:
         data = request.json
         code = data.get('code', '')
-        custom_input = data.get('input', '')
         language_id = data.get('language_id', 71)
 
         if not code:
             return jsonify({'error': 'No code provided'}), 400
         
-        result = execute_code_judge0(code, custom_input, None, language_id, is_run=True)
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id FROM problems WHERE slug = ?
+        """, (slug,))
+        problem_row = cur.fetchone()
+
+        if not problem_row:
+            conn.close()
+            return jsonify({'error': 'Problem not found'}), 404
+        
+        problem_id = problem_row['id']
+
+        cur.execute("""
+            SELECT id, input, expected_output, explanation, is_sample
+            FROM test_cases
+            WHERE problem_id = ? AND is_sample = 1
+            ORDER BY display_order
+        """, (problem_id,))
+        sample_test_cases = cur.fetchall()
+        conn.close()
+
+        if not sample_test_cases:
+            return jsonify({'error': 'No sample test cases found'}), 404
+        
+        results = []
+        all_passed = True
+
+        for tc in sample_test_cases:
+            result = execute_code_judge0(code, tc['input'], tc['expected_output'], language_id)
+            results.append({
+                'test_case_id': tc['id'],
+                'input': tc['input'],
+                'expected_output': tc['expected_output'],
+                'actual_output': result['output'],
+                'passed': result['passed'],
+                'status': result['status'],
+                'error': result.get('error', ''),
+                'explanation': tc['explanation']
+            })
+
+            if not result['passed']:
+                all_passed = False
 
         return jsonify({
             'success': True,
-            'output': result['output'],
-            'status': result['status'],
-            'error': result.get('error', '')
+            'all_passed': all_passed,
+            'results': results,
+            'message': 'All sample test cases passed!' if all_passed else 'Some sample test cases failed'
         }), 200
         
     except Exception as e:

@@ -18,10 +18,7 @@ function showToast(message, type = 'info') {
     `;
     
     container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+    setTimeout(() => toast.remove(), 3000);
 }
 
 // Auth
@@ -34,10 +31,7 @@ function checkAuth() {
         return null;
     }
     
-    return {
-        token: token,
-        user: JSON.parse(userData)
-    };
+    return { token, user: JSON.parse(userData) };
 }
 
 function showLoading() {
@@ -63,55 +57,38 @@ function handleLogout() {
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
     showToast('Logged out successfully', 'success');
-    setTimeout(() => {
-        window.location.href = '/';
-    }, 500);
+    setTimeout(() => window.location.href = '/', 500);
 }
 
 // APIs
 async function fetchLeaderboard(token) {
-    try {
-        const response = await fetch('/api/leaderboard', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Session expired. Please login again.');
-            }
-            throw new Error('Failed to fetch leaderboard');
+    const response = await fetch('/api/leaderboard', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
         }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching leaderboard:', error);
-        throw error;
+    });
+    
+    if (!response.ok) {
+        if (response.status === 401) throw new Error('Session expired. Please login again.');
+        throw new Error('Failed to fetch leaderboard');
     }
+    
+    return await response.json();
 }
 
 async function fetchUserProfile(uid, token) {
-    try {
-        const response = await fetch(`/api/profile/${uid}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch user profile');
+    const response = await fetch(`/api/profile/${uid}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
         }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching user profile:', error);
-        throw error;
-    }
+    });
+    
+    if (!response.ok) throw new Error('Failed to fetch user profile');
+    return await response.json();
 }
 
 let allUsers = [];
@@ -121,6 +98,21 @@ let currentUserId = null;
 let isLoading = false;
 let hasMoreUsers = true;
 const USERS_PER_LOAD = 30;
+
+function animateValue(element, start, end, duration) {
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+            current = end;
+            clearInterval(timer);
+        }
+        element.textContent = Math.floor(current);
+    }, 16);
+}
 
 function calculateUserStats(userData, allUsers) {
     const userRank = allUsers.findIndex(u => u.uid === userData.uid) + 1;
@@ -132,36 +124,59 @@ function calculateUserStats(userData, allUsers) {
 }
 
 function updateUserStatsCard(userData, stats) {
-    document.getElementById('userRank').textContent = `#${stats.userRank}`;
-    document.getElementById('userPercentile').textContent = `${stats.percentile}%`;
+    const rankEl = document.getElementById('userRank');
+    rankEl.textContent = `#${stats.userRank}`;
+    rankEl.classList.add('points-animate');
+    
+    const percentileEl = document.getElementById('userPercentile');
+    animateValue(percentileEl, 0, stats.percentile, 1000);
+    percentileEl.insertAdjacentHTML('beforeend', '%');
+    
     document.getElementById('topPercent').textContent = stats.topPercent;
-    document.getElementById('userPoints').textContent = userData.points || 0;
-    document.getElementById('userSolved').textContent = userData.problems_solved || 0;
+    
+    const pointsEl = document.getElementById('userPoints');
+    animateValue(pointsEl, 0, userData.points || 0, 1000);
+    const solvedEl = document.getElementById('userSolved');
+    animateValue(solvedEl, 0, userData.problems_solved || 0, 1000);
     
     setTimeout(() => {
         document.getElementById('percentileBar').style.width = `${stats.percentile}%`;
     }, 100);
 }
 
-function renderLeaderboardItem(user, actualRank, isCurrentUser) {
-    const rankColors = {
-        0: 'text-yellow-400',
-        1: 'text-gray-300',
-        2: 'text-orange-400'
+function getMedalIcon(rank) {
+    const medals = {
+        0: '<i class="fas fa-medal text-yellow-400 text-2xl medal-icon"></i>',
+        1: '<i class="fas fa-medal text-gray-300 text-2xl medal-icon"></i>',
+        2: '<i class="fas fa-medal text-orange-400 text-2xl medal-icon"></i>'
     };
-    
+    return medals[rank] || `<span class="text-base font-bold text-gray-500">#${rank + 1}</span>`;
+}
+
+function getPointsDelta(points) {
+    if (points > 500) return '+50';
+    if (points > 200) return '+20';
+    return '+10';
+}
+
+function renderLeaderboardItem(user, actualRank, isCurrentUser) {
     const displayRank = actualRank + 1;
+    const rankIcon = getMedalIcon(actualRank);
     
-    const rankIcon = actualRank < 3 
-        ? `<i class="fas fa-medal ${rankColors[actualRank]} text-2xl"></i>`
-        : `<span class="text-base font-bold text-gray-500">#${displayRank}</span>`;
+    const badges = [];
+    if (isCurrentUser) {
+        badges.push('<span class="status-badge online">You</span>');
+    }
+    if (actualRank < 10 && user.points > 100) {
+        badges.push('<span class="status-badge rising">Rising</span>');
+    }
     
     return `
-        <a href="/profile/${user.uid}" class="block">
+        <a href="/profile/${user.uid}" class="block" data-rank="${displayRank}">
             <div class="leaderboard-item p-4 ${isCurrentUser ? 'current-user-highlight' : ''}">
                 <div class="flex items-center gap-3">
                     <!-- Rank -->
-                    <div class="flex items-center justify-center w-12 flex-shrink-0">
+                    <div class="rank-display flex items-center justify-center flex-shrink-0">
                         ${rankIcon}
                     </div>
                     
@@ -169,13 +184,17 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
                     <div class="flex items-center gap-3 flex-1 min-w-0">
                         <img src="${user.picture || 'https://via.placeholder.com/40'}" 
                             alt="${user.name}"
-                            class="h-10 w-10 rounded-full border-2 border-white border-opacity-10 flex-shrink-0"
+                            class="h-10 w-10 rounded-full flex-shrink-0"
                             loading="lazy">
                         
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 mb-1">
                                 <h3 class="text-sm font-semibold text-white truncate">${user.name}</h3>
-                                ${isCurrentUser ? '<span class="text-xs bg-white bg-opacity-10 text-white px-2 py-0.5 rounded-full flex-shrink-0">You</span>' : ''}
+                                ${badges.join('')}
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+                                <span>${user.problems_solved || 0} problems</span>
+                                ${actualRank < 10 ? '<span class="text-green-400">• Top 10</span>' : ''}
                             </div>
                         </div>
                     </div>
@@ -183,12 +202,15 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
                     <!-- Stats -->
                     <div class="flex items-center gap-4 flex-shrink-0">
                         <div class="text-center hidden sm:block">
-                            <p class="text-xs text-gray-500">Points</p>
-                            <p class="text-sm font-bold text-white">${user.points || 0}</p>
+                            <p class="text-xs text-gray-500 mb-1">Points</p>
+                            <div class="flex items-center gap-1">
+                                <p class="text-sm font-bold text-white points-animate">${user.points || 0}</p>
+                                ${actualRank < 20 ? `<span class="text-xs text-green-400">↑</span>` : ''}
+                            </div>
                         </div>
                         
                         <div class="text-center">
-                            <p class="text-xs text-gray-500">Solved</p>
+                            <p class="text-xs text-gray-500 mb-1">Solved</p>
                             <p class="text-sm font-bold text-white">${user.problems_solved || 0}</p>
                         </div>
                         
@@ -205,9 +227,9 @@ function renderLeaderboard(users) {
     
     if (users.length === 0) {
         leaderboardList.innerHTML = `
-            <div class="p-12 text-center text-gray-500">
-                <i class="fas fa-users text-4xl mb-3 opacity-30"></i>
-                <p class="text-sm">No users found</p>
+            <div class="empty-state">
+                <i class="fas fa-users text-gray-500"></i>
+                <p class="text-sm text-gray-400">No users found</p>
             </div>
         `;
         return;
@@ -223,15 +245,15 @@ function renderLeaderboard(users) {
     if (isLoading) {
         footerHTML = `
             <div class="p-6 text-center border-t border-white border-opacity-5">
-                <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white border-opacity-20"></div>
+                <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
                 <p class="mt-3 text-xs text-gray-500">Loading more...</p>
             </div>
         `;
     } else if (!hasMoreUsers && displayedUsers.length > 0) {
         footerHTML = `
             <div class="p-6 text-center text-gray-500 text-xs border-t border-white border-opacity-5">
-                <i class="fas fa-check-circle text-xl mb-2 opacity-30"></i>
-                <p>You've reached the end of the leaderboard</p>
+                <i class="fas fa-check-circle text-xl mb-2 text-green-500"></i>
+                <p>You've reached the end</p>
             </div>
         `;
     }
@@ -275,18 +297,15 @@ function filterLeaderboard() {
             globalRank: index
         }));
     } else {
-        const searchResults = [];
-        
-        allUsers.forEach((user, originalIndex) => {
-            const matchesSearch = user.name.toLowerCase().includes(searchTerm);
-            
-            if (matchesSearch) {
-                searchResults.push({
-                    ...user,
-                    globalRank: originalIndex
-                });
-            }
-        });
+        const searchResults = allUsers
+            .map((user, originalIndex) => ({
+                ...user,
+                globalRank: originalIndex
+            }))
+            .filter(user => 
+                user.name.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
+            );
         
         filteredUsers = searchResults;
     }
@@ -344,7 +363,7 @@ async function initLeaderboardPage() {
     
     try {
         currentUserId = authData.user.uid;
-        
+
         document.getElementById('profileLink').href = `/profile/${currentUserId}`;
         
         const [leaderboardData, userData] = await Promise.all([
@@ -362,6 +381,7 @@ async function initLeaderboardPage() {
         loadMoreUsers();
         
         showContent();
+        showToast('Leaderboard loaded successfully', 'success');
         
     } catch (error) {
         showError(error.message || 'Failed to load leaderboard. Please try again.');

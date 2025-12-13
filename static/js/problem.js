@@ -237,7 +237,6 @@ async function runCode() {
     
     const code = editor.getValue();
     const languageId = parseInt(document.getElementById('languageSelect').value);
-    const customInput = document.getElementById('customInput').value;
     
     if (!code.trim()) {
         showToast('Please write some code first', 'error');
@@ -257,8 +256,7 @@ async function runCode() {
             },
             body: JSON.stringify({
                 code: code,
-                language_id: languageId,
-                input: customInput
+                language_id: languageId
             })
         });
         
@@ -268,9 +266,15 @@ async function runCode() {
             throw new Error(result.error || 'Failed to run code');
         }
         
-        displayRunResult(result);
-        showToast('Code executed successfully', 'success');
-        document.querySelector('[data-tab="testcases"]').click();
+        displayRunResults(result);
+        
+        if (result.all_passed) {
+            showToast('All sample test cases passed!', 'success');
+        } else {
+            showToast('Some sample test cases failed', 'error');
+        }
+        
+        document.querySelector('[data-tab="results"]').click();
         
     } catch (error) {
         console.error('Error running code:', error);
@@ -282,62 +286,71 @@ async function runCode() {
     }
 }
 
-function displayRunResult(result) {
-    const output = document.getElementById('testcasesOutput');
+function displayRunResults(result) {
+    const output = document.getElementById('resultsOutput');
     
-    const customInputSection = `
-        <div class="custom-input-section">
-            <div class="custom-input-label">Custom Input</div>
-            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
+    const passedCount = result.results.filter(r => r.passed).length;
+    const totalCount = result.results.length;
+    
+    let html = `
+        <div style="background: ${result.all_passed ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; 
+                    border: 1px solid ${result.all_passed ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; 
+                    border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                <i class="fas ${result.all_passed ? 'fa-check-circle' : 'fa-times-circle'}" 
+                   style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-size: 20px;"></i>
+                <span style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-weight: 700; font-size: 16px;">
+                    ${result.all_passed ? 'All Sample Tests Passed' : 'Sample Tests Failed'}
+                </span>
+            </div>
+            <p style="color: #9ca3af; font-size: 14px;">
+                ${passedCount} / ${totalCount} sample test cases passed
+            </p>
         </div>
     `;
     
-    if (result.error) {
-        output.innerHTML = customInputSection + `
-            <div class="test-result failed">
+    result.results.forEach((test, idx) => {
+        html += `
+            <div class="test-result ${test.passed ? 'passed' : 'failed'}">
                 <div class="result-header">
-                    <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
-                    <span class="result-status status-failed">
-                        <i class="fas fa-times-circle"></i>
-                        Failed
+                    <span style="color: #d4d4d4;">Sample Test Case ${idx + 1}</span>
+                    <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
+                        <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${test.passed ? 'Passed' : 'Failed'}
                     </span>
                 </div>
                 <div class="result-details">
-                    <div class="result-label">Error:</div>
-                    <div class="result-value" style="color: #f87171;">${result.error}</div>
+                    <div class="result-label">Input:</div>
+                    <div class="result-value">${test.input || '(empty)'}</div>
+                    
+                    <div class="result-label">Expected Output:</div>
+                    <div class="result-value">${test.expected_output}</div>
+                    
+                    <div class="result-label">Your Output:</div>
+                    <div class="result-value" style="color: ${test.passed ? '#4ade80' : '#f87171'};">
+                        ${test.actual_output || '(empty)'}
+                    </div>
+                    
+                    ${test.explanation ? `
+                        <div class="result-label">Explanation:</div>
+                        <div class="result-value">${test.explanation}</div>
+                    ` : ''}
+                    
+                    ${test.error ? `
+                        <div class="result-label">Error:</div>
+                        <div class="result-value" style="color: #f87171;">${test.error}</div>
+                    ` : ''}
                 </div>
             </div>
         `;
-    } else {
-        output.innerHTML = customInputSection + `
-            <div class="test-result passed">
-                <div class="result-header">
-                    <span style="color: #9ca3af; font-size: 13px;">Execution Result</span>
-                    <span class="result-status status-passed">
-                        <i class="fas fa-check-circle"></i>
-                        Success
-                    </span>
-                </div>
-                <div class="result-details">
-                    <div class="result-label">Output:</div>
-                    <div class="result-value">${result.output || '(empty output)'}</div>
-                    <div class="result-label" style="margin-top: 12px;">Status:</div>
-                    <div class="result-value">${result.status}</div>
-                </div>
-            </div>
-        `;
-    }
+    });
+    
+    output.innerHTML = html;
 }
 
 function displayRunError(error) {
-    const output = document.getElementById('testcasesOutput');
-    const customInputSection = `
-        <div class="custom-input-section">
-            <div class="custom-input-label">Custom Input</div>
-            <textarea class="custom-input-textarea" id="customInput" placeholder="Enter custom input here...">${document.getElementById('customInput').value}</textarea>
-        </div>
-    `;
-    output.innerHTML = customInputSection + `
+    const output = document.getElementById('resultsOutput');
+    output.innerHTML = `
         <div class="test-result failed">
             <div class="result-header">
                 <span style="color: #9ca3af; font-size: 13px;">Execution Error</span>
@@ -588,16 +601,12 @@ function initConsoleTabs() {
     });
 }
 
-
-
 // logout
 function handleLogout() {
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
     window.location.href = '/auth';
 }
-
-
 
 // init
 async function initProblemPage() {
