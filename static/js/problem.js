@@ -459,6 +459,31 @@ function displaySubmitResults(result) {
         </div>
     `;
     
+    if (result.complexity_check && result.complexity_check.analyzed) {
+        const comp = result.complexity_check;
+        html += `
+            <div style="background: ${comp.passes ? 'rgba(34, 197, 94, 0.08)' : 'rgba(239, 68, 68, 0.08)'}; 
+                        border: 1px solid ${comp.passes ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; 
+                        border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <i class="fas fa-tachometer-alt" style="color: ${comp.passes ? '#4ade80' : '#f87171'};"></i>
+                    <div style="flex: 1;">
+                        <div style="color: ${comp.passes ? '#4ade80' : '#f87171'}; font-weight: 600; font-size: 13px; margin-bottom: 4px;">
+                            Time Complexity: ${comp.passes ? 'Passed' : 'Failed'}
+                        </div>
+                        <div style="color: #9ca3af; font-size: 12px;">
+                            Expected: <span style="color: #7E1EE7;">${comp.expected}</span> • 
+                            Detected: <span style="color: ${comp.passes ? '#4ade80' : '#f87171'};">${comp.detected}</span>
+                        </div>
+                        <div style="color: #6b7280; font-size: 11px; margin-top: 4px; font-style: italic;">
+                            ${comp.reason}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
     result.results.forEach((test, idx) => {
         const statusColor = test.passed ? '#4ade80' : '#f87171';
         const statusIcon = test.passed ? 'fa-check-circle' : 'fa-times-circle';

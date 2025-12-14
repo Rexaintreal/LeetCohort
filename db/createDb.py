@@ -32,6 +32,7 @@ def create_schema():
         space_complexity TEXT,
         points INTEGER DEFAULT 10,
         order_matters INTEGER DEFAULT 1,
+        check_complexity INTEGER DEFAULT 0,  -- Added here
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """

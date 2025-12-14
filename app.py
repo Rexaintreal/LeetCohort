@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from execution import execute_code_piston, safe_json_load
+from execution import execute_code_piston, safe_json_load, check_code_complexity
 import json
 import secrets
 
@@ -653,7 +653,8 @@ def submit_solution(slug):
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT id, title, points, boilerplate_code, order_matters
+            SELECT id, title, points, boilerplate_code, order_matters, 
+                time_complexity, check_complexity
             FROM problems 
             WHERE slug = ?
         """, (slug,))
@@ -778,7 +779,39 @@ def submit_solution(slug):
                     first_failure_status = 'System Error'
         
         results.sort(key=lambda x: x['test_case_id'])
+
+        complexity_check = None
+
         
+        if all_passed and problem_row['check_complexity'] == 1 and problem_row['time_complexity']:
+            try:
+                base_test = None
+                for test in prepared_tests:
+                    if not test['is_sample']:
+                        base_test = test
+                        break
+                
+                if not base_test:
+                    base_test = prepared_tests[-1] 
+                
+                if base_test:
+                    complexity_check = check_code_complexity(
+                        user_code=code,
+                        boilerplate_code=boilerplate_code,
+                        problem_slug=slug,
+                        base_test_input=base_test['input'],
+                        base_test_output=base_test['output'],
+                        expected_complexity=problem_row['time_complexity'],
+                        order_matters=order_matters
+                    )
+                    
+                    if not complexity_check['passes']:
+                        all_passed = False
+                        first_failure_status = 'Time Complexity Exceeded'
+            
+            except Exception as e:
+                print(f"Complexity check error: {e}")
+
         if all_passed:
             try:
                 uid = request.user['uid']
@@ -802,15 +835,20 @@ def submit_solution(slug):
         
         overall_status = 'Accepted' if all_passed else (first_failure_status or 'Wrong Answer')
         
-        return jsonify({
+        response = {
             'success': True,
             'all_passed': all_passed,
             'results': results,
             'total_points': problem_points if all_passed else 0,
-            'points_earned': actual_points_earned,  
+            'points_earned': actual_points_earned,
             'verdict': overall_status,
             'message': 'Accepted' if all_passed else f'{overall_status}'
-        }), 200
+        }
+        
+        if complexity_check: 
+            response['complexity_check'] = complexity_check
+        
+        return jsonify(response), 200
     
     except Exception as e:
         print(f"Error in submit_solution: {e}")

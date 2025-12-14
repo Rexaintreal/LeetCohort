@@ -424,3 +424,123 @@ def execute_code_piston(
         'execution_time': 0,
         'memory_used': 0
     }
+
+# COMPLEXITY CHECK (BASIC for now)
+
+def check_code_complexity(
+    user_code: str,
+    boilerplate_code: str, 
+    problem_slug: str,
+    base_test_input: dict,
+    base_test_output: any,
+    expected_complexity: str,
+    order_matters: bool = True
+) -> dict:
+    
+    if not expected_complexity or expected_complexity.strip() == '':
+        return {'passes': True, 'reason': 'No complexity requirement', 'analyzed': False}
+    
+    complexity_rates = {
+        'O(1)': 1.0,
+        'O(log n)': 1.1,
+        'O(n)': 2.0,
+        'O(n log n)': 2.2,
+        'O(n²)': 4.0,
+        'O(n³)': 8.0,
+    }
+    
+    if expected_complexity not in complexity_rates:
+        return {'passes': True, 'reason': f'Unknown complexity: {expected_complexity}', 'analyzed': False}
+    
+    try:
+        times = []
+        sizes = []
+        
+        for scale in [1, 2, 4, 8]:
+            scaled_input = {}
+            max_size = 1
+            
+            for key, value in base_test_input.items():
+                if isinstance(value, list):
+                    new_list = value * scale
+                    scaled_input[key] = new_list
+                    max_size = max(max_size, len(new_list))
+                elif isinstance(value, int):
+                    scaled_input[key] = value * scale
+                    max_size = max(max_size, value * scale)
+                else:
+                    scaled_input[key] = value
+            
+            start = time.perf_counter()
+            
+            result = execute_code_piston(
+                user_code=user_code,
+                test_case_input_json=scaled_input,
+                test_case_output_json=base_test_output,
+                boilerplate_code=boilerplate_code,
+                problem_slug=problem_slug,
+                order_matters=order_matters
+            )
+            
+            elapsed = time.perf_counter() - start
+            
+            if elapsed > 5.0:
+                return {
+                    'passes': False,
+                    'detected': 'Too Slow',
+                    'expected': expected_complexity,
+                    'reason': f'Code took {elapsed:.2f}s for input size {max_size}',
+                    'analyzed': True
+                }
+            
+            times.append(elapsed)
+            sizes.append(max_size)
+        
+        growth_ratios = []
+        for i in range(1, len(times)):
+            if times[i-1] > 0.0001:  
+                time_growth = times[i] / times[i-1]
+                size_growth = sizes[i] / sizes[i-1]
+                
+                if size_growth > 1.1:
+                    normalized = time_growth ** (2.0 / size_growth)
+                    growth_ratios.append(normalized)
+        
+        if not growth_ratios:
+            return {'passes': True, 'reason': 'Could not measure growth', 'analyzed': False}
+        
+        avg_growth = sum(growth_ratios) / len(growth_ratios)
+        expected_rate = complexity_rates[expected_complexity]
+        
+        passes = (avg_growth <= expected_rate * 2.5)
+        
+        detected = 'Unknown'
+        for complexity, rate in sorted(complexity_rates.items(), key=lambda x: x[1]):
+            if avg_growth <= rate * 1.3:
+                detected = complexity
+                break
+        
+        if detected == 'Unknown' and avg_growth > 8:
+            detected = 'O(2^n) or worse'
+        
+        return {
+            'passes': passes,
+            'detected': detected,
+            'expected': expected_complexity,
+            'average_growth_ratio': round(avg_growth, 2),
+            'execution_times': [round(t, 4) for t in times],
+            'input_sizes': sizes,
+            'reason': (
+                f'Detected {detected} matches expected {expected_complexity}'
+                if passes
+                else f'Detected {detected}, expected {expected_complexity} (growth: {avg_growth:.2f}x per 2x input)'
+            ),
+            'analyzed': True
+        }
+    
+    except Exception as e:
+        return {
+            'passes': True,
+            'reason': f'Complexity check skipped: {str(e)}',
+            'analyzed': False
+        }
