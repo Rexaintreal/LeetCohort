@@ -27,22 +27,16 @@ def create_schema():
         topic_tags TEXT,
         company_tags TEXT,
         constraints TEXT,
-        boilerplate_python TEXT,
-        boilerplate_java TEXT,
-        boilerplate_cpp TEXT,
-        boilerplate_javascript TEXT,
-        boilerplate_c TEXT,
+        boilerplate_code TEXT,
         time_complexity TEXT,
         space_complexity TEXT,
         points INTEGER DEFAULT 10,
-        acceptance_rate REAL DEFAULT 0.0,
         order_matters INTEGER DEFAULT 1,
-        allow_multiple_solutions INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """
     cursor.execute(create_problems_sql)
-    print(" - Table 'problems' created.")
+    print(" - Table 'problems' created (Python-only).")
 
     create_hints_sql = """
     CREATE TABLE hints (

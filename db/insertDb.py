@@ -43,10 +43,9 @@ def seed_database():
                 INSERT INTO problems (
                     title, slug, description, input_format, output_format, 
                     difficulty, topic_tags, company_tags, constraints, 
-                    boilerplate_python, boilerplate_java, boilerplate_cpp, 
-                    boilerplate_javascript, boilerplate_c, 
+                    boilerplate_code, points, order_matters,
                     time_complexity, space_complexity
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
             
             val_problem = (
@@ -59,11 +58,9 @@ def seed_database():
                 p.get("topic_tags"),
                 p.get("company_tags"),
                 p.get("constraints"),
-                p.get("boilerplate_python"),
-                p.get("boilerplate_java"),
-                p.get("boilerplate_cpp"),
-                p.get("boilerplate_javascript"),
-                p.get("boilerplate_c"),
+                p.get("boilerplate_code"),  
+                p.get("points", 10),  
+                p.get("order_matters", 1), 
                 p.get("time_complexity"),
                 p.get("space_complexity")
             )
@@ -85,8 +82,8 @@ def seed_database():
                         INSERT INTO test_cases (
                             problem_id, input, expected_output, 
                             input_json, expected_output_json, 
-                            is_sample, explanation, display_order
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            is_sample, explanation, points, display_order
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     '''
                     
                     input_val = tc.get("input")
@@ -94,6 +91,7 @@ def seed_database():
                     input_json = tc.get("input_json")
                     output_json = tc.get("expected_output_json")
                     explanation = tc.get("explanation")
+                    test_points = tc.get("points", 10) 
                     
                     cursor.execute(sql_tc, (
                         problem_id, 
@@ -103,25 +101,28 @@ def seed_database():
                         output_json, 
                         tc.get("is_sample", 0), 
                         explanation,
+                        test_points,
                         i + 1 
                     ))
 
             inserted_count += 1
-            print(f"Inserted: {p['title']}")
+            print(f"✓ Inserted: {p['title']}")
 
         except sqlite3.IntegrityError as e:
-            print(f"Skipping '{p['title']}' (likely already exists): {e}")
+            print(f"✗ Skipping '{p['title']}' (likely already exists): {e}")
             skipped_count += 1
         except Exception as e:
-            print(f"Error inserting '{p['title']}': {e}")
+            print(f"✗ Error inserting '{p['title']}': {e}")
+            import traceback
+            traceback.print_exc()
 
     conn.commit()
     conn.close()
     
-    print("-" * 30)
+    print("-" * 50)
     print(f"Process Complete.")
-    print(f"Inserted: {inserted_count}")
-    print(f"Skipped:  {skipped_count}")
+    print(f"✓ Inserted: {inserted_count}")
+    print(f"✗ Skipped:  {skipped_count}")
 
 if __name__ == "__main__":
     seed_database()

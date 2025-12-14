@@ -2,60 +2,31 @@
   {
     "title": "Two Sum",
     "slug": "two-sum",
-    "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have **exactly one solution**, and you may not use the same element twice.\n\nYou can return the answer in any order.",
-    "input_format": "Array nums, Integer target",
-    "output_format": "Array of two indices",
+    "description": "Given an array of integers nums and an integer target...",
+    "input_format": "nums: List[int], target: int",
+    "output_format": "List[int]",
     "difficulty": "Easy",
-    "topic_tags": "Array,Hash Table,Two Pointers",
-    "company_tags": "Google,Amazon,Facebook,Microsoft",
-    "constraints": "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\nOnly one valid answer exists.",
-    "boilerplate_python": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        pass",
-    "boilerplate_java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        \n    }\n}",
-    "boilerplate_cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        \n    }\n};",
-    "boilerplate_javascript": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nvar twoSum = function(nums, target) {\n    \n};",
-    "boilerplate_c": null,
+    "topic_tags": "Array,Hash Table",
+    "company_tags": "Amazon,Google",
+    "constraints": "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9",
+    "boilerplate_code": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        pass",
     "time_complexity": "O(n)",
     "space_complexity": "O(n)",
-    "points": 10,
-    "acceptance_rate": 0.51,
-    "order_matters": 0,
-    "allow_multiple_solutions": 0,
-    
     "hints": [
       {
-        "hint": "A brute-force solution would use nested loops, checking every pair. Can you do better than O(n^2)?",
+        "hint": "Try using a hash map to store seen numbers",
         "display_order": 1
-      },
-      {
-        "hint": "Consider using a hash map (or dictionary) to store the elements you've already seen and what value you need to complete the 'target'.",
-        "display_order": 2
-      },
-      {
-        "hint": "Iterate through the array, and for each number `x`, check if `target - x` exists in your hash map.",
-        "display_order": 3
       }
     ],
-    
     "test_cases": [
       {
-        "input": "[2,7,11,15]\n9",
-        "expected_output": "[0, 1]",
+        "input": "[2,7,11,15], 9",
+        "expected_output": "[0,1]",
         "input_json": "{\"nums\": [2,7,11,15], \"target\": 9}",
-        "expected_output_json": "[0, 1]",
+        "expected_output_json": "[0,1]",
         "is_sample": 1,
-        "explanation": "Because nums[0] + nums[1] == 9, we return [0, 1].",
-        "points": 10,
+        "explanation": "nums[0] + nums[1] = 2 + 7 = 9",
         "display_order": 1
-      },
-      {
-        "input": "[3,2,4]\n6",
-        "expected_output": "[1, 2]",
-        "input_json": "{\"nums\": [3,2,4], \"target\": 6}",
-        "expected_output_json": "[1, 2]",
-        "is_sample": 0,
-        "explanation": null,
-        "points": 10,
-        "display_order": 2
       }
     ]
   }

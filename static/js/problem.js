@@ -1,4 +1,4 @@
-// toast no
+// Toast notifications
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -42,7 +42,7 @@ let currentProblem = null;
 
 function initCodeEditor(boilerplateCode = '', language = 'python') {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
-        mode: language,
+        mode: 'python',
         theme: 'yonce',
         lineNumbers: true,
         indentUnit: 4,
@@ -65,28 +65,6 @@ function initCodeEditor(boilerplateCode = '', language = 'python') {
     editor.setValue(boilerplateCode);
     editor.setSize('100%', '100%');
 }
-
-// langs
-const languageModes = {
-    '71': 'python',
-    '63': 'javascript',
-    '62': 'text/x-java',
-    '54': 'text/x-c++src'
-};
-
-const languageToBoilerplate = {
-    '71': 'python',
-    '63': 'javascript',
-    '62': 'java',
-    '54': 'cpp'
-};
-
-const languageNames = {
-    '71': 'Python 3',
-    '63': 'JavaScript',
-    '62': 'Java',
-    '54': 'C++'
-};
 
 // getting problem details
 async function fetchProblemDetail(slug) {
@@ -132,7 +110,7 @@ function renderProblem(problem) {
                 <strong>${problem.points}</strong>
             </div>
         </div>
-    `;
+    `;    
     let tagsHTML = '';
     if ((problem.topic_tags && problem.topic_tags.length > 0) || (problem.company_tags && problem.company_tags.length > 0)) {
         tagsHTML = '<div class="tags-section">';
@@ -160,7 +138,7 @@ function renderProblem(problem) {
     
     renderHints(problem.hints);
     
-    initCodeEditor(problem.boilerplate_code.python || '# Write your solution here\n', 'python');
+    initCodeEditor(problem.boilerplate_code || '# Write your solution here\n', 'python');
 }
 
 function formatDescription(problem) {
@@ -257,50 +235,15 @@ function renderHints(hints) {
     `).join('');
 }
 
-function initLanguageSelect() {
-    const select = document.getElementById('languageSelect');
-    
-    select.addEventListener('change', (e) => {
-        const languageId = e.target.value;
-        
-        if (!languageModes[languageId]) {
-            showToast('This language is not supported', 'error');
-            select.value = '71';
-            return;
-        }
-        
-        const mode = languageModes[languageId];
-        editor.setOption('mode', mode);
-        
-        const boilerplateKey = languageToBoilerplate[languageId];
-        if (boilerplateKey && currentProblem && currentProblem.boilerplate_code[boilerplateKey]) {
-            editor.setValue(currentProblem.boilerplate_code[boilerplateKey]);
-        } else {
-            const langName = languageNames[languageId];
-            if (languageId === '62' || languageId === '54') {
-                editor.setValue(`// ${langName} solution\n`);
-            } else {
-                editor.setValue(`// ${langName} solution\n`);
-            }
-        }
-    });
-}
-
 // runCode
 async function runCode() {
     const authData = checkAuth();
     if (!authData) return;
     
     const code = editor.getValue();
-    const languageId = parseInt(document.getElementById('languageSelect').value);
     
     if (!code.trim()) {
         showToast('Please write some code first', 'error');
-        return;
-    }
-    
-    if (![71, 63, 62, 54].includes(languageId)) {
-        showToast('This language is not currently supported', 'error');
         return;
     }
     
@@ -316,8 +259,7 @@ async function runCode() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                code: code,
-                language_id: languageId
+                code: code
             })
         });
         
@@ -437,15 +379,9 @@ async function submitCode() {
     if (!authData) return;
     
     const code = editor.getValue();
-    const languageId = parseInt(document.getElementById('languageSelect').value);
     
     if (!code.trim()) {
         showToast('Please write some code first', 'error');
-        return;
-    }
-    
-    if (![71, 63, 62, 54].includes(languageId)) {
-        showToast('This language is not currently supported', 'error');
         return;
     }
     
@@ -461,8 +397,7 @@ async function submitCode() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                code: code,
-                language_id: languageId
+                code: code
             })
         });
         
@@ -676,7 +611,7 @@ function initConsoleTabs() {
     });
 }
 
-// logout
+// Logout
 function handleLogout() {
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
@@ -699,7 +634,6 @@ async function initProblemPage() {
         initResizer();
         initConsoleResizer();
         initConsoleTabs();
-        initLanguageSelect();
         document.getElementById('consoleContainer').style.height = '280px';
                 
     } catch (error) {

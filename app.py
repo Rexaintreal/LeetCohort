@@ -222,7 +222,6 @@ def get_user(uid):
 @app.route('/api/problem/<slug>/submit', methods=['POST'])
 @token_required
 def submit_solution(slug):
-
     conn = None
     try:
         data = request.json
@@ -230,19 +229,14 @@ def submit_solution(slug):
             return jsonify({'error': 'No data provided'}), 400
         
         code = data.get('code', '').strip()
-        language_id = data.get('language_id', 71)
         
         if not code:
             return jsonify({'error': 'No code provided'}), 400
         
-        if language_id not in [71, 63, 62, 54]:
-            return jsonify({'error': f'Unsupported language: {language_id}'}), 400
-        
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT id, title, points, boilerplate_python, boilerplate_java,
-                   boilerplate_cpp, boilerplate_javascript, order_matters
+            SELECT id, title, points, boilerplate_code, order_matters
             FROM problems 
             WHERE slug = ?
         """, (slug,))
@@ -254,14 +248,7 @@ def submit_solution(slug):
         problem_id = problem_row['id']
         problem_points = problem_row['points']
         order_matters = bool(problem_row['order_matters']) if problem_row['order_matters'] is not None else True
-        
-        boilerplate_map = {
-            71: problem_row['boilerplate_python'],
-            63: problem_row['boilerplate_javascript'],
-            62: problem_row['boilerplate_java'],
-            54: problem_row['boilerplate_cpp']
-        }
-        boilerplate_code = boilerplate_map.get(language_id, problem_row['boilerplate_python'])
+        boilerplate_code = problem_row['boilerplate_code']
         
         cur.execute("""
             SELECT id, input, expected_output, input_json, expected_output_json,
@@ -313,7 +300,6 @@ def submit_solution(slug):
                 user_code=code,
                 test_case_input_json=test['input'],
                 test_case_output_json=test['output'],
-                language_id=language_id,
                 boilerplate_code=boilerplate_code,
                 problem_slug=slug,
                 order_matters=order_matters
@@ -430,20 +416,15 @@ def run_code(slug):
             return jsonify({'error': 'No data provided'}), 400
         
         code = data.get('code', '').strip()
-        language_id = data.get('language_id', 71)
         
         if not code:
             return jsonify({'error': 'No code provided'}), 400
-        
-        if language_id not in [71, 63, 62, 54]:
-            return jsonify({'error': f'Unsupported language: {language_id}'}), 400
         
         conn = get_db_connection()
         cur = conn.cursor()
         
         cur.execute("""
-            SELECT id, boilerplate_python, boilerplate_java, 
-                   boilerplate_cpp, boilerplate_javascript, order_matters
+            SELECT id, boilerplate_code, order_matters
             FROM problems 
             WHERE slug = ?
         """, (slug,))
@@ -454,14 +435,7 @@ def run_code(slug):
         
         problem_id = problem_row['id']
         order_matters = bool(problem_row['order_matters']) if problem_row['order_matters'] is not None else True
-        
-        boilerplate_map = {
-            71: problem_row['boilerplate_python'],
-            63: problem_row['boilerplate_javascript'],
-            62: problem_row['boilerplate_java'],
-            54: problem_row['boilerplate_cpp']
-        }
-        boilerplate_code = boilerplate_map.get(language_id, problem_row['boilerplate_python'])
+        boilerplate_code = problem_row['boilerplate_code']
         
         cur.execute("""
             SELECT id, input, expected_output, input_json, expected_output_json, 
@@ -512,7 +486,6 @@ def run_code(slug):
                 user_code=code,
                 test_case_input_json=test['input'],
                 test_case_output_json=test['output'],
-                language_id=language_id,
                 boilerplate_code=boilerplate_code,
                 problem_slug=slug,
                 order_matters=order_matters
@@ -688,7 +661,7 @@ def get_problems():
             SELECT 
                 id, title, slug, difficulty, 
                 topic_tags, company_tags, points,
-                acceptance_rate, created_at
+                created_at
             FROM problems
             ORDER BY id ASC         
         """)
@@ -703,7 +676,6 @@ def get_problems():
                 'topic_tags': parse_tags(row['topic_tags']),
                 'company_tags': parse_tags(row['company_tags']),
                 'points': row['points'],
-                'acceptance_rate': row['acceptance_rate'],
                 'created_at': row['created_at']
             })
         conn.close()
@@ -725,8 +697,8 @@ def get_problem_detail(slug):
             SELECT 
                 id, title, slug, description, input_format, output_format,
                 difficulty, topic_tags, company_tags, constraints,
-                boilerplate_python, boilerplate_java, boilerplate_cpp, boilerplate_javascript,
-                time_complexity, space_complexity, points, acceptance_rate, created_at
+                boilerplate_code,
+                time_complexity, space_complexity, points, created_at
             FROM problems
             WHERE slug = ?
         """, (slug,))
@@ -750,16 +722,10 @@ def get_problem_detail(slug):
             'topic_tags': [t.strip() for t in t_tags],    
             'company_tags': [t.strip() for t in c_tags],
             'constraints': problem_row['constraints'],
-            'boilerplate_code': {
-                'python': problem_row['boilerplate_python'],
-                'java': problem_row['boilerplate_java'],
-                'cpp': problem_row['boilerplate_cpp'],
-                'javascript': problem_row['boilerplate_javascript']
-            },
+            'boilerplate_code': problem_row['boilerplate_code'],  
             'time_complexity': problem_row['time_complexity'],
             'space_complexity': problem_row['space_complexity'],
             'points': problem_row['points'],
-            'acceptance_rate': problem_row['acceptance_rate'],
             'created_at': problem_row['created_at']
         }
 
