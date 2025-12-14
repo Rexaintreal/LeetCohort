@@ -130,28 +130,6 @@ function updateProgressBars(problems, solvedProblems) {
     }, 100);
 }
 
-//questions
-async function loadProblems() {
-    const authData = checkAuth();
-    if (!authData) return;
-    
-    try {
-        const response = await fetch('/api/problems', {
-            headers: {
-                'Authorization': `Bearer ${authData.token}`
-            }
-        });
-        
-        if (!response.ok) throw new Error('Failed to fetch problems');
-        
-        const problems = await response.json();
-        renderProblems(problems, authData.user);
-        
-    } catch (error) {
-        console.error('Error loading problems:', error);
-        showError('Failed to load problems');
-    }
-}
 
 function renderProblems(problems, solvedProblems) {
     const container = document.getElementById('problemsList');
@@ -179,9 +157,14 @@ function renderProblems(problems, solvedProblems) {
         const isSolved = solvedIds.includes(problem.id);
         const difficultyClass = `difficulty-${problem.difficulty.toLowerCase()}`;
         const topics = problem.topic_tags || [];
-        const topicsHTML = topics.slice(0, 2).map(tag => 
+        const companies = problem.company_tags || [];
+        
+        const allTags = [...topics.slice(0, 1), ...companies.slice(0, 1)];
+        const tagsHTML = allTags.map(tag => 
             `<span class="topic-tag">${tag}</span>`
         ).join('');
+        
+        const remainingCount = (topics.length + companies.length) - allTags.length;
         
         return `
             <div class="problem-item p-3 cursor-pointer" onclick="window.location.href='/problem/${problem.slug}'">
@@ -192,8 +175,8 @@ function renderProblems(problems, solvedProblems) {
                         <h3 class="text-sm font-medium text-white truncate flex-1">${problem.title}</h3>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
-                        ${topics.length > 0 ? topicsHTML : ''}
-                        ${topics.length > 2 ? `<span class="topic-tag">+${topics.length - 2}</span>` : ''}
+                        ${tagsHTML}
+                        ${remainingCount > 0 ? `<span class="topic-tag">+${remainingCount}</span>` : ''}
                         <span class="difficulty-badge ${difficultyClass}">${problem.difficulty}</span>
                         <span class="points-badge">
                             <i class="fas fa-star"></i>
@@ -343,6 +326,7 @@ async function fetchLeaderboard(token) {
 let allProblems = [];
 let currentFilter = 'all';
 let selectedTopics = new Set();
+let selectedCompanies = new Set();
 let isFiltering = false;
 
 function getAllTopics(problems) {
@@ -352,6 +336,15 @@ function getAllTopics(problems) {
         topics.forEach(topic => topicsSet.add(topic));
     });
     return Array.from(topicsSet).sort();
+}
+
+function getAllCompanies(problems) {
+    const companiesSet = new Set();
+    problems.forEach(problem => {
+        const companies = problem.company_tags || [];
+        companies.forEach(company => companiesSet.add(company));
+    });
+    return Array.from(companiesSet).sort();
 }
 
 function renderTopicFilter() {
@@ -413,16 +406,91 @@ function renderTopicFilter() {
     }
 }
 
+function renderCompanyFilter() {
+    const companies = getAllCompanies(allProblems);
+    const dropdown = document.getElementById('companyDropdown');
+    const filterBtnText = document.getElementById('companyFilterText');
+    
+    if (selectedCompanies.size > 0) {
+        filterBtnText.textContent = `Companies (${selectedCompanies.size})`;
+        document.getElementById('companyFilterBtn').classList.add('has-filter');
+    } else {
+        filterBtnText.textContent = 'Company';
+        document.getElementById('companyFilterBtn').classList.remove('has-filter');
+    }
+
+    dropdown.innerHTML = `
+        <div class="topic-filter-header">
+            <span>Filter by Company</span>
+            ${selectedCompanies.size > 0 ? 
+                `<span class="clear-filters-btn" id="clearCompaniesBtn">Clear All</span>` 
+                : ''}
+        </div>
+        ${companies.map(company => {
+            const isActive = selectedCompanies.has(company);
+            return `
+            <button class="topic-filter-item ${isActive ? 'active' : ''}" data-company="${company}">
+                <span>${company}</span>
+                <div class="topic-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </button>
+            `;
+        }).join('')}
+    `;
+    
+    dropdown.querySelectorAll('.topic-filter-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            const company = btn.dataset.company;
+            if (selectedCompanies.has(company)) {
+                selectedCompanies.delete(company);
+            } else {
+                selectedCompanies.add(company);
+            }
+            renderCompanyFilter();
+            filterProblems();
+        });
+    });
+
+    const clearBtn = document.getElementById('clearCompaniesBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedCompanies.clear();
+            renderCompanyFilter();
+            filterProblems();
+        });
+    }
+}
+
 function toggleTopicDropdown() {
     const dropdown = document.getElementById('topicDropdown');
+    const companyDropdown = document.getElementById('companyDropdown');
     dropdown.classList.toggle('hidden');
+    companyDropdown.classList.add('hidden');
+}
+
+function toggleCompanyDropdown() {
+    const dropdown = document.getElementById('companyDropdown');
+    const topicDropdown = document.getElementById('topicDropdown');
+    dropdown.classList.toggle('hidden');
+    topicDropdown.classList.add('hidden');
 }
 
 document.addEventListener('click', (e) => {
-    const dropdown = document.getElementById('topicDropdown');
-    const toggleBtn = document.getElementById('topicFilterBtn');
-    if (dropdown && toggleBtn && !dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
-        dropdown.classList.add('hidden');
+    const topicDropdown = document.getElementById('topicDropdown');
+    const topicBtn = document.getElementById('topicFilterBtn');
+    const companyDropdown = document.getElementById('companyDropdown');
+    const companyBtn = document.getElementById('companyFilterBtn');
+    
+    if (topicDropdown && topicBtn && !topicDropdown.contains(e.target) && !topicBtn.contains(e.target)) {
+        topicDropdown.classList.add('hidden');
+    }
+    
+    if (companyDropdown && companyBtn && !companyDropdown.contains(e.target) && !companyBtn.contains(e.target)) {
+        companyDropdown.classList.add('hidden');
     }
 });
 
@@ -438,12 +506,21 @@ function filterProblems() {
     if (currentFilter !== 'all') {
         filtered = filtered.filter(p => p.difficulty === currentFilter);
     }
+    
     if (selectedTopics.size > 0) {
         filtered = filtered.filter(p => {
             const problemTopics = p.topic_tags || [];
             return Array.from(selectedTopics).every(selected => problemTopics.includes(selected));
         });
     }
+    
+    if (selectedCompanies.size > 0) {
+        filtered = filtered.filter(p => {
+            const problemCompanies = p.company_tags || [];
+            return Array.from(selectedCompanies).every(selected => problemCompanies.includes(selected));
+        });
+    }
+    
     if (searchTerm) {
         filtered = filtered.filter(p => 
             p.title.toLowerCase().includes(searchTerm) || 
@@ -491,6 +568,7 @@ async function initHomePage() {
         updateProgressBars(allProblems, userData.solved_problems || []);
         renderLeaderboard(leaderboardData, userData.uid);
         renderTopicFilter();
+        renderCompanyFilter();
         showContent();
 
     } catch (error) {
@@ -508,10 +586,12 @@ async function initHomePage() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initHomePage();
+    
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
     }
+    
     const searchInput = document.getElementById('searchProblems');
     if (searchInput) {
         let debounceTimer;
@@ -520,6 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
             debounceTimer = setTimeout(filterProblems, 300);
         });
     }
+    
     const filterButtons = document.querySelectorAll('.difficulty-filter');
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -537,5 +618,14 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleTopicDropdown();
         });
     }
+    
+    const companyFilterBtn = document.getElementById('companyFilterBtn');
+    if (companyFilterBtn) {
+        companyFilterBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleCompanyDropdown();
+        });
+    }
 });
+
 window.navigateToProblem = navigateToProblem;
