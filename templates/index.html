@@ -93,9 +93,63 @@
         .floating-code {
             animation: float 6s ease-in-out infinite;
         }
+
+        .axiom-logo {
+            display: inline-block;
+            height: 24px;
+            vertical-align: middle;
+            margin: 0 4px;
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .axiom-logo:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.2);
+        }
+
+        .footer-text-large {
+            font-size: 16px;
+        }
+
+        .nav-icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-icon-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-icon-link img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        .hackclub-banner {
+            position: fixed;
+            top: 30px;
+            left: 0px;  
+            width: 200px;
+            height: auto;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            .hackclub-banner {
+                width: 150px;
+            }
+        }
     </style>
 </head>
 <body class="bg-black text-gray-100 min-h-screen flex flex-col">
+    <img src="{{ url_for('static', filename='assets/hackclubflagfromleft.png') }}" alt="Hack Club" class="hackclub-banner">
     <div class="animated-bg"></div>
     <div class="fixed inset-0 bg-black bg-opacity-60 z-0"></div>
     <div class="fixed inset-0 pointer-events-none overflow-hidden opacity-5 z-0">
@@ -112,9 +166,17 @@
                     <img src="{{ url_for('static', filename='assets/logo-outlined.png') }}" alt="LeetCohort" class="h-10 w-10 rounded-lg shadow-lg">
                     <span>LeetCohort</span>
                 </a>
-                <a href="{{ url_for('auth') }}" class="text-gray-400 hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-800 transition">
-                    Sign In
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="https://hackclub.com/" target="_blank" rel="noopener noreferrer" class="nav-icon-link" title="Hack Club">
+                        <img src="{{ url_for('static', filename='assets/hackclub.png') }}" alt="Hack Club">
+                    </a>
+                    <a href="https://github.com/Rexaintreal/LeetCohort" target="_blank" rel="noopener noreferrer" class="nav-icon-link" title="Source Code on GitHub">
+                        <i class="fab fa-github text-xl text-white"></i>
+                    </a>
+                    <a href="{{ url_for('auth') }}" class="text-gray-400 hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+                        Sign In
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -133,8 +195,12 @@
     </main>
     <footer class="py-8 relative z-10">
         <div class="max-w-7xl mx-auto px-6">
-            <p class="text-center text-sm text-gray-400">
-                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Saurabh Tiwari</a>
+            <p class="text-center text-gray-400 footer-text-large">
+                Made for 
+                <a href="https://axiom.hackclub.com/" target="_blank" class="inline-flex items-center hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/axiom.png') }}" alt="Axiom" class="axiom-logo">
+                </a> 
+                by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Saurabh Tiwari</a>
             </p>
         </div>
     </footer>

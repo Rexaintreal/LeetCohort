@@ -162,3 +162,15 @@ body {
         padding: 32px 24px;
     }
 }
+.axiom-logo {
+    display: inline-block;
+    height: 24px;
+    vertical-align: middle;
+    margin-left: 4px;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.axiom-logo:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}

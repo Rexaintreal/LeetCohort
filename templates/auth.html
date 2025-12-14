@@ -60,9 +60,13 @@
         </div>
     </main>
     <footer class="py-8 relative z-10">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col items-center gap-2">
             <p class="text-center text-sm text-gray-400">
-                Made for <a href="https://axiom.hackclub.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Axiom</a> by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Saurabh Tiwari</a>
+                Made for 
+                <a href="https://axiom.hackclub.com/" target="_blank" class="inline-flex items-center hover:opacity-80 transition">
+                    <img src="{{ url_for('static', filename='assets/axiom.png') }}" alt="Axiom" class="axiom-logo h-6 w-auto">
+                </a> 
+                by <a href="https://saurabhcodesawfully.pythonanywhere.com/" target="_blank" class="text-white hover:text-primary font-medium transition">Saurabh Tiwari</a>
             </p>
         </div>
     </footer>
