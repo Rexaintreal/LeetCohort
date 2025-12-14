@@ -75,11 +75,17 @@ function updateNavbarProfile(currentUserData, isOwnProfile) {
     
     if (currentUserData && currentUserData.picture) {
         profilePic.src = currentUserData.picture;
-        profilePic.style.display = 'block';
-        profileIcon.style.display = 'none';
+        profilePic.style.display = 'block'; 
+        profileIcon.style.display = 'none'; 
     } else {
-        profilePic.style.display = 'none';
-        profileIcon.style.display = 'block';
+        profilePic.src = '/static/assets/hcavatar.png'; 
+        
+        profilePic.style.display = 'block'; 
+        profileIcon.style.display = 'none'; 
+    }
+
+    if (profilePic && currentUserData) {
+        profilePic.alt = currentUserData.name || 'User Profile';
     }
     if (currentUserData) {
         profileLink.href = `/profile/${currentUserData.uid}`;
@@ -123,7 +129,7 @@ function timeAgo(dateString) {
 }
 
 function updateProfile(data) {
-    document.getElementById('profileAvatar').src = data.picture || 'https://via.placeholder.com/128';
+    document.getElementById('profileAvatar').src = data.picture || '/static/assets/hcavatar.png';
     document.getElementById('profileName').textContent = data.name;
     document.getElementById('profileEmail').style.display = 'none';
     document.getElementById('profileRank').textContent = `#${data.rank || '-'}`;

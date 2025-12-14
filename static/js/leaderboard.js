@@ -182,7 +182,7 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
                     
                     <!-- User Info -->
                     <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <img src="${user.picture || 'https://via.placeholder.com/40'}" 
+                        <img src="${user.picture || '/static/assets/hcavatar.png'}" 
                             alt="${user.name}"
                             class="h-10 w-10 rounded-full flex-shrink-0"
                             loading="lazy">
@@ -345,13 +345,14 @@ function updateNavbarProfile(userData) {
     const profilePic = document.getElementById('navProfilePic');
     const profileIcon = document.getElementById('navProfileIcon');
     
-    if (userData && userData.picture) {
+    if (userData.picture) {
         profilePic.src = userData.picture;
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
     } else {
-        profilePic.style.display = 'none';
-        profileIcon.style.display = 'block';
+        profilePic.src = '/static/assets/hcavatar.png'; 
+        profilePic.style.display = 'block'; 
+        profileIcon.style.display = 'none'; 
     }
 }
 

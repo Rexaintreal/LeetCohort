@@ -174,3 +174,26 @@ body {
     transform: translateY(-2px);
     filter: brightness(1.2);
 }
+
+#hackclubSignInBtn {
+    background-color: #EC3750;
+    color: white;
+    margin-bottom: 12px;
+}
+
+#hackclubSignInBtn:hover:not(:disabled) {
+    background-color: #d32f46;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(236, 55, 80, 0.3);
+}
+
+#githubSignInBtn {
+    background-color: #24292e;
+    color: white;
+}
+
+#githubSignInBtn:hover:not(:disabled) {
+    background-color: #1a1e22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(36, 41, 46, 0.3);
+}

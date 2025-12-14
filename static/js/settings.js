@@ -106,13 +106,14 @@ function updateNavbarProfile(userData) {
     const profilePic = document.getElementById('navProfilePic');
     const profileIcon = document.getElementById('navProfileIcon');
     
-    if (userData && userData.picture) {
+    if (userData.picture) {
         profilePic.src = userData.picture;
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
     } else {
-        profilePic.style.display = 'none';
-        profileIcon.style.display = 'block';
+        profilePic.src = '/static/assets/hcavatar.png'; 
+        profilePic.style.display = 'block'; 
+        profileIcon.style.display = 'none'; 
     }
 }
 
@@ -270,8 +271,7 @@ function populateSettings(userData, userRank) {
     currentUserData = userData;
 
     const avatarPreview = document.getElementById('avatarPreview');
-    const avatarUrl = userData.picture || 'https://via.placeholder.com/128';
-    
+    const avatarUrl = userData.picture || '/static/assets/hcavatar.png';    
     if (userData.picture && userData.picture.includes('/static/uploads/')) {
         avatarPreview.src = `${avatarUrl}?t=${Date.now()}`;
     } else {

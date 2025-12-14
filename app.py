@@ -1,4 +1,4 @@
-from flask import Flask, Response, render_template, request, jsonify, url_for
+from flask import Flask, Response, render_template, request, jsonify, url_for, redirect, session
 from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -14,9 +14,20 @@ from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from execution import execute_code_piston, safe_json_load
 import json
+import secrets
 
 app = Flask(__name__)
 CORS(app)
+app.secret_key = os.getenv('FLASK_SECRET_KEY', secrets.token_hex(32))
+
+# OAuth Configuration
+HACKCLUB_CLIENT_ID = os.getenv('HACKCLUB_CLIENT_ID')
+HACKCLUB_CLIENT_SECRET = os.getenv('HACKCLUB_CLIENT_SECRET')
+HACKCLUB_REDIRECT_URI = os.getenv('HACKCLUB_REDIRECT_URI', 'http://localhost:5000/auth/hackclub/callback')
+
+GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
+GITHUB_REDIRECT_URI = os.getenv('GITHUB_REDIRECT_URI', 'http://localhost:5000/auth/github/callback')
 
 # upload configs
 UPLOAD_FOLDER = 'static/uploads'
@@ -78,6 +89,36 @@ def parse_tags(tag_string):
     
     return [tag.strip() for tag in tag_string.split(',') if tag.strip()]
 
+def create_or_update_user(email, name, picture, provider, provider_id):
+    uid = f"{provider}_{provider_id}"
+    
+    user_ref = db.collection('users').document(uid)
+    user_doc = user_ref.get()
+    
+    if user_doc.exists:
+        user_ref.update({
+            'last_active': datetime.now()
+        })
+        user_data = user_doc.to_dict()
+        is_new = False
+    else:
+        user_data = {
+            'uid': uid,
+            'email': email,
+            'name': name or email.split('@')[0],
+            'picture': picture,
+            'points': 0,
+            'problems_solved': 0,
+            'solved_problems': [],
+            'created_at': datetime.now(),
+            'last_active': datetime.now(),
+            'provider': provider
+        }
+        user_ref.set(user_data)
+        is_new = True
+    
+    return user_data, is_new
+
 # Image proxy route
 @app.route("/proxy-image")
 def proxy_image():
@@ -137,7 +178,261 @@ def firebase_config():
     }
     return jsonify(config)
 
-##auth
+@app.route('/api/oauth-config')
+def oauth_config():
+    config = {
+        'hackclub': {
+            'client_id': HACKCLUB_CLIENT_ID,
+            'redirect_uri': HACKCLUB_REDIRECT_URI,
+            'authorize_url': 'https://auth.hackclub.com/oauth/authorize',
+            'scopes': 'openid profile email name slack_id verification_status'
+        },
+        'github': {
+            'client_id': GITHUB_CLIENT_ID,
+            'redirect_uri': GITHUB_REDIRECT_URI,
+            'authorize_url': 'https://github.com/login/oauth/authorize',
+            'scopes': 'read:user user:email'
+        }
+    }
+    return jsonify(config)
+
+@app.route('/auth/success')
+def auth_success():
+    return render_template('auth_success.html')
+
+@app.route('/api/auth/session')
+def get_session():
+    if 'custom_token' in session and 'user_uid' in session:
+        return jsonify({
+            'custom_token': session['custom_token'],
+            'user_uid': session['user_uid'],
+            'is_new_user': session.get('is_new_user', False)
+        }), 200
+    return jsonify({'error': 'No session'}), 404
+
+# AUTH HACKCLUB
+@app.route('/auth/hackclub/callback')
+def hackclub_callback():
+    code = request.args.get('code')
+    error = request.args.get('error')
+    
+    if error:
+        return redirect(f'/auth?error={error}')
+    
+    if not code:
+        return redirect('/auth?error=no_code')
+    
+    try:
+        token_payload = {
+            'client_id': HACKCLUB_CLIENT_ID,
+            'client_secret': HACKCLUB_CLIENT_SECRET,
+            'redirect_uri': HACKCLUB_REDIRECT_URI,
+            'code': code,
+            'grant_type': 'authorization_code'
+        }
+        
+        
+        token_response = requests.post(
+            'https://auth.hackclub.com/oauth/token',
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'User-Agent': 'LeetCohort/1.0'
+            },
+            json=token_payload,
+            timeout=15
+        )
+        
+        print(f"Response Status: {token_response.status_code}")
+        print(f"Response Headers: {dict(token_response.headers)}")
+        print(f"Response Body: {token_response.text[:500]}")
+        
+        if not token_response.ok:
+            print(f"\nJSON method failed, trying form-encoded...")
+            
+            token_response = requests.post(
+                'https://auth.hackclub.com/oauth/token',
+                headers={
+                    'Accept': 'application/json',
+                    'User-Agent': 'LeetCohort/1.0'
+                },
+                data=token_payload,  
+                timeout=15
+            )
+            
+        
+        if not token_response.ok:
+            return redirect('/auth?error=token_exchange_failed')
+        
+        token_data = token_response.json()
+        access_token = token_data.get('access_token')
+        
+        if not access_token:
+            return redirect('/auth?error=token_exchange_failed')
+        
+        
+        user_response = requests.get(
+            'https://auth.hackclub.com/api/v1/me',
+            headers={
+                'Authorization': f'Bearer {access_token}',
+                'Accept': 'application/json'
+            },
+            timeout=15
+        )
+        
+        print(f"User info status: {user_response.status_code}")
+        
+        if not user_response.ok:
+            return redirect('/auth?error=user_info_failed')
+        
+        user_info = user_response.json()
+        
+        identity = user_info.get('identity', {})
+        
+        email = identity.get('primary_email')
+        first_name = identity.get('first_name', '')
+        last_name = identity.get('last_name', '')
+        name = f"{first_name} {last_name}".strip()
+        picture = None
+        provider_id = identity.get('id')
+        
+        
+        if not email or not provider_id:
+            return redirect('/auth?error=user_info_failed')
+        
+        user_data, is_new = create_or_update_user(
+            email=email,
+            name=name or email.split('@')[0],
+            picture=picture,
+            provider='hackclub',
+            provider_id=provider_id
+        )
+        
+        
+        custom_token = firebase_auth.create_custom_token(user_data['uid'])
+        
+        session['user_uid'] = user_data['uid']
+        session['custom_token'] = custom_token.decode('utf-8')
+        session['is_new_user'] = is_new
+        
+        
+        return redirect('/auth/success')
+        
+    except requests.exceptions.Timeout:
+        return redirect('/auth?error=oauth_failed')
+    except requests.exceptions.RequestException as e:
+        return redirect('/auth?error=oauth_failed')
+    except Exception as e:
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return redirect('/auth?error=oauth_failed')
+
+##auth - GitHub OAuth
+
+@app.route('/auth/github/callback')
+def github_callback():
+    code = request.args.get('code')
+    error = request.args.get('error')
+    
+    if error:
+        return redirect(f'/auth?error={error}')
+    
+    if not code:
+        return redirect('/auth?error=no_code')
+    
+    try:
+        token_response = requests.post(
+            'https://github.com/login/oauth/access_token',
+            headers={
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            json={
+                'client_id': GITHUB_CLIENT_ID,
+                'client_secret': GITHUB_CLIENT_SECRET,
+                'code': code,
+                'redirect_uri': GITHUB_REDIRECT_URI
+            }
+        )
+        
+        print(f"GitHub token response status: {token_response.status_code}")
+        print(f"GitHub token response: {token_response.text}")
+        
+        if not token_response.ok:
+            print(f"Token exchange failed: {token_response.text}")
+            return redirect('/auth?error=token_exchange_failed')
+        
+        token_data = token_response.json()
+        access_token = token_data.get('access_token')
+        
+        if not access_token:
+            print("No access token in response")
+            return redirect('/auth?error=token_exchange_failed')
+        
+        user_response = requests.get(
+            'https://api.github.com/user',
+            headers={
+                'Authorization': f'Bearer {access_token}',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        )
+        
+        print(f"User info response status: {user_response.status_code}")
+        
+        if not user_response.ok:
+            print(f"Failed to get user info: {user_response.text}")
+            return redirect('/auth?error=user_info_failed')
+        
+        user_info = user_response.json()
+        
+        email = user_info.get('email')
+        if not email:
+            emails_response = requests.get(
+                'https://api.github.com/user/emails',
+                headers={
+                    'Authorization': f'Bearer {access_token}',
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            )
+            if emails_response.ok:
+                emails = emails_response.json()
+                primary_email = next((e['email'] for e in emails if e['primary']), None)
+                email = primary_email or (emails[0]['email'] if emails else None)
+        
+        name = user_info.get('name') or user_info.get('login')
+        picture = user_info.get('avatar_url')
+        provider_id = str(user_info.get('id'))
+        
+        if not provider_id:
+            print("No GitHub user ID found")
+            return redirect('/auth?error=user_info_failed')
+        
+        user_data, is_new = create_or_update_user(
+            email=email or f"{user_info.get('login')}@github.user",
+            name=name,
+            picture=picture,
+            provider='github',
+            provider_id=provider_id
+        )
+        
+        custom_token = firebase_auth.create_custom_token(user_data['uid'])
+        
+        session['user_uid'] = user_data['uid']
+        session['custom_token'] = custom_token.decode('utf-8')
+        session['is_new_user'] = is_new
+        
+        return redirect('/auth/success')
+        
+    except Exception as e:
+        print(f"GitHub OAuth error: {e}")
+        import traceback
+        traceback.print_exc()
+        return redirect(f'/auth?error=oauth_failed')
+
+
+
+##auth - Google 
 
 @app.route('/api/auth/verify', methods=['POST'])
 def verify_and_create_user():
@@ -170,7 +465,8 @@ def verify_and_create_user():
                 'problems_solved': 0,
                 'solved_problems': [],
                 'created_at': datetime.now(),
-                'last_active': datetime.now()
+                'last_active': datetime.now(),
+                'provider': 'google'
             }
             user_ref.set(user_data)
 

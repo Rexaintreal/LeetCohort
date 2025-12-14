@@ -77,8 +77,9 @@ function updateNavbarProfile(userData) {
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
     } else {
-        profilePic.style.display = 'none';
-        profileIcon.style.display = 'block';
+        profilePic.src = '/static/assets/hcavatar.png'; 
+        profilePic.style.display = 'block'; 
+        profileIcon.style.display = 'none'; 
     }
 }
 
@@ -93,7 +94,7 @@ function updateUserProfile(userData, rank) {
     if (userName) userName.textContent = userData.name;
     if (userEmail) userEmail.textContent = userData.email;
     if (userAvatar) {
-        userAvatar.src = userData.picture || 'https://via.placeholder.com/96';
+        userAvatar.src = userData.picture || 'static/assets/hcavatar.png';
         userAvatar.alt = userData.name;
     }
     if (userPoints) userPoints.textContent = userData.points || 0;
@@ -229,7 +230,7 @@ function renderLeaderboard(leaderboard, currentUserId) {
                     <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
                         ${index < 3 ? `<i class="fas fa-medal medal-icon"></i>` : `${index + 1}`}
                     </div>
-                    <img src="${user.picture || 'https://via.placeholder.com/32'}"  
+                    <img src="${user.picture || '/static/assets/hcavatar.png'}" 
                         class="h-8 w-8 rounded-full border-2 border-white border-opacity-10 transition-transform hover:scale-110"
                         loading="lazy"
                         alt="${user.name}">

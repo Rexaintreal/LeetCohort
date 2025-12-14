@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing In - LeetCohort</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo.png') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #000000;
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #7E1EE7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-100 min-h-screen flex items-center justify-center">
+    <div class="text-center">
+        <div class="spinner mx-auto mb-4"></div>
+        <h1 class="text-xl font-semibold mb-2">Completing sign in...</h1>
+        <p class="text-gray-400 text-sm">Please wait while we set up your account</p>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        
+        async function completeOAuthSignIn() {
+            try {
+                const configResponse = await fetch('/api/firebase-config');
+                if (!configResponse.ok) {
+                    throw new Error('Failed to fetch Firebase config');
+                }
+                const firebaseConfig = await configResponse.json();
+                
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                
+                const sessionResponse = await fetch('/api/auth/session');
+                if (!sessionResponse.ok) {
+                    throw new Error('No session found');
+                }
+                const sessionData = await sessionResponse.json();
+                
+                const userCredential = await signInWithCustomToken(auth, sessionData.custom_token);
+                const idToken = await userCredential.user.getIdToken();
+                
+                const userResponse = await fetch(`/api/user/${sessionData.user_uid}`, {
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                });
+                
+                if (!userResponse.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                
+                const userData = await userResponse.json();
+                
+                localStorage.setItem('firebaseToken', idToken);
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
+                window.location.href = '/home';
+                
+            } catch (error) {
+                console.error('OAuth completion error:', error);
+                window.location.href = '/auth?error=oauth_failed';
+            }
+        }
+        
+        completeOAuthSignIn();
+    </script>
+</body>
+</html>
