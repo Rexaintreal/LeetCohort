@@ -242,7 +242,7 @@ function renderLeaderboard(leaderboard, currentUserId) {
         
         return `
             <a href="/profile/${user.uid}" class="block">
-                <div class="leaderboard-item flex items-center gap-3 p-3 rounded-lg transition cursor-pointer ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}">
+                <div class="leaderboard-item flex items-center gap-3 p-3 rounded-lg transition cursor-pointer ${isCurrentUser ? 'bg-white bg-opacity-5 border border-white border-opacity-10' : 'hover:bg-white hover:bg-opacity-5'}" data-rank="${index + 1}">
                     <div class="flex items-center justify-center w-6 text-sm font-semibold ${rankColors[index] || 'text-gray-500'}">
                         ${index < 3 ? `<i class="fas fa-medal medal-icon"></i>` : `${index + 1}`}
                     </div>
@@ -250,7 +250,6 @@ function renderLeaderboard(leaderboard, currentUserId) {
                         class="h-8 w-8 rounded-full border-2 border-white border-opacity-10 transition-transform hover:scale-110"
                         loading="lazy"
                         alt="${user.name}">
-
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium truncate text-white">${user.name}</p>
                         <p class="text-xs text-gray-500">${user.problems_solved} solved</p>
@@ -390,7 +389,7 @@ function renderTopicFilter() {
     
     dropdown.querySelectorAll('.topic-filter-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
+            e.stopPropagation();
             
             const topic = btn.dataset.topic;
             if (selectedTopics.has(topic)) {
@@ -491,7 +490,7 @@ async function initHomePage() {
         renderProblems(allProblems, userData.solved_problems || []);
         updateProgressBars(allProblems, userData.solved_problems || []);
         renderLeaderboard(leaderboardData, userData.uid);
-        renderTopicFilter(); 
+        renderTopicFilter();
         showContent();
 
     } catch (error) {

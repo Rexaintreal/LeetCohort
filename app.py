@@ -13,6 +13,7 @@ import uuid
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from execution import execute_code_piston, safe_json_load
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -62,6 +63,20 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def parse_tags(tag_string):
+    if not tag_string:
+        return []
+    
+    tag_string = tag_string.strip()
+    
+    if tag_string.startswith('['):
+        try:
+            tags = json.loads(tag_string)
+            return [str(tag).strip() for tag in tags if tag]
+        except json.JSONDecodeError:
+            pass
+    
+    return [tag.strip() for tag in tag_string.split(',') if tag.strip()]
 
 # Image proxy route
 @app.route("/proxy-image")
@@ -680,16 +695,13 @@ def get_problems():
 
         problems = []
         for row in cur.fetchall():
-            t_tags = row['topic_tags'].split(',') if row['topic_tags'] else []
-            c_tags = row['company_tags'].split(',') if row['company_tags'] else []
-
             problems.append({
                 'id': row['id'],
                 'title': row['title'], 
                 'slug': row['slug'],   
                 'difficulty': row['difficulty'],
-                'topic_tags': [t.strip() for t in t_tags],
-                'company_tags': [t.strip() for t in c_tags],
+                'topic_tags': parse_tags(row['topic_tags']),
+                'company_tags': parse_tags(row['company_tags']),
                 'points': row['points'],
                 'acceptance_rate': row['acceptance_rate'],
                 'created_at': row['created_at']

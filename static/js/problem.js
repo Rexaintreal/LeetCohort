@@ -1,4 +1,4 @@
-// toast noti
+// toast no
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -68,10 +68,10 @@ function initCodeEditor(boilerplateCode = '', language = 'python') {
 
 // langs
 const languageModes = {
-    '71': 'python',              
-    '63': 'javascript',          
-    '62': 'text/x-java',         
-    '54': 'text/x-c++src'        
+    '71': 'python',
+    '63': 'javascript',
+    '62': 'text/x-java',
+    '54': 'text/x-c++src'
 };
 
 const languageToBoilerplate = {
@@ -122,9 +122,44 @@ function renderProblem(problem) {
     difficultyBadge.textContent = problem.difficulty;
     difficultyBadge.className = `difficulty-${problem.difficulty.toLowerCase()} px-3 py-1 rounded text-xs font-bold`;
     
+    const headerSection = difficultyBadge.parentElement.parentElement;
+    
+    const infoHTML = `
+        <div class="problem-header-info">
+            <div class="info-item">
+                <i class="fas fa-star"></i>
+                <span>Points:</span>
+                <strong>${problem.points}</strong>
+            </div>
+        </div>
+    `;
+    let tagsHTML = '';
+    if ((problem.topic_tags && problem.topic_tags.length > 0) || (problem.company_tags && problem.company_tags.length > 0)) {
+        tagsHTML = '<div class="tags-section">';
+        
+        if (problem.topic_tags && problem.topic_tags.length > 0) {
+            problem.topic_tags.forEach(tag => {
+                tagsHTML += `<span class="topic-tag"><i class="fas fa-tag"></i>${tag}</span>`;
+            });
+        }
+        
+        if (problem.company_tags && problem.company_tags.length > 0) {
+            problem.company_tags.forEach(tag => {
+                tagsHTML += `<span class="company-tag"><i class="fas fa-building"></i>${tag}</span>`;
+            });
+        }
+        
+        tagsHTML += '</div>';
+    }
+    
+    headerSection.innerHTML += infoHTML + tagsHTML;
+    
     document.getElementById('problemDescription').innerHTML = formatDescription(problem);
+    
     renderExamples(problem.sample_test_cases);
+    
     renderHints(problem.hints);
+    
     initCodeEditor(problem.boilerplate_code.python || '# Write your solution here\n', 'python');
 }
 
@@ -164,23 +199,26 @@ function formatDescription(problem) {
     }
     
     if (problem.time_complexity || problem.space_complexity) {
-        html += `<div style="margin-top: 24px; display: flex; gap: 16px;">`;
+        html += `<div class="complexity-grid">`;
+        
         if (problem.time_complexity) {
             html += `
-                <div style="flex: 1; padding: 12px; background: rgba(34, 197, 94, 0.05); border-radius: 6px; border: 1px solid rgba(34, 197, 94, 0.2);">
-                    <div style="font-size: 11px; color: #22c55e; font-weight: 600; margin-bottom: 4px;">EXPECTED TIME</div>
-                    <div style="color: #cccccc; font-size: 14px; font-weight: 600;">${problem.time_complexity}</div>
+                <div class="complexity-item">
+                    <div class="complexity-label"><i class="fas fa-clock"></i> Time Complexity</div>
+                    <div class="complexity-value">${problem.time_complexity}</div>
                 </div>
             `;
         }
+        
         if (problem.space_complexity) {
             html += `
-                <div style="flex: 1; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                    <div style="font-size: 11px; color: #3b82f6; font-weight: 600; margin-bottom: 4px;">EXPECTED SPACE</div>
-                    <div style="color: #cccccc; font-size: 14px; font-weight: 600;">${problem.space_complexity}</div>
+                <div class="complexity-item">
+                    <div class="complexity-label"><i class="fas fa-memory"></i> Space Complexity</div>
+                    <div class="complexity-value">${problem.space_complexity}</div>
                 </div>
             `;
         }
+        
         html += `</div>`;
     }
     
@@ -227,7 +265,7 @@ function initLanguageSelect() {
         
         if (!languageModes[languageId]) {
             showToast('This language is not supported', 'error');
-            select.value = '71'; 
+            select.value = '71';
             return;
         }
         
