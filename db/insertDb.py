@@ -16,6 +16,32 @@ def create_connection():
         print(f"Error connecting to database: {e}")
         return None
 
+
+def calculate_points(problem):
+    difficulty_base = {
+        "Easy": 10,
+        "Medium": 20,
+        "Hard": 40
+    }
+
+    points = difficulty_base.get(problem.get("difficulty", "Easy"), 10)
+
+    test_cases = problem.get("test_cases", [])
+    if len(test_cases) > 1:
+        points += (len(test_cases) - 1) * 5
+
+    hints = problem.get("hints", [])
+    if not hints:
+        points += 5
+
+    if problem.get("order_matters", 1) == 0:
+        points += 5
+
+    return round_to_5(points)
+
+def round_to_5(n):
+    return int(round(n / 5) * 5)
+
 def seed_database():
     conn = create_connection()
     if conn is None:
@@ -59,7 +85,7 @@ def seed_database():
                 p.get("company_tags"),
                 p.get("constraints"),
                 p.get("boilerplate_code"),  
-                p.get("points", 10),  
+                calculate_points(p),
                 p.get("order_matters", 1), 
                 p.get("time_complexity"),
                 p.get("space_complexity")

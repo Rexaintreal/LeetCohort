@@ -29,5 +29,2594 @@
         "display_order": 1
       }
     ]
+  },
+  {
+    "title": "Best Time to Buy and Sell Stock",
+    "slug": "best-time-to-buy-and-sell-stock",
+    "description": "You are given an array prices where prices[i] is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.",
+    "input_format": "prices: List[int]",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Array,Dynamic Programming",
+    "company_tags": "Amazon,Facebook",
+    "constraints": "1 <= prices.length <= 10^5\n0 <= prices[i] <= 10^4",
+    "boilerplate_code": "class Solution:\n    def maxProfit(self, prices: List[int]) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Track the minimum price seen so far.", "display_order": 1 }
+    ],
+    "test_cases": [
+      {
+        "input": "[7,1,5,3,6,4]",
+        "expected_output": "5",
+        "input_json": "{\"prices\": [7,1,5,3,6,4]}",
+        "expected_output_json": "5",
+        "is_sample": 1,
+        "explanation": "Buy at 1 and sell at 6.",
+        "display_order": 1
+      }
+    ]
+    },
+    {
+      "title": "Contains Duplicate",
+      "slug": "contains-duplicate",
+      "description": "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.",
+      "input_format": "nums: List[int]",
+      "output_format": "bool",
+      "difficulty": "Easy",
+      "topic_tags": "Array,Hash Table",
+      "company_tags": "Google,Microsoft",
+      "constraints": "1 <= nums.length <= 10^5\n-10^9 <= nums[i] <= 10^9",
+      "boilerplate_code": "class Solution:\n    def containsDuplicate(self, nums: List[int]) -> bool:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "hints": [
+        { "hint": "Use a set to track seen elements.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[1,2,3,1]",
+          "expected_output": "true",
+          "input_json": "{\"nums\": [1,2,3,1]}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "1 appears twice.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Valid Anagram",
+      "slug": "valid-anagram",
+      "description": "Given two strings s and t, return true if t is an anagram of s, and false otherwise.",
+      "input_format": "s: str, t: str",
+      "output_format": "bool",
+      "difficulty": "Easy",
+      "topic_tags": "Hash Table,String",
+      "company_tags": "Amazon,Apple",
+      "constraints": "1 <= s.length, t.length <= 5 * 10^4",
+      "boilerplate_code": "class Solution:\n    def isAnagram(self, s: str, t: str) -> bool:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Compare character frequencies.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "\"anagram\", \"nagaram\"",
+          "expected_output": "true",
+          "input_json": "{\"s\": \"anagram\", \"t\": \"nagaram\"}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "Both strings have the same characters.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "description": "Given an integer array nums, find the contiguous subarray with the largest sum, and return its sum.",
+      "input_format": "nums: List[int]",
+      "output_format": "int",
+      "difficulty": "Medium",
+      "topic_tags": "Array,Dynamic Programming",
+      "company_tags": "Microsoft,Google",
+      "constraints": "1 <= nums.length <= 10^5\n-10^4 <= nums[i] <= 10^4",
+      "boilerplate_code": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Kadane’s Algorithm is useful here.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[-2,1,-3,4,-1,2,1,-5,4]",
+          "expected_output": "6",
+          "input_json": "{\"nums\": [-2,1,-3,4,-1,2,1,-5,4]}",
+          "expected_output_json": "6",
+          "is_sample": 1,
+          "explanation": "Subarray [4,-1,2,1] has sum 6.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "description": "Merge two sorted linked lists and return it as a sorted list.",
+      "input_format": "l1: ListNode, l2: ListNode",
+      "output_format": "ListNode",
+      "difficulty": "Easy",
+      "topic_tags": "Linked List,Recursion",
+      "company_tags": "Amazon,Microsoft",
+      "constraints": "The number of nodes in both lists is in the range [0, 50].",
+      "boilerplate_code": "class Solution:\n    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Compare nodes one by one.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[1,2,4], [1,3,4]",
+          "expected_output": "[1,1,2,3,4,4]",
+          "input_json": "{\"l1\": [1,2,4], \"l2\": [1,3,4]}",
+          "expected_output_json": "[1,1,2,3,4,4]",
+          "is_sample": 1,
+          "explanation": "Merged in sorted order.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+      "input_format": "s: str",
+      "output_format": "bool",
+      "difficulty": "Easy",
+      "topic_tags": "Stack,String",
+      "company_tags": "Google,Facebook",
+      "constraints": "1 <= s.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def isValid(self, s: str) -> bool:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "hints": [
+        { "hint": "Use a stack to match brackets.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "\"()[]{}\"",
+          "expected_output": "true",
+          "input_json": "{\"s\": \"()[]{}\"}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "All brackets are closed correctly.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Binary Search",
+      "slug": "binary-search",
+      "description": "Given an array of integers nums which is sorted in ascending order, and an integer target, return the index of target if it exists.",
+      "input_format": "nums: List[int], target: int",
+      "output_format": "int",
+      "difficulty": "Easy",
+      "topic_tags": "Array,Binary Search",
+      "company_tags": "Amazon,Apple",
+      "constraints": "1 <= nums.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def search(self, nums: List[int], target: int) -> int:\n        pass",
+      "time_complexity": "O(log n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Use left and right pointers.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[-1,0,3,5,9,12], 9",
+          "expected_output": "4",
+          "input_json": "{\"nums\": [-1,0,3,5,9,12], \"target\": 9}",
+          "expected_output_json": "4",
+          "is_sample": 1,
+          "explanation": "9 is at index 4.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "description": "You are climbing a staircase. Each time you can climb 1 or 2 steps. How many distinct ways can you climb to the top?",
+      "input_format": "n: int",
+      "output_format": "int",
+      "difficulty": "Easy",
+      "topic_tags": "Dynamic Programming,Math",
+      "company_tags": "Amazon,Adobe",
+      "constraints": "1 <= n <= 45",
+      "boilerplate_code": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "This is similar to Fibonacci numbers.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "3",
+          "expected_output": "3",
+          "input_json": "{\"n\": 3}",
+          "expected_output_json": "3",
+          "is_sample": 1,
+          "explanation": "1+1+1, 1+2, 2+1.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Reverse Linked List",
+      "slug": "reverse-linked-list",
+      "description": "Given the head of a singly linked list, reverse the list and return the reversed list.",
+      "input_format": "head: ListNode",
+      "output_format": "ListNode",
+      "difficulty": "Easy",
+      "topic_tags": "Linked List",
+      "company_tags": "Amazon,Microsoft",
+      "constraints": "The number of nodes in the list is in the range [0, 5000].",
+      "boilerplate_code": "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[1,2,3,4,5]",
+          "expected_output": "[5,4,3,2,1]",
+          "input_json": "{\"head\": [1,2,3,4,5]}",
+          "expected_output_json": "[5,4,3,2,1]",
+          "is_sample": 1,
+          "explanation": "Reverse pointers iteratively.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Move Zeroes",
+      "slug": "move-zeroes",
+      "description": "Given an integer array nums, move all 0's to the end while maintaining the relative order of the non-zero elements.",
+      "input_format": "nums: List[int]",
+      "output_format": "None (modify in-place)",
+      "difficulty": "Easy",
+      "topic_tags": "Array,Two Pointers",
+      "company_tags": "Facebook,Amazon",
+      "constraints": "1 <= nums.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def moveZeroes(self, nums: List[int]) -> None:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[0,1,0,3,12]",
+          "expected_output": "[1,3,12,0,0]",
+          "input_json": "{\"nums\": [0,1,0,3,12]}",
+          "expected_output_json": "[1,3,12,0,0]",
+          "is_sample": 1,
+          "explanation": "Shift non-zero elements forward.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "description": "Given an integer array nums, return an array answer such that answer[i] is the product of all elements of nums except nums[i].",
+      "input_format": "nums: List[int]",
+      "output_format": "List[int]",
+      "difficulty": "Medium",
+      "topic_tags": "Array,Prefix Sum",
+      "company_tags": "Amazon,Google",
+      "constraints": "2 <= nums.length <= 10^5",
+      "boilerplate_code": "class Solution:\n    def productExceptSelf(self, nums: List[int]) -> List[int]:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Use prefix and suffix products.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[1,2,3,4]",
+          "expected_output": "[24,12,8,6]",
+          "input_json": "{\"nums\": [1,2,3,4]}",
+          "expected_output_json": "[24,12,8,6]",
+          "is_sample": 1,
+          "explanation": "Multiply all except current index.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "description": "Given a string s, find the length of the longest substring without repeating characters.",
+      "input_format": "s: str",
+      "output_format": "int",
+      "difficulty": "Medium",
+      "topic_tags": "String,Sliding Window",
+      "company_tags": "Amazon,Adobe",
+      "constraints": "0 <= s.length <= 5 * 10^4",
+      "boilerplate_code": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "hints": [
+        { "hint": "Use a sliding window with a set.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "\"abcabcbb\"",
+          "expected_output": "3",
+          "input_json": "{\"s\": \"abcabcbb\"}",
+          "expected_output_json": "3",
+          "is_sample": 1,
+          "explanation": "Substring \"abc\" has length 3.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Search in Rotated Sorted Array",
+      "slug": "search-in-rotated-sorted-array",
+      "description": "Search for a target value in a rotated sorted array.",
+      "input_format": "nums: List[int], target: int",
+      "output_format": "int",
+      "difficulty": "Medium",
+      "topic_tags": "Array,Binary Search",
+      "company_tags": "Microsoft,Google",
+      "constraints": "1 <= nums.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def search(self, nums: List[int], target: int) -> int:\n        pass",
+      "time_complexity": "O(log n)",
+      "space_complexity": "O(1)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[4,5,6,7,0,1,2], 0",
+          "expected_output": "4",
+          "input_json": "{\"nums\": [4,5,6,7,0,1,2], \"target\": 0}",
+          "expected_output_json": "4",
+          "is_sample": 1,
+          "explanation": "0 is at index 4.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "description": "Given an array of intervals, merge all overlapping intervals.",
+      "input_format": "intervals: List[List[int]]",
+      "output_format": "List[List[int]]",
+      "difficulty": "Medium",
+      "topic_tags": "Array,Sorting",
+      "company_tags": "Facebook,Amazon",
+      "constraints": "1 <= intervals.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def merge(self, intervals: List[List[int]]) -> List[List[int]]:\n        pass",
+      "time_complexity": "O(n log n)",
+      "space_complexity": "O(n)",
+      "hints": [
+        { "hint": "Sort intervals by start time.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[[1,3],[2,6],[8,10],[15,18]]",
+          "expected_output": "[[1,6],[8,10],[15,18]]",
+          "input_json": "{\"intervals\": [[1,3],[2,6],[8,10],[15,18]]}",
+          "expected_output_json": "[[1,6],[8,10],[15,18]]",
+          "is_sample": 1,
+          "explanation": "Intervals [1,3] and [2,6] overlap.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Detect Cycle in Linked List",
+      "slug": "detect-cycle-in-linked-list",
+      "description": "Given a linked list, determine if it has a cycle in it.",
+      "input_format": "head: ListNode",
+      "output_format": "bool",
+      "difficulty": "Medium",
+      "topic_tags": "Linked List,Two Pointers",
+      "company_tags": "Amazon,Microsoft",
+      "constraints": "The number of nodes is in the range [0, 10^4].",
+      "boilerplate_code": "class Solution:\n    def hasCycle(self, head: ListNode) -> bool:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[3,2,0,-4], pos = 1",
+          "expected_output": "true",
+          "input_json": "{\"head\": [3,2,0,-4], \"pos\": 1}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "Tail connects to index 1.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Word Search",
+      "slug": "word-search",
+      "description": "Given an m x n grid of characters and a word, return true if the word exists in the grid.",
+      "input_format": "board: List[List[str]], word: str",
+      "output_format": "bool",
+      "difficulty": "Hard",
+      "topic_tags": "Backtracking,Matrix",
+      "company_tags": "Amazon,Google",
+      "constraints": "1 <= m, n <= 6",
+      "boilerplate_code": "class Solution:\n    def exist(self, board: List[List[str]], word: str) -> bool:\n        pass",
+      "time_complexity": "O(m * n * 4^k)",
+      "space_complexity": "O(k)",
+      "hints": [
+        { "hint": "Use DFS and mark visited cells.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], \"ABCCED\"",
+          "expected_output": "true",
+          "input_json": "{\"board\": [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], \"word\": \"ABCCED\"}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "Word exists in the grid.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "LRU Cache",
+      "slug": "lru-cache",
+      "description": "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.",
+      "input_format": "capacity: int, operations",
+      "output_format": "varies",
+      "difficulty": "Hard",
+      "topic_tags": "Hash Table,Design",
+      "company_tags": "Amazon,Facebook",
+      "constraints": "1 <= capacity <= 3000",
+      "boilerplate_code": "class LRUCache:\n    def __init__(self, capacity: int):\n        pass",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(n)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "LRUCache(2), put(1,1), put(2,2), get(1), put(3,3), get(2)",
+          "expected_output": "[1, -1]",
+          "input_json": "{\"capacity\": 2}",
+          "expected_output_json": "[1, -1]",
+          "is_sample": 1,
+          "explanation": "Least recently used key is evicted.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Median of Two Sorted Arrays",
+      "slug": "median-of-two-sorted-arrays",
+      "description": "Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays.",
+      "input_format": "nums1: List[int], nums2: List[int]",
+      "output_format": "float",
+      "difficulty": "Hard",
+      "topic_tags": "Array,Binary Search",
+      "company_tags": "Google,Amazon",
+      "constraints": "0 <= nums1.length + nums2.length <= 2000",
+      "boilerplate_code": "class Solution:\n    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:\n        pass",
+      "time_complexity": "O(log(min(n,m)))",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Binary search on the smaller array.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[1,3], [2]",
+          "expected_output": "2.0",
+          "input_json": "{\"nums1\": [1,3], \"nums2\": [2]}",
+          "expected_output_json": "2.0",
+          "is_sample": 1,
+          "explanation": "Median is 2.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Invert Binary Tree",
+      "slug": "invert-binary-tree",
+      "description": "Given the root of a binary tree, invert the tree and return its root.",
+      "input_format": "root: TreeNode",
+      "output_format": "TreeNode",
+      "difficulty": "Easy",
+      "topic_tags": "Tree,DFS",
+      "company_tags": "Google,Amazon",
+      "constraints": "The number of nodes is in the range [0, 100].",
+      "boilerplate_code": "class Solution:\n    def invertTree(self, root: TreeNode) -> TreeNode:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(h)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[4,2,7,1,3,6,9]",
+          "expected_output": "[4,7,2,9,6,3,1]",
+          "input_json": "{\"root\": [4,2,7,1,3,6,9]}",
+          "expected_output_json": "[4,7,2,9,6,3,1]",
+          "is_sample": 1,
+          "explanation": "Swap left and right children recursively.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Valid Palindrome",
+      "slug": "valid-palindrome",
+      "description": "Given a string s, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.",
+      "input_format": "s: str",
+      "output_format": "bool",
+      "difficulty": "Easy",
+      "topic_tags": "String,Two Pointers",
+      "company_tags": "Facebook,Microsoft",
+      "constraints": "1 <= s.length <= 2 * 10^5",
+      "boilerplate_code": "class Solution:\n    def isPalindrome(self, s: str) -> bool:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Use two pointers moving inward.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "\"A man, a plan, a canal: Panama\"",
+          "expected_output": "true",
+          "input_json": "{\"s\": \"A man, a plan, a canal: Panama\"}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "Ignoring non-alphanumerics forms a palindrome.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Min Stack",
+      "slug": "min-stack",
+      "description": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.",
+      "input_format": "operations",
+      "output_format": "varies",
+      "difficulty": "Medium",
+      "topic_tags": "Stack,Design",
+      "company_tags": "Amazon,Google",
+      "constraints": "Operations <= 3 * 10^4",
+      "boilerplate_code": "class MinStack:\n    def __init__(self):\n        pass",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(n)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "push(-2), push(0), push(-3), getMin(), pop(), top(), getMin()",
+          "expected_output": "[-3, 0, -2]",
+          "input_json": "{}",
+          "expected_output_json": "[-3, 0, -2]",
+          "is_sample": 1,
+          "explanation": "Track minimum values separately.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Kth Largest Element in an Array",
+      "slug": "kth-largest-element-in-an-array",
+      "description": "Given an integer array nums and an integer k, return the kth largest element in the array.",
+      "input_format": "nums: List[int], k: int",
+      "output_format": "int",
+      "difficulty": "Medium",
+      "topic_tags": "Heap,Quickselect",
+      "company_tags": "Amazon,Facebook",
+      "constraints": "1 <= nums.length <= 10^5",
+      "boilerplate_code": "class Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Try using a heap or quickselect.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[3,2,1,5,6,4], 2",
+          "expected_output": "5",
+          "input_json": "{\"nums\": [3,2,1,5,6,4], \"k\": 2}",
+          "expected_output_json": "5",
+          "is_sample": 1,
+          "explanation": "The 2nd largest element is 5.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Coin Change",
+      "slug": "coin-change",
+      "description": "Given an integer array coins representing coin denominations and an integer amount, return the fewest number of coins needed to make up that amount.",
+      "input_format": "coins: List[int], amount: int",
+      "output_format": "int",
+      "difficulty": "Medium",
+      "topic_tags": "Dynamic Programming",
+      "company_tags": "Amazon,Uber",
+      "constraints": "1 <= coins.length <= 12\n0 <= amount <= 10^4",
+      "boilerplate_code": "class Solution:\n    def coinChange(self, coins: List[int], amount: int) -> int:\n        pass",
+      "time_complexity": "O(amount * n)",
+      "space_complexity": "O(amount)",
+      "hints": [
+        { "hint": "Bottom-up DP works well.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[1,2,5], 11",
+          "expected_output": "3",
+          "input_json": "{\"coins\": [1,2,5], \"amount\": 11}",
+          "expected_output_json": "3",
+          "is_sample": 1,
+          "explanation": "11 = 5 + 5 + 1.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "description": "Given an m x n 2D grid of '1's and '0's, count the number of islands.",
+      "input_format": "grid: List[List[str]]",
+      "output_format": "int",
+      "difficulty": "Medium",
+      "topic_tags": "DFS,BFS,Matrix",
+      "company_tags": "Amazon,Google",
+      "constraints": "1 <= m, n <= 300",
+      "boilerplate_code": "class Solution:\n    def numIslands(self, grid: List[List[str]]) -> int:\n        pass",
+      "time_complexity": "O(m * n)",
+      "space_complexity": "O(m * n)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[[\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]]",
+          "expected_output": "2",
+          "input_json": "{\"grid\": [[\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\"],[\"0\",\"0\",\"1\"]]}",
+          "expected_output_json": "2",
+          "is_sample": 1,
+          "explanation": "Two separate islands exist.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Jump Game",
+      "slug": "jump-game",
+      "description": "Given an array nums where each element represents your maximum jump length, determine if you can reach the last index.",
+      "input_format": "nums: List[int]",
+      "output_format": "bool",
+      "difficulty": "Medium",
+      "topic_tags": "Greedy,Array",
+      "company_tags": "Microsoft,Amazon",
+      "constraints": "1 <= nums.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def canJump(self, nums: List[int]) -> bool:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Track the farthest reachable index.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[2,3,1,1,4]",
+          "expected_output": "true",
+          "input_json": "{\"nums\": [2,3,1,1,4]}",
+          "expected_output_json": "true",
+          "is_sample": 1,
+          "explanation": "You can reach the end.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Serialize and Deserialize Binary Tree",
+      "slug": "serialize-and-deserialize-binary-tree",
+      "description": "Design an algorithm to serialize and deserialize a binary tree.",
+      "input_format": "root: TreeNode",
+      "output_format": "string / TreeNode",
+      "difficulty": "Hard",
+      "topic_tags": "Tree,Design",
+      "company_tags": "Google,Amazon",
+      "constraints": "The number of nodes is in the range [0, 10^4].",
+      "boilerplate_code": "class Codec:\n    def serialize(self, root: TreeNode) -> str:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[1,2,3,null,null,4,5]",
+          "expected_output": "[1,2,3,null,null,4,5]",
+          "input_json": "{\"root\": [1,2,3,null,null,4,5]}",
+          "expected_output_json": "[1,2,3,null,null,4,5]",
+          "is_sample": 1,
+          "explanation": "Tree remains unchanged after deserialization.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Trapping Rain Water",
+      "slug": "trapping-rain-water",
+      "description": "Given n non-negative integers representing an elevation map, compute how much water it can trap after raining.",
+      "input_format": "height: List[int]",
+      "output_format": "int",
+      "difficulty": "Hard",
+      "topic_tags": "Two Pointers,Stack",
+      "company_tags": "Amazon,Google",
+      "constraints": "1 <= height.length <= 2 * 10^4",
+      "boilerplate_code": "class Solution:\n    def trap(self, height: List[int]) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "Use two pointers to track max heights.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[0,1,0,2,1,0,1,3,2,1,2,1]",
+          "expected_output": "6",
+          "input_json": "{\"height\": [0,1,0,2,1,0,1,3,2,1,2,1]}",
+          "expected_output_json": "6",
+          "is_sample": 1,
+          "explanation": "Total trapped water is 6.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Word Ladder",
+      "slug": "word-ladder",
+      "description": "Given two words and a dictionary, return the length of the shortest transformation sequence.",
+      "input_format": "beginWord: str, endWord: str, wordList: List[str]",
+      "output_format": "int",
+      "difficulty": "Hard",
+      "topic_tags": "BFS,Graph",
+      "company_tags": "Amazon,LinkedIn",
+      "constraints": "1 <= wordList.length <= 5000",
+      "boilerplate_code": "class Solution:\n    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:\n        pass",
+      "time_complexity": "O(n * m)",
+      "space_complexity": "O(n)",
+      "hints": [
+        { "hint": "Use BFS for shortest path.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "\"hit\", \"cog\", [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]",
+          "expected_output": "5",
+          "input_json": "{\"beginWord\": \"hit\", \"endWord\": \"cog\", \"wordList\": [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]}",
+          "expected_output_json": "5",
+          "is_sample": 1,
+          "explanation": "Shortest path length is 5.",
+          "display_order": 1
+        }
+      ]
+    },
+    {
+      "title": "Single Number",
+      "slug": "single-number",
+      "description": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.",
+      "input_format": "nums: List[int]",
+      "output_format": "int",
+      "difficulty": "Easy",
+      "topic_tags": "Array,Bit Manipulation",
+      "company_tags": "Amazon,Apple",
+      "constraints": "1 <= nums.length <= 3 * 10^4",
+      "boilerplate_code": "class Solution:\n    def singleNumber(self, nums: List[int]) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [
+        { "hint": "XOR of same numbers cancels out.", "display_order": 1 }
+      ],
+      "test_cases": [
+        {
+          "input": "[4,1,2,1,2]",
+          "expected_output": "4",
+          "input_json": "{\"nums\": [4,1,2,1,2]}",
+          "expected_output_json": "4",
+          "is_sample": 1,
+          "explanation": "4 appears only once.",
+          "display_order": 1
+        }
+      ]
+    }, 
+    {
+      "title": "Missing Number",
+      "slug": "missing-number",
+      "description": "Given an array nums containing n distinct numbers taken from the range [0, n], return the missing number.",
+      "input_format": "nums: List[int]",
+      "output_format": "int",
+      "difficulty": "Easy",
+      "topic_tags": "Array,Math",
+      "company_tags": "Amazon,Microsoft",
+      "constraints": "1 <= nums.length <= 10^4",
+      "boilerplate_code": "class Solution:\n    def missingNumber(self, nums: List[int]) -> int:\n        pass",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(1)",
+      "hints": [],
+      "test_cases": [
+        {
+          "input": "[3,0,1]",
+          "expected_output": "2",
+          "input_json": "{\"nums\": [3,0,1]}",
+          "expected_output_json": "2",
+          "is_sample": 1,
+          "explanation": "2 is missing from the range.",
+          "display_order": 1
+        }
+      ]
+    },{
+  "title": "First Unique Character in a String",
+  "slug": "first-unique-character-in-a-string",
+  "description": "Find the first non-repeating character and return its index.",
+  "input_format": "s: str",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Hash Table,String",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= s.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def firstUniqChar(self, s: str) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"leetcode\"",
+      "expected_output": "0",
+      "input_json": "{\"s\": \"leetcode\"}",
+      "expected_output_json": "0",
+      "is_sample": 1,
+      "explanation": "l appears only once.",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Rotate Array",
+  "slug": "rotate-array",
+  "description": "Rotate the array to the right by k steps.",
+  "input_format": "nums: List[int], k: int",
+  "output_format": "None",
+  "difficulty": "Easy",
+  "topic_tags": "Array",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= nums.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def rotate(self, nums: List[int], k: int) -> None:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [
+    { "hint": "Reverse parts of the array.", "display_order": 1 }
+  ],
+  "test_cases": [
+    {
+      "input": "[1,2,3,4,5,6,7], 3",
+      "expected_output": "[5,6,7,1,2,3,4]",
+      "input_json": "{\"nums\": [1,2,3,4,5,6,7], \"k\": 3}",
+      "expected_output_json": "[5,6,7,1,2,3,4]",
+      "is_sample": 1,
+      "explanation": "Rotate right by 3.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Maximum Depth of Binary Tree",
+  "slug": "maximum-depth-of-binary-tree",
+  "description": "Find the maximum depth of a binary tree.",
+  "input_format": "root: TreeNode",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Amazon,Google",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def maxDepth(self, root: TreeNode) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[3,9,20,null,null,15,7]",
+      "expected_output": "3",
+      "input_json": "{\"root\": [3,9,20,null,null,15,7]}",
+      "expected_output_json": "3",
+      "is_sample": 1,
+      "explanation": "Max depth is 3.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Same Tree",
+  "slug": "same-tree",
+  "description": "Determine if two binary trees are the same.",
+  "input_format": "p: TreeNode, q: TreeNode",
+  "output_format": "bool",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "0 <= nodes <= 100",
+  "boilerplate_code": "class Solution:\n    def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3], [1,2,3]",
+      "expected_output": "true",
+      "input_json": "{\"p\": [1,2,3], \"q\": [1,2,3]}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "Both trees are identical.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Balanced Binary Tree",
+  "slug": "balanced-binary-tree",
+  "description": "Determine if a binary tree is height-balanced.",
+  "input_format": "root: TreeNode",
+  "output_format": "bool",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def isBalanced(self, root: TreeNode) -> bool:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[3,9,20,null,null,15,7]",
+      "expected_output": "true",
+      "input_json": "{\"root\": [3,9,20,null,null,15,7]}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "Tree height difference is valid.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Subtree of Another Tree",
+  "slug": "subtree-of-another-tree",
+  "description": "Check if one tree is a subtree of another.",
+  "input_format": "root: TreeNode, subRoot: TreeNode",
+  "output_format": "bool",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Amazon,Google",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def isSubtree(self, root: TreeNode, subRoot: TreeNode) -> bool:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[3,4,5,1,2], [4,1,2]",
+      "expected_output": "true",
+      "input_json": "{\"root\": [3,4,5,1,2], \"subRoot\": [4,1,2]}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "Subtree exists.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Implement Queue using Stacks",
+  "slug": "implement-queue-using-stacks",
+  "description": "Implement a queue using only stacks.",
+  "input_format": "operations",
+  "output_format": "varies",
+  "difficulty": "Easy",
+  "topic_tags": "Stack,Design",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= operations <= 10^4",
+  "boilerplate_code": "class MyQueue:\n    def __init__(self):\n        pass",
+  "time_complexity": "O(1)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "push(1), push(2), peek(), pop()",
+      "expected_output": "[1,1]",
+      "input_json": "{}",
+      "expected_output_json": "[1,1]",
+      "is_sample": 1,
+      "explanation": "Queue behavior maintained.",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Invert Binary Tree",
+  "slug": "invert-binary-tree",
+  "description": "Invert a binary tree.",
+  "input_format": "root: TreeNode",
+  "output_format": "TreeNode",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Google,Amazon",
+  "constraints": "0 <= nodes <= 100",
+  "boilerplate_code": "class Solution:\n    def invertTree(self, root: TreeNode) -> TreeNode:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [
+    { "hint": "Swap left and right children recursively.", "display_order": 1 }
+  ],
+  "test_cases": [
+    {
+      "input": "[4,2,7,1,3,6,9]",
+      "expected_output": "[4,7,2,9,6,3,1]",
+      "input_json": "{\"root\": [4,2,7,1,3,6,9]}",
+      "expected_output_json": "[4,7,2,9,6,3,1]",
+      "is_sample": 1,
+      "explanation": "Tree is inverted.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Diameter of Binary Tree",
+  "slug": "diameter-of-binary-tree",
+  "description": "Return the length of the diameter of the binary tree.",
+  "input_format": "root: TreeNode",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Facebook,Amazon",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def diameterOfBinaryTree(self, root: TreeNode) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3,4,5]",
+      "expected_output": "3",
+      "input_json": "{\"root\": [1,2,3,4,5]}",
+      "expected_output_json": "3",
+      "is_sample": 1,
+      "explanation": "Longest path has 3 edges.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Intersection of Two Arrays",
+  "slug": "intersection-of-two-arrays",
+  "description": "Return an array of the intersection of two arrays.",
+  "input_format": "nums1: List[int], nums2: List[int]",
+  "output_format": "List[int]",
+  "difficulty": "Easy",
+  "topic_tags": "Array,Hash Table",
+  "company_tags": "Amazon,Apple",
+  "constraints": "1 <= nums1.length, nums2.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:\n        pass",
+  "time_complexity": "O(n + m)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,2,1], [2,2]",
+      "expected_output": "[2]",
+      "input_json": "{\"nums1\": [1,2,2,1], \"nums2\": [2,2]}",
+      "expected_output_json": "[2]",
+      "is_sample": 1,
+      "explanation": "2 is common.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Move Zeroes",
+  "slug": "move-zeroes",
+  "description": "Move all 0's to the end while maintaining the order of non-zero elements.",
+  "input_format": "nums: List[int]",
+  "output_format": "None",
+  "difficulty": "Easy",
+  "topic_tags": "Array,Two Pointers",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= nums.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def moveZeroes(self, nums: List[int]) -> None:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [
+    { "hint": "Use a pointer for non-zero positions.", "display_order": 1 }
+  ],
+  "test_cases": [
+    {
+      "input": "[0,1,0,3,12]",
+      "expected_output": "[1,3,12,0,0]",
+      "input_json": "{\"nums\": [0,1,0,3,12]}",
+      "expected_output_json": "[1,3,12,0,0]",
+      "is_sample": 1,
+      "explanation": "Zeros moved to the end.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Pascal's Triangle",
+  "slug": "pascals-triangle",
+  "description": "Generate the first numRows of Pascal's triangle.",
+  "input_format": "numRows: int",
+  "output_format": "List[List[int]]",
+  "difficulty": "Easy",
+  "topic_tags": "Array,Dynamic Programming",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= numRows <= 30",
+  "boilerplate_code": "class Solution:\n    def generate(self, numRows: int) -> List[List[int]]:\n        pass",
+  "time_complexity": "O(n^2)",
+  "space_complexity": "O(n^2)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "5",
+      "expected_output": "[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]",
+      "input_json": "{\"numRows\": 5}",
+      "expected_output_json": "[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]",
+      "is_sample": 1,
+      "explanation": "Classic Pascal triangle.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Reverse Linked List",
+  "slug": "reverse-linked-list",
+  "description": "Reverse a singly linked list.",
+  "input_format": "head: ListNode",
+  "output_format": "ListNode",
+  "difficulty": "Easy",
+  "topic_tags": "Linked List",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "0 <= nodes <= 5000",
+  "boilerplate_code": "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3,4,5]",
+      "expected_output": "[5,4,3,2,1]",
+      "input_json": "{\"head\": [1,2,3,4,5]}",
+      "expected_output_json": "[5,4,3,2,1]",
+      "is_sample": 1,
+      "explanation": "List reversed.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Reverse Linked List",
+  "slug": "reverse-linked-list",
+  "description": "Reverse a singly linked list.",
+  "input_format": "head: ListNode",
+  "output_format": "ListNode",
+  "difficulty": "Easy",
+  "topic_tags": "Linked List",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "0 <= nodes <= 5000",
+  "boilerplate_code": "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3,4,5]",
+      "expected_output": "[5,4,3,2,1]",
+      "input_json": "{\"head\": [1,2,3,4,5]}",
+      "expected_output_json": "[5,4,3,2,1]",
+      "is_sample": 1,
+      "explanation": "List reversed.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Linked List Cycle",
+  "slug": "linked-list-cycle",
+  "description": "Determine if a linked list has a cycle.",
+  "input_format": "head: ListNode",
+  "output_format": "bool",
+  "difficulty": "Easy",
+  "topic_tags": "Linked List,Two Pointers",
+  "company_tags": "Amazon,Google",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def hasCycle(self, head: ListNode) -> bool:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [
+    { "hint": "Use fast and slow pointers.", "display_order": 1 }
+  ],
+  "test_cases": [
+    {
+      "input": "[3,2,0,-4], pos=1",
+      "expected_output": "true",
+      "input_json": "{\"head\": [3,2,0,-4], \"pos\": 1}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "Tail connects to node index 1.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Power of Two",
+  "slug": "power-of-two",
+  "description": "Check if an integer is a power of two.",
+  "input_format": "n: int",
+  "output_format": "bool",
+  "difficulty": "Easy",
+  "topic_tags": "Math,Bit Manipulation",
+  "company_tags": "Amazon,Apple",
+  "constraints": "-2^31 <= n <= 2^31 - 1",
+  "boilerplate_code": "class Solution:\n    def isPowerOfTwo(self, n: int) -> bool:\n        pass",
+  "time_complexity": "O(1)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "16",
+      "expected_output": "true",
+      "input_json": "{\"n\": 16}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "16 = 2^4.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Roman to Integer",
+  "slug": "roman-to-integer",
+  "description": "Convert a Roman numeral to an integer.",
+  "input_format": "s: str",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Hash Table,String",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= s.length <= 15",
+  "boilerplate_code": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"MCMXCIV\"",
+      "expected_output": "1994",
+      "input_json": "{\"s\": \"MCMXCIV\"}",
+      "expected_output_json": "1994",
+      "is_sample": 1,
+      "explanation": "Standard Roman conversion.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Longest Common Prefix",
+  "slug": "longest-common-prefix",
+  "description": "Find the longest common prefix string amongst an array of strings.",
+  "input_format": "strs: List[str]",
+  "output_format": "str",
+  "difficulty": "Easy",
+  "topic_tags": "String",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= strs.length <= 200",
+  "boilerplate_code": "class Solution:\n    def longestCommonPrefix(self, strs: List[str]) -> str:\n        pass",
+  "time_complexity": "O(n * m)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[\"flower\",\"flow\",\"flight\"]",
+      "expected_output": "\"fl\"",
+      "input_json": "{\"strs\": [\"flower\",\"flow\",\"flight\"]}",
+      "expected_output_json": "\"fl\"",
+      "is_sample": 1,
+      "explanation": "fl is common prefix.",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Group Anagrams",
+  "slug": "group-anagrams",
+  "description": "Group anagrams together from a list of strings.",
+  "input_format": "strs: List[str]",
+  "output_format": "List[List[str]]",
+  "difficulty": "Medium",
+  "topic_tags": "Hash Table,String",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= strs.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:\n        pass",
+  "time_complexity": "O(n * k)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+      "expected_output": "[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+      "input_json": "{\"strs\": [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]}",
+      "expected_output_json": "[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+      "is_sample": 1,
+      "explanation": "Strings with same character counts are grouped.",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Top K Frequent Elements",
+  "slug": "top-k-frequent-elements",
+  "description": "Return the k most frequent elements.",
+  "input_format": "nums: List[int], k: int",
+  "output_format": "List[int]",
+  "difficulty": "Medium",
+  "topic_tags": "Hash Table,Heap",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= nums.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def topKFrequent(self, nums: List[int], k: int) -> List[int]:\n        pass",
+  "time_complexity": "O(n log k)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,1,1,2,2,3], 2",
+      "expected_output": "[1,2]",
+      "input_json": "{\"nums\": [1,1,1,2,2,3], \"k\": 2}",
+      "expected_output_json": "[1,2]",
+      "is_sample": 1,
+      "explanation": "1 and 2 appear most frequently.",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Evaluate Reverse Polish Notation",
+  "slug": "evaluate-reverse-polish-notation",
+  "description": "Evaluate the value of an arithmetic expression in Reverse Polish Notation.",
+  "input_format": "tokens: List[str]",
+  "output_format": "int",
+  "difficulty": "Medium",
+  "topic_tags": "Stack",
+  "company_tags": "Amazon,LinkedIn",
+  "constraints": "1 <= tokens.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def evalRPN(self, tokens: List[str]) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[\"2\",\"1\",\"+\",\"3\",\"*\"]",
+      "expected_output": "9",
+      "input_json": "{\"tokens\": [\"2\",\"1\",\"+\",\"3\",\"*\"]}",
+      "expected_output_json": "9",
+      "is_sample": 1,
+      "explanation": "(2+1)*3 = 9",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Daily Temperatures",
+  "slug": "daily-temperatures",
+  "description": "Return how many days you would have to wait until a warmer temperature.",
+  "input_format": "temperatures: List[int]",
+  "output_format": "List[int]",
+  "difficulty": "Medium",
+  "topic_tags": "Stack,Array",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= temperatures.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[73,74,75,71,69,72,76,73]",
+      "expected_output": "[1,1,4,2,1,1,0,0]",
+      "input_json": "{\"temperatures\": [73,74,75,71,69,72,76,73]}",
+      "expected_output_json": "[1,1,4,2,1,1,0,0]",
+      "is_sample": 1,
+      "explanation": "Use a monotonic stack.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Course Schedule",
+  "slug": "course-schedule",
+  "description": "Determine if you can finish all courses given prerequisites.",
+  "input_format": "numCourses: int, prerequisites: List[List[int]]",
+  "output_format": "bool",
+  "difficulty": "Medium",
+  "topic_tags": "Graph,Topological Sort",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= numCourses <= 2000",
+  "boilerplate_code": "class Solution:\n    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:\n        pass",
+  "time_complexity": "O(V + E)",
+  "space_complexity": "O(V + E)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "2, [[1,0]]",
+      "expected_output": "true",
+      "input_json": "{\"numCourses\": 2, \"prerequisites\": [[1,0]]}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "Course 0 can be taken before 1.",
+      "display_order": 1
+    }
+  ]
+},
+{
+  "title": "Longest Palindromic Substring",
+  "slug": "longest-palindromic-substring",
+  "description": "Given a string s, return the longest palindromic substring in s.",
+  "input_format": "s: str",
+  "output_format": "str",
+  "difficulty": "Medium",
+  "topic_tags": "String,Dynamic Programming",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "1 <= s.length <= 1000",
+  "boilerplate_code": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        pass",
+  "time_complexity": "O(n^2)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"babad\"",
+      "expected_output": "\"bab\"",
+      "input_json": "{\"s\": \"babad\"}",
+      "expected_output_json": "\"bab\"",
+      "is_sample": 1,
+      "explanation": "bab is a valid longest palindrome.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Subarray Sum Equals K",
+  "slug": "subarray-sum-equals-k",
+  "description": "Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals k.",
+  "input_format": "nums: List[int], k: int",
+  "output_format": "int",
+  "difficulty": "Medium",
+  "topic_tags": "Array,Hash Table,Prefix Sum",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= nums.length <= 2 * 10^4",
+  "boilerplate_code": "class Solution:\n    def subarraySum(self, nums: List[int], k: int) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,1,1], 2",
+      "expected_output": "2",
+      "input_json": "{\"nums\": [1,1,1], \"k\": 2}",
+      "expected_output_json": "2",
+      "is_sample": 1,
+      "explanation": "Subarrays [1,1] at indices (0,1) and (1,2).",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Sort Colors",
+  "slug": "sort-colors",
+  "description": "Sort an array containing 0s, 1s, and 2s without using the built-in sort function.",
+  "input_format": "nums: List[int]",
+  "output_format": "None (modify in-place)",
+  "difficulty": "Medium",
+  "topic_tags": "Array,Two Pointers",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "1 <= nums.length <= 300",
+  "boilerplate_code": "class Solution:\n    def sortColors(self, nums: List[int]) -> None:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[2,0,2,1,1,0]",
+      "expected_output": "[0,0,1,1,2,2]",
+      "input_json": "{\"nums\": [2,0,2,1,1,0]}",
+      "expected_output_json": "[0,0,1,1,2,2]",
+      "is_sample": 1,
+      "explanation": "Dutch National Flag algorithm.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Spiral Matrix",
+  "slug": "spiral-matrix",
+  "description": "Return all elements of the matrix in spiral order.",
+  "input_format": "matrix: List[List[int]]",
+  "output_format": "List[int]",
+  "difficulty": "Medium",
+  "topic_tags": "Matrix,Simulation",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= m, n <= 10",
+  "boilerplate_code": "class Solution:\n    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:\n        pass",
+  "time_complexity": "O(m * n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[[1,2,3],[4,5,6],[7,8,9]]",
+      "expected_output": "[1,2,3,6,9,8,7,4,5]",
+      "input_json": "{\"matrix\": [[1,2,3],[4,5,6],[7,8,9]]}",
+      "expected_output_json": "[1,2,3,6,9,8,7,4,5]",
+      "is_sample": 1,
+      "explanation": "Traverse layer by layer.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Binary Tree Level Order Traversal",
+  "slug": "binary-tree-level-order-traversal",
+  "description": "Return the level order traversal of a binary tree.",
+  "input_format": "root: TreeNode",
+  "output_format": "List[List[int]]",
+  "difficulty": "Medium",
+  "topic_tags": "Tree,BFS",
+  "company_tags": "Amazon,Google",
+  "constraints": "0 <= nodes <= 2000",
+  "boilerplate_code": "class Solution:\n    def levelOrder(self, root: TreeNode) -> List[List[int]]:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[3,9,20,null,null,15,7]",
+      "expected_output": "[[3],[9,20],[15,7]]",
+      "input_json": "{\"root\": [3,9,20,null,null,15,7]}",
+      "expected_output_json": "[[3],[9,20],[15,7]]",
+      "is_sample": 1,
+      "explanation": "Traverse level by level using a queue.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Decode String",
+  "slug": "decode-string",
+  "description": "Decode a string encoded with the pattern k[encoded_string].",
+  "input_format": "s: str",
+  "output_format": "str",
+  "difficulty": "Medium",
+  "topic_tags": "Stack,String",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= s.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"3[a2[c]]\"",
+      "expected_output": "\"accaccacc\"",
+      "input_json": "{\"s\": \"3[a2[c]]\"}",
+      "expected_output_json": "\"accaccacc\"",
+      "is_sample": 1,
+      "explanation": "Nested decoding using a stack.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Sliding Window Maximum",
+  "slug": "sliding-window-maximum",
+  "description": "Return the maximum value in each sliding window of size k.",
+  "input_format": "nums: List[int], k: int",
+  "output_format": "List[int]",
+  "difficulty": "Hard",
+  "topic_tags": "Deque,Sliding Window",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= nums.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(k)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,3,-1,-3,5,3,6,7], 3",
+      "expected_output": "[3,3,5,5,6,7]",
+      "input_json": "{\"nums\": [1,3,-1,-3,5,3,6,7], \"k\": 3}",
+      "expected_output_json": "[3,3,5,5,6,7]",
+      "is_sample": 1,
+      "explanation": "Use a monotonic deque.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Merge K Sorted Lists",
+  "slug": "merge-k-sorted-lists",
+  "description": "Merge k sorted linked lists into one sorted list.",
+  "input_format": "lists: List[ListNode]",
+  "output_format": "ListNode",
+  "difficulty": "Hard",
+  "topic_tags": "Heap,Linked List",
+  "company_tags": "Amazon,Google",
+  "constraints": "0 <= lists.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def mergeKLists(self, lists: List[ListNode]) -> ListNode:\n        pass",
+  "time_complexity": "O(n log k)",
+  "space_complexity": "O(k)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[[1,4,5],[1,3,4],[2,6]]",
+      "expected_output": "[1,1,2,3,4,4,5,6]",
+      "input_json": "{\"lists\": [[1,4,5],[1,3,4],[2,6]]}",
+      "expected_output_json": "[1,1,2,3,4,4,5,6]",
+      "is_sample": 1,
+      "explanation": "Merge using a min-heap.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Minimum Window Substring",
+  "slug": "minimum-window-substring",
+  "description": "Return the minimum window substring of s that contains all characters of t.",
+  "input_format": "s: str, t: str",
+  "output_format": "str",
+  "difficulty": "Hard",
+  "topic_tags": "String,Sliding Window",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= s.length, t.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def minWindow(self, s: str, t: str) -> str:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"ADOBECODEBANC\", \"ABC\"",
+      "expected_output": "\"BANC\"",
+      "input_json": "{\"s\": \"ADOBECODEBANC\", \"t\": \"ABC\"}",
+      "expected_output_json": "\"BANC\"",
+      "is_sample": 1,
+      "explanation": "Smallest window containing all characters.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Edit Distance",
+  "slug": "edit-distance",
+  "description": "Return the minimum number of operations required to convert word1 to word2.",
+  "input_format": "word1: str, word2: str",
+  "output_format": "int",
+  "difficulty": "Hard",
+  "topic_tags": "Dynamic Programming,String",
+  "company_tags": "Google,Amazon",
+  "constraints": "0 <= word1.length, word2.length <= 500",
+  "boilerplate_code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n        pass",
+  "time_complexity": "O(n * m)",
+  "space_complexity": "O(n * m)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"horse\", \"ros\"",
+      "expected_output": "3",
+      "input_json": "{\"word1\": \"horse\", \"word2\": \"ros\"}",
+      "expected_output_json": "3",
+      "is_sample": 1,
+      "explanation": "horse → rorse → rose → ros.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Fibonacci Number",
+  "slug": "fibonacci-number",
+  "description": "Return the nth Fibonacci number.",
+  "input_format": "n: int",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Dynamic Programming,Math",
+  "company_tags": "Amazon,Apple",
+  "constraints": "0 <= n <= 30",
+  "boilerplate_code": "class Solution:\n    def fib(self, n: int) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "5",
+      "expected_output": "5",
+      "input_json": "{\"n\": 5}",
+      "expected_output_json": "5",
+      "is_sample": 1,
+      "explanation": "Fibonacci sequence: 0,1,1,2,3,5",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Power of Two",
+  "slug": "power-of-two",
+  "description": "Return true if n is a power of two.",
+  "input_format": "n: int",
+  "output_format": "bool",
+  "difficulty": "Easy",
+  "topic_tags": "Math,Bit Manipulation",
+  "company_tags": "Google,Microsoft",
+  "constraints": "-2^31 <= n <= 2^31 - 1",
+  "boilerplate_code": "class Solution:\n    def isPowerOfTwo(self, n: int) -> bool:\n        pass",
+  "time_complexity": "O(1)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "16",
+      "expected_output": "true",
+      "input_json": "{\"n\": 16}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "16 = 2^4",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Intersection of Two Arrays II",
+  "slug": "intersection-of-two-arrays-ii",
+  "description": "Return the intersection of two arrays including duplicate elements.",
+  "input_format": "nums1: List[int], nums2: List[int]",
+  "output_format": "List[int]",
+  "difficulty": "Easy",
+  "topic_tags": "Array,Hash Table",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= nums1.length, nums2.length <= 1000",
+  "boilerplate_code": "class Solution:\n    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:\n        pass",
+  "time_complexity": "O(n + m)",
+  "space_complexity": "O(min(n, m))",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,2,1], [2,2]",
+      "expected_output": "[2,2]",
+      "input_json": "{\"nums1\": [1,2,2,1], \"nums2\": [2,2]}",
+      "expected_output_json": "[2,2]",
+      "is_sample": 1,
+      "explanation": "2 appears twice in both arrays.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Rotate Array",
+  "slug": "rotate-array",
+  "description": "Rotate the array to the right by k steps.",
+  "input_format": "nums: List[int], k: int",
+  "output_format": "None (modify in-place)",
+  "difficulty": "Medium",
+  "topic_tags": "Array",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "1 <= nums.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def rotate(self, nums: List[int], k: int) -> None:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3,4,5,6,7], 3",
+      "expected_output": "[5,6,7,1,2,3,4]",
+      "input_json": "{\"nums\": [1,2,3,4,5,6,7], \"k\": 3}",
+      "expected_output_json": "[5,6,7,1,2,3,4]",
+      "is_sample": 1,
+      "explanation": "Rotate right by 3 steps.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Set Matrix Zeroes",
+  "slug": "set-matrix-zeroes",
+  "description": "If an element is 0, set its entire row and column to 0.",
+  "input_format": "matrix: List[List[int]]",
+  "output_format": "None (modify in-place)",
+  "difficulty": "Medium",
+  "topic_tags": "Matrix,Array",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= m, n <= 200",
+  "boilerplate_code": "class Solution:\n    def setZeroes(self, matrix: List[List[int]]) -> None:\n        pass",
+  "time_complexity": "O(m * n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[[1,1,1],[1,0,1],[1,1,1]]",
+      "expected_output": "[[1,0,1],[0,0,0],[1,0,1]]",
+      "input_json": "{\"matrix\": [[1,1,1],[1,0,1],[1,1,1]]}",
+      "expected_output_json": "[[1,0,1],[0,0,0],[1,0,1]]",
+      "is_sample": 1,
+      "explanation": "Zero row and column containing 0.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Group Anagrams",
+  "slug": "group-anagrams",
+  "description": "Group strings that are anagrams of each other.",
+  "input_format": "strs: List[str]",
+  "output_format": "List[List[str]]",
+  "difficulty": "Medium",
+  "topic_tags": "Hash Table,String",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= strs.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:\n        pass",
+  "time_complexity": "O(n * k)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+      "expected_output": "[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+      "input_json": "{\"strs\": [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]}",
+      "expected_output_json": "[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+      "is_sample": 1,
+      "explanation": "Group by sorted characters.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Top K Frequent Elements",
+  "slug": "top-k-frequent-elements",
+  "description": "Return the k most frequent elements.",
+  "input_format": "nums: List[int], k: int",
+  "output_format": "List[int]",
+  "difficulty": "Medium",
+  "topic_tags": "Heap,Hash Table",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= nums.length <= 10^5",
+  "boilerplate_code": "class Solution:\n    def topKFrequent(self, nums: List[int], k: int) -> List[int]:\n        pass",
+  "time_complexity": "O(n log k)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,1,1,2,2,3], 2",
+      "expected_output": "[1,2]",
+      "input_json": "{\"nums\": [1,1,1,2,2,3], \"k\": 2}",
+      "expected_output_json": "[1,2]",
+      "is_sample": 1,
+      "explanation": "1 and 2 appear most frequently.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Validate Binary Search Tree",
+  "slug": "validate-binary-search-tree",
+  "description": "Determine if a binary tree is a valid BST.",
+  "input_format": "root: TreeNode",
+  "output_format": "bool",
+  "difficulty": "Medium",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Amazon,Google",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def isValidBST(self, root: TreeNode) -> bool:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[2,1,3]",
+      "expected_output": "true",
+      "input_json": "{\"root\": [2,1,3]}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "BST property holds.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Course Schedule",
+  "slug": "course-schedule",
+  "description": "Determine if all courses can be finished given prerequisites.",
+  "input_format": "numCourses: int, prerequisites: List[List[int]]",
+  "output_format": "bool",
+  "difficulty": "Medium",
+  "topic_tags": "Graph,Topological Sort",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= numCourses <= 2000",
+  "boilerplate_code": "class Solution:\n    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:\n        pass",
+  "time_complexity": "O(V + E)",
+  "space_complexity": "O(V + E)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "2, [[1,0]]",
+      "expected_output": "true",
+      "input_json": "{\"numCourses\": 2, \"prerequisites\": [[1,0]]}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "Course 0 can be taken before 1.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Maximum Depth of Binary Tree",
+  "slug": "maximum-depth-of-binary-tree",
+  "description": "Return the maximum depth of a binary tree.",
+  "input_format": "root: TreeNode",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,DFS",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "0 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def maxDepth(self, root: TreeNode) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(h)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[3,9,20,null,null,15,7]",
+      "expected_output": "3",
+      "input_json": "{\"root\": [3,9,20,null,null,15,7]}",
+      "expected_output_json": "3",
+      "is_sample": 1,
+      "explanation": "Longest path has 3 nodes.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Squares of a Sorted Array",
+  "slug": "squares-of-a-sorted-array",
+  "description": "Return an array of the squares of each number sorted in non-decreasing order.",
+  "input_format": "nums: List[int]",
+  "output_format": "List[int]",
+  "difficulty": "Easy",
+  "topic_tags": "Array,Two Pointers",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= nums.length <= 10^4",
+  "boilerplate_code": "class Solution:\n    def sortedSquares(self, nums: List[int]) -> List[int]:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[-4,-1,0,3,10]",
+      "expected_output": "[0,1,9,16,100]",
+      "input_json": "{\"nums\": [-4,-1,0,3,10]}",
+      "expected_output_json": "[0,1,9,16,100]",
+      "is_sample": 1,
+      "explanation": "Square and sort.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Valid Sudoku",
+  "slug": "valid-sudoku",
+  "description": "Determine if a 9x9 Sudoku board is valid.",
+  "input_format": "board: List[List[str]]",
+  "output_format": "bool",
+  "difficulty": "Medium",
+  "topic_tags": "Hash Table,Matrix",
+  "company_tags": "Amazon,Apple",
+  "constraints": "board.length == 9",
+  "boilerplate_code": "class Solution:\n    def isValidSudoku(self, board: List[List[str]]) -> bool:\n        pass",
+  "time_complexity": "O(1)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[[\"5\",\"3\",\".\",\".\",\"7\",\".\",\".\",\".\",\".\"],...]",
+      "expected_output": "true",
+      "input_json": "{\"board\": \"valid\"}",
+      "expected_output_json": "true",
+      "is_sample": 1,
+      "explanation": "No duplicates in rows, cols, boxes.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Majority Element",
+  "slug": "majority-element",
+  "description": "Find the element that appears more than n/2 times.",
+  "input_format": "nums: List[int]",
+  "output_format": "int",
+  "difficulty": "Easy",
+  "topic_tags": "Array,Divide and Conquer",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "1 <= nums.length <= 5 * 10^4",
+  "boilerplate_code": "class Solution:\n    def majorityElement(self, nums: List[int]) -> int:\n        pass",
+  "time_complexity": "O(n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[2,2,1,1,1,2,2]",
+      "expected_output": "2",
+      "input_json": "{\"nums\": [2,2,1,1,1,2,2]}",
+      "expected_output_json": "2",
+      "is_sample": 1,
+      "explanation": "2 appears more than n/2 times.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Find Minimum in Rotated Sorted Array",
+  "slug": "find-minimum-in-rotated-sorted-array",
+  "description": "Find the minimum element in a rotated sorted array.",
+  "input_format": "nums: List[int]",
+  "output_format": "int",
+  "difficulty": "Medium",
+  "topic_tags": "Binary Search",
+  "company_tags": "Google,Amazon",
+  "constraints": "1 <= nums.length <= 5000",
+  "boilerplate_code": "class Solution:\n    def findMin(self, nums: List[int]) -> int:\n        pass",
+  "time_complexity": "O(log n)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[3,4,5,1,2]",
+      "expected_output": "1",
+      "input_json": "{\"nums\": [3,4,5,1,2]}",
+      "expected_output_json": "1",
+      "is_sample": 1,
+      "explanation": "Rotation point contains minimum.",
+      "display_order": 1
+    }
+  ]
+  },{
+  "title": "Subsets",
+  "slug": "subsets",
+  "description": "Return all possible subsets of a given array.",
+  "input_format": "nums: List[int]",
+  "output_format": "List[List[int]]",
+  "difficulty": "Medium",
+  "topic_tags": "Backtracking,Bit Manipulation",
+  "company_tags": "Amazon,Facebook",
+  "constraints": "1 <= nums.length <= 10",
+  "boilerplate_code": "class Solution:\n    def subsets(self, nums: List[int]) -> List[List[int]]:\n        pass",
+  "time_complexity": "O(2^n)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3]",
+      "expected_output": "[[],[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]",
+      "input_json": "{\"nums\": [1,2,3]}",
+      "expected_output_json": "[[],[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]",
+      "is_sample": 1,
+      "explanation": "All combinations.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Permutations",
+  "slug": "permutations",
+  "description": "Return all possible permutations.",
+  "input_format": "nums: List[int]",
+  "output_format": "List[List[int]]",
+  "difficulty": "Medium",
+  "topic_tags": "Backtracking",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= nums.length <= 6",
+  "boilerplate_code": "class Solution:\n    def permute(self, nums: List[int]) -> List[List[int]]:\n        pass",
+  "time_complexity": "O(n!)",
+  "space_complexity": "O(n)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[1,2,3]",
+      "expected_output": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+      "input_json": "{\"nums\": [1,2,3]}",
+      "expected_output_json": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+      "is_sample": 1,
+      "explanation": "All permutations.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Combination Sum",
+  "slug": "combination-sum",
+  "description": "Find all unique combinations that sum to target.",
+  "input_format": "candidates: List[int], target: int",
+  "output_format": "List[List[int]]",
+  "difficulty": "Medium",
+  "topic_tags": "Backtracking",
+  "company_tags": "Amazon,Uber",
+  "constraints": "1 <= candidates.length <= 30",
+  "boilerplate_code": "class Solution:\n    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:\n        pass",
+  "time_complexity": "Exponential",
+  "space_complexity": "O(target)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[2,3,6,7], 7",
+      "expected_output": "[[2,2,3],[7]]",
+      "input_json": "{\"candidates\": [2,3,6,7], \"target\": 7}",
+      "expected_output_json": "[[2,2,3],[7]]",
+      "is_sample": 1,
+      "explanation": "Valid combinations.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Longest Palindromic Substring",
+  "slug": "longest-palindromic-substring",
+  "description": "Return the longest palindromic substring.",
+  "input_format": "s: str",
+  "output_format": "str",
+  "difficulty": "Medium",
+  "topic_tags": "String,Dynamic Programming",
+  "company_tags": "Amazon,Google",
+  "constraints": "1 <= s.length <= 1000",
+  "boilerplate_code": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        pass",
+  "time_complexity": "O(n^2)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"babad\"",
+      "expected_output": "\"bab\"",
+      "input_json": "{\"s\": \"babad\"}",
+      "expected_output_json": "\"bab\"",
+      "is_sample": 1,
+      "explanation": "bab is a palindrome.",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Edit Distance",
+  "slug": "edit-distance",
+  "description": "Compute the minimum number of operations to convert one word to another.",
+  "input_format": "word1: str, word2: str",
+  "output_format": "int",
+  "difficulty": "Hard",
+  "topic_tags": "Dynamic Programming",
+  "company_tags": "Google,Amazon",
+  "constraints": "0 <= word1.length, word2.length <= 500",
+  "boilerplate_code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n        pass",
+  "time_complexity": "O(n * m)",
+  "space_complexity": "O(n * m)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "\"horse\", \"ros\"",
+      "expected_output": "3",
+      "input_json": "{\"word1\": \"horse\", \"word2\": \"ros\"}",
+      "expected_output_json": "3",
+      "is_sample": 1,
+      "explanation": "horse → ros",
+      "display_order": 1
+    }
+  ]
+},{
+  "title": "Lowest Common Ancestor of a BST",
+  "slug": "lowest-common-ancestor-of-a-bst",
+  "description": "Find the lowest common ancestor of two nodes in a BST.",
+  "input_format": "root: TreeNode, p: TreeNode, q: TreeNode",
+  "output_format": "TreeNode",
+  "difficulty": "Easy",
+  "topic_tags": "Tree,BST",
+  "company_tags": "Amazon,Microsoft",
+  "constraints": "2 <= nodes <= 10^4",
+  "boilerplate_code": "class Solution:\n    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:\n        pass",
+  "time_complexity": "O(h)",
+  "space_complexity": "O(1)",
+  "hints": [],
+  "test_cases": [
+    {
+      "input": "[6,2,8,0,4,7,9,null,null,3,5], 2, 8",
+      "expected_output": "6",
+      "input_json": "{\"root\": [6,2,8,0,4,7,9], \"p\": 2, \"q\": 8}",
+      "expected_output_json": "6",
+      "is_sample": 1,
+      "explanation": "Split point.",
+      "display_order": 1
+    }
+  ]
+},{
+    "title": "Implement Stack using Queues",
+    "slug": "implement-stack-using-queues",
+    "description": "Implement a last-in-first-out (LIFO) stack using only two queues.",
+    "input_format": "Operations on stack",
+    "output_format": "Return values of pop/top operations",
+    "difficulty": "Easy",
+    "topic_tags": "Stack,Queue,Design",
+    "company_tags": "Amazon,Google",
+    "constraints": "1 <= operations <= 10^4",
+    "boilerplate_code": "class MyStack:\n    def __init__(self):\n        pass\n    def push(self, x: int) -> None:\n        pass\n    def pop(self) -> int:\n        pass\n    def top(self) -> int:\n        pass\n    def empty(self) -> bool:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Rotate the queue after push", "display_order": 1 }]
+  },
+  {
+    "title": "Find Pivot Index",
+    "slug": "find-pivot-index",
+    "description": "Find the index where the sum of numbers to the left equals the sum to the right.",
+    "input_format": "nums: List[int]",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Array,Prefix Sum",
+    "company_tags": "Amazon",
+    "constraints": "1 <= nums.length <= 10^4",
+    "boilerplate_code": "class Solution:\n    def pivotIndex(self, nums: List[int]) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Maintain running left sum", "display_order": 1 }]
+  },
+  {
+    "title": "Remove Duplicates from Sorted Array",
+    "slug": "remove-duplicates-from-sorted-array",
+    "description": "Remove duplicates in-place from a sorted array.",
+    "input_format": "nums: List[int]",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Array,Two Pointers",
+    "company_tags": "Microsoft",
+    "constraints": "1 <= nums.length <= 3 * 10^4",
+    "boilerplate_code": "class Solution:\n    def removeDuplicates(self, nums: List[int]) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Use slow and fast pointers", "display_order": 1 }]
+  },
+  {
+    "title": "Intersection of Two Linked Lists",
+    "slug": "intersection-of-two-linked-lists",
+    "description": "Find the node at which two singly linked lists intersect.",
+    "input_format": "headA: ListNode, headB: ListNode",
+    "output_format": "ListNode",
+    "difficulty": "Easy",
+    "topic_tags": "Linked List,Two Pointers",
+    "company_tags": "Amazon",
+    "constraints": "Lists may have different lengths",
+    "boilerplate_code": "class Solution:\n    def getIntersectionNode(self, headA, headB):\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Switch pointers when reaching the end", "display_order": 1 }]
+  },
+  {
+    "title": "Middle of the Linked List",
+    "slug": "middle-of-the-linked-list",
+    "description": "Return the middle node of the linked list.",
+    "input_format": "head: ListNode",
+    "output_format": "ListNode",
+    "difficulty": "Easy",
+    "topic_tags": "Linked List,Two Pointers",
+    "company_tags": "Google",
+    "constraints": "1 <= nodes <= 100",
+    "boilerplate_code": "class Solution:\n    def middleNode(self, head):\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Use slow and fast pointers", "display_order": 1 }]
+  },
+  {
+    "title": "Backspace String Compare",
+    "slug": "backspace-string-compare",
+    "description": "Compare two strings after processing backspace characters.",
+    "input_format": "s: str, t: str",
+    "output_format": "bool",
+    "difficulty": "Easy",
+    "topic_tags": "String,Stack,Two Pointers",
+    "company_tags": "Facebook",
+    "constraints": "1 <= s.length, t.length <= 200",
+    "boilerplate_code": "class Solution:\n    def backspaceCompare(self, s: str, t: str) -> bool:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Traverse from end skipping deleted chars", "display_order": 1 }]
+  },
+  {
+    "title": "Flood Fill",
+    "slug": "flood-fill",
+    "description": "Perform flood fill on an image starting from a given pixel.",
+    "input_format": "image: List[List[int]], sr: int, sc: int, color: int",
+    "output_format": "List[List[int]]",
+    "difficulty": "Easy",
+    "topic_tags": "DFS,BFS,Matrix",
+    "company_tags": "Amazon",
+    "constraints": "1 <= m,n <= 50",
+    "boilerplate_code": "class Solution:\n    def floodFill(self, image, sr, sc, color):\n        pass",
+    "time_complexity": "O(m*n)",
+    "space_complexity": "O(m*n)",
+    "hints": [{ "hint": "Use DFS or BFS", "display_order": 1 }]
+  },
+  {
+    "title": "Max Consecutive Ones",
+    "slug": "max-consecutive-ones",
+    "description": "Find the maximum number of consecutive 1s in a binary array.",
+    "input_format": "nums: List[int]",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Array",
+    "company_tags": "Google",
+    "constraints": "1 <= nums.length <= 10^5",
+    "boilerplate_code": "class Solution:\n    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Reset count on zero", "display_order": 1 }]
+  },
+  {
+    "title": "Binary Tree Inorder Traversal",
+    "slug": "binary-tree-inorder-traversal",
+    "description": "Return the inorder traversal of a binary tree.",
+    "input_format": "root: TreeNode",
+    "output_format": "List[int]",
+    "difficulty": "Easy",
+    "topic_tags": "Tree,DFS",
+    "company_tags": "Amazon",
+    "constraints": "Number of nodes <= 100",
+    "boilerplate_code": "class Solution:\n    def inorderTraversal(self, root):\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Recursive or iterative using stack", "display_order": 1 }]
+  },
+  {
+    "title": "Binary Tree Preorder Traversal",
+    "slug": "binary-tree-preorder-traversal",
+    "description": "Return the preorder traversal of a binary tree.",
+    "input_format": "root: TreeNode",
+    "output_format": "List[int]",
+    "difficulty": "Easy",
+    "topic_tags": "Tree,DFS",
+    "company_tags": "Microsoft",
+    "constraints": "Number of nodes <= 100",
+    "boilerplate_code": "class Solution:\n    def preorderTraversal(self, root):\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Root -> Left -> Right", "display_order": 1 }]
+  },
+  {
+    "title": "Binary Tree Postorder Traversal",
+    "slug": "binary-tree-postorder-traversal",
+    "description": "Return the postorder traversal of a binary tree.",
+    "input_format": "root: TreeNode",
+    "output_format": "List[int]",
+    "difficulty": "Easy",
+    "topic_tags": "Tree,DFS",
+    "company_tags": "Facebook",
+    "constraints": "Number of nodes <= 100",
+    "boilerplate_code": "class Solution:\n    def postorderTraversal(self, root):\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Left -> Right -> Root", "display_order": 1 }]
+  },
+  {
+    "title": "Symmetric Tree",
+    "slug": "symmetric-tree",
+    "description": "Check whether a binary tree is symmetric.",
+    "input_format": "root: TreeNode",
+    "output_format": "bool",
+    "difficulty": "Easy",
+    "topic_tags": "Tree,Recursion",
+    "company_tags": "Amazon",
+    "constraints": "Number of nodes <= 1000",
+    "boilerplate_code": "class Solution:\n    def isSymmetric(self, root):\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Compare left and right subtrees", "display_order": 1 }]
+  }, {
+    "title": "Isomorphic Strings",
+    "slug": "isomorphic-strings",
+    "description": "Determine if two strings are isomorphic.",
+    "input_format": "s: str, t: str",
+    "output_format": "bool",
+    "difficulty": "Easy",
+    "topic_tags": "String,Hash Table",
+    "company_tags": "Google",
+    "constraints": "1 <= s.length, t.length <= 5*10^4",
+    "boilerplate_code": "class Solution:\n    def isIsomorphic(self, s: str, t: str) -> bool:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Maintain character mappings both ways", "display_order": 1 }]
+  },
+  {
+    "title": "Happy Number",
+    "slug": "happy-number",
+    "description": "Determine if a number is a happy number.",
+    "input_format": "n: int",
+    "output_format": "bool",
+    "difficulty": "Easy",
+    "topic_tags": "Hash Table,Math",
+    "company_tags": "Amazon",
+    "constraints": "1 <= n <= 2^31 - 1",
+    "boilerplate_code": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        pass",
+    "time_complexity": "O(log n)",
+    "space_complexity": "O(log n)",
+    "hints": [{ "hint": "Use a set to detect cycles", "display_order": 1 }]
+  },
+  {
+    "title": "Excel Sheet Column Number",
+    "slug": "excel-sheet-column-number",
+    "description": "Convert an Excel column title to its corresponding number.",
+    "input_format": "columnTitle: str",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Math,String",
+    "company_tags": "Microsoft",
+    "constraints": "1 <= columnTitle.length <= 7",
+    "boilerplate_code": "class Solution:\n    def titleToNumber(self, columnTitle: str) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Treat it as base-26", "display_order": 1 }]
+  },
+  {
+    "title": "Excel Sheet Column Title",
+    "slug": "excel-sheet-column-title",
+    "description": "Convert a number to its Excel column title.",
+    "input_format": "columnNumber: int",
+    "output_format": "str",
+    "difficulty": "Easy",
+    "topic_tags": "Math,String",
+    "company_tags": "Microsoft",
+    "constraints": "1 <= columnNumber <= 2^31 - 1",
+    "boilerplate_code": "class Solution:\n    def convertToTitle(self, columnNumber: int) -> str:\n        pass",
+    "time_complexity": "O(log n)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Modulo 26 with adjustment", "display_order": 1 }]
+  },
+  {
+    "title": "Add Binary",
+    "slug": "add-binary",
+    "description": "Add two binary strings.",
+    "input_format": "a: str, b: str",
+    "output_format": "str",
+    "difficulty": "Easy",
+    "topic_tags": "String,Math",
+    "company_tags": "Facebook",
+    "constraints": "1 <= a.length, b.length <= 10^4",
+    "boilerplate_code": "class Solution:\n    def addBinary(self, a: str, b: str) -> str:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Simulate binary addition with carry", "display_order": 1 }]
+  },
+  {
+    "title": "Count Primes",
+    "slug": "count-primes",
+    "description": "Count the number of prime numbers less than n.",
+    "input_format": "n: int",
+    "output_format": "int",
+    "difficulty": "Medium",
+    "topic_tags": "Math,Sieve of Eratosthenes",
+    "company_tags": "Amazon",
+    "constraints": "0 <= n <= 5*10^6",
+    "boilerplate_code": "class Solution:\n    def countPrimes(self, n: int) -> int:\n        pass",
+    "time_complexity": "O(n log log n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Use Sieve of Eratosthenes", "display_order": 1 }]
+  },
+  {
+    "title": "Hamming Distance",
+    "slug": "hamming-distance",
+    "description": "Calculate the Hamming distance between two integers.",
+    "input_format": "x: int, y: int",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Bit Manipulation",
+    "company_tags": "Google",
+    "constraints": "0 <= x, y <= 2^31 - 1",
+    "boilerplate_code": "class Solution:\n    def hammingDistance(self, x: int, y: int) -> int:\n        pass",
+    "time_complexity": "O(1)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "XOR then count set bits", "display_order": 1 }]
+  },
+  {
+    "title": "Reverse Bits",
+    "slug": "reverse-bits",
+    "description": "Reverse bits of a given 32-bit unsigned integer.",
+    "input_format": "n: int",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Bit Manipulation",
+    "company_tags": "Apple",
+    "constraints": "Input is 32-bit",
+    "boilerplate_code": "class Solution:\n    def reverseBits(self, n: int) -> int:\n        pass",
+    "time_complexity": "O(1)",
+    "space_complexity": "O(1)",
+    "hints": [{ "hint": "Shift bits one by one", "display_order": 1 }]
+  },
+  {
+    "title": "Counting Bits",
+    "slug": "counting-bits",
+    "description": "Return the number of 1s in binary representation for all numbers from 0 to n.",
+    "input_format": "n: int",
+    "output_format": "List[int]",
+    "difficulty": "Easy",
+    "topic_tags": "DP,Bit Manipulation",
+    "company_tags": "Microsoft",
+    "constraints": "0 <= n <= 10^5",
+    "boilerplate_code": "class Solution:\n    def countBits(self, n: int) -> List[int]:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Use DP: bits[i] = bits[i >> 1] + (i & 1)", "display_order": 1 }]
+  },
+  {
+    "title": "Longest Harmonious Subsequence",
+    "slug": "longest-harmonious-subsequence",
+    "description": "Find the length of the longest harmonious subsequence.",
+    "input_format": "nums: List[int]",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Hash Table,Sliding Window",
+    "company_tags": "Amazon",
+    "constraints": "1 <= nums.length <= 2*10^4",
+    "boilerplate_code": "class Solution:\n    def findLHS(self, nums: List[int]) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "hints": [{ "hint": "Use frequency map", "display_order": 1 }]
+  }, {
+    "title": "Plus One",
+    "slug": "plus-one-array",
+    "description": "Given a non-empty array of digits representing a non-negative integer, increment the integer by one.",
+    "input_format": "digits: List[int]",
+    "output_format": "List[int]",
+    "difficulty": "Easy",
+    "topic_tags": "Array,Math",
+    "company_tags": "Google",
+    "constraints": "1 <= digits.length <= 100\n0 <= digits[i] <= 9",
+    "boilerplate_code": "class Solution:\n    def plusOne(self, digits: List[int]) -> List[int]:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Handle carry from the last digit", "display_order": 1 }
+    ]
+  },
+  {
+    "title": "Sqrt(x)",
+    "slug": "integer-square-root",
+    "description": "Compute and return the square root of x, where the return value is truncated to an integer.",
+    "input_format": "x: int",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "Math,Binary Search",
+    "company_tags": "Amazon",
+    "constraints": "0 <= x <= 2^31 - 1",
+    "boilerplate_code": "class Solution:\n    def mySqrt(self, x: int) -> int:\n        pass",
+    "time_complexity": "O(log n)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Binary search from 0 to x", "display_order": 1 }
+    ]
+  },
+  {
+    "title": "Length of Last Word",
+    "slug": "length-of-last-word",
+    "description": "Return the length of the last word in a string.",
+    "input_format": "s: str",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "String",
+    "company_tags": "Microsoft",
+    "constraints": "1 <= s.length <= 10^4",
+    "boilerplate_code": "class Solution:\n    def lengthOfLastWord(self, s: str) -> int:\n        pass",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Traverse from the end skipping spaces", "display_order": 1 }
+    ]
+  },
+  {
+    "title": "Implement strStr()",
+    "slug": "implement-strstr",
+    "description": "Find the first occurrence of a substring in a string.",
+    "input_format": "haystack: str, needle: str",
+    "output_format": "int",
+    "difficulty": "Easy",
+    "topic_tags": "String,Two Pointers",
+    "company_tags": "Facebook",
+    "constraints": "0 <= haystack.length, needle.length <= 10^4",
+    "boilerplate_code": "class Solution:\n    def strStr(self, haystack: str, needle: str) -> int:\n        pass",
+    "time_complexity": "O(n*m)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Check substring starting at each index", "display_order": 1 }
+    ]
+  },
+  {
+    "title": "Palindrome Number",
+    "slug": "palindrome-number",
+    "description": "Determine whether an integer is a palindrome.",
+    "input_format": "x: int",
+    "output_format": "bool",
+    "difficulty": "Easy",
+    "topic_tags": "Math",
+    "company_tags": "Amazon",
+    "constraints": "-2^31 <= x <= 2^31 - 1",
+    "boilerplate_code": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        pass",
+    "time_complexity": "O(log n)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Reverse half of the number", "display_order": 1 }
+    ]
+  },
+  {
+    "title": "Ugly Number",
+    "slug": "ugly-number",
+    "description": "Check whether a number is an ugly number.",
+    "input_format": "n: int",
+    "output_format": "bool",
+    "difficulty": "Easy",
+    "topic_tags": "Math",
+    "company_tags": "Google",
+    "constraints": "-2^31 <= n <= 2^31 - 1",
+    "boilerplate_code": "class Solution:\n    def isUgly(self, n: int) -> bool:\n        pass",
+    "time_complexity": "O(log n)",
+    "space_complexity": "O(1)",
+    "hints": [
+      { "hint": "Divide by 2, 3, and 5 repeatedly", "display_order": 1 }
+    ]
   }
 ]
