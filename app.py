@@ -11,10 +11,8 @@ import requests
 from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image
-import io
-import base64
-import time
-import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from execution import execute_code_piston, safe_json_load
 
 app = Flask(__name__)
 CORS(app)
@@ -34,6 +32,7 @@ cred = credentials.Certificate('firebase-admin-sdk.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+executor = ThreadPoolExecutor(max_workers=5)
 
 # Helper Functions
 
@@ -64,85 +63,7 @@ def get_db_connection():
     return conn
 
 
-# EXECUTING CODE USING JUDGE0 API
-def execute_code_judge0(code, input_data, expected_output, language_id, is_run=False):
-
-    JUDGE0_URL = "https://judge0-ce.p.rapidapi.com"
-    RAPIDAPI_KEY = os.getenv('RAPIDAPI_KEY', '')  
-    
-    if not RAPIDAPI_KEY:
-        JUDGE0_URL = "https://judge0-ce.p.rapidapi.com"  
-    
-    headers = {
-        "content-type": "application/json",
-        "X-RapidAPI-Key": RAPIDAPI_KEY,
-        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
-    } if RAPIDAPI_KEY else {
-        "content-type": "application/json"
-    }
-    encoded_code = base64.b64encode(code.encode()).decode()
-    encoded_input = base64.b64encode(input_data.encode()).decode() if input_data else ""
-    
-    submission_data = {
-        "source_code": encoded_code,
-        "language_id": language_id,
-        "stdin": encoded_input,
-        "expected_output": base64.b64encode(expected_output.encode()).decode() if expected_output else None
-    }
-    
-    try:
-        submit_url = "https://ce.judge0.com/submissions?base64_encoded=true&wait=true"
-        
-        response = requests.post(submit_url, json=submission_data, timeout=10)
-        
-        if response.status_code != 201 and response.status_code != 200:
-            return {
-                'output': '',
-                'passed': False,
-                'status': 'Error',
-                'error': f'Judge0 API error: {response.status_code}'
-            }
-        
-        result = response.json()
-        
-        stdout = base64.b64decode(result.get('stdout', '')).decode() if result.get('stdout') else ''
-        stderr = base64.b64decode(result.get('stderr', '')).decode() if result.get('stderr') else ''
-        compile_output = base64.b64decode(result.get('compile_output', '')).decode() if result.get('compile_output') else ''
-        
-        output = stdout or stderr or compile_output or ''
-        status_id = result.get('status', {}).get('id')
-        status_desc = result.get('status', {}).get('description', 'Unknown')
-        
-        passed = False
-        if is_run:
-            passed = status_id == 3
-        elif expected_output:
-            passed = status_id == 3 and output.strip() == expected_output.strip()
-        
-        return {
-            'output': output,
-            'passed': passed,
-            'status': status_desc,
-            'error': stderr or compile_output if status_id != 3 else ''
-        }
-        
-    except requests.exceptions.Timeout:
-        return {
-            'output': '',
-            'passed': False,
-            'status': 'Timeout',
-            'error': 'Code execution timed out'
-        }
-    except Exception as e:
-        return {
-            'output': '',
-            'passed': False,
-            'status': 'Error',
-            'error': str(e)
-        }
-    
-# image proxy route
-
+# Image proxy route
 @app.route("/proxy-image")
 def proxy_image():
     url = request.args.get("url")
@@ -286,147 +207,336 @@ def get_user(uid):
 @app.route('/api/problem/<slug>/submit', methods=['POST'])
 @token_required
 def submit_solution(slug):
+
+    conn = None
     try:
         data = request.json
-        code = data.get('code', '')
-        language_id = data.get('language_id', 71) 
-
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        code = data.get('code', '').strip()
+        language_id = data.get('language_id', 71)
+        
         if not code:
             return jsonify({'error': 'No code provided'}), 400
+        
+        if language_id not in [71, 63, 62, 54]:
+            return jsonify({'error': f'Unsupported language: {language_id}'}), 400
         
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT id, title, points FROM problems WHERE slug = ?
+            SELECT id, title, points, boilerplate_python, boilerplate_java,
+                   boilerplate_cpp, boilerplate_javascript, order_matters
+            FROM problems 
+            WHERE slug = ?
         """, (slug,))
         problem_row = cur.fetchone()
-
+        
         if not problem_row:
-            conn.close()
             return jsonify({'error': 'Problem not found'}), 404
         
         problem_id = problem_row['id']
         problem_points = problem_row['points']
-
+        order_matters = bool(problem_row['order_matters']) if problem_row['order_matters'] is not None else True
+        
+        boilerplate_map = {
+            71: problem_row['boilerplate_python'],
+            63: problem_row['boilerplate_javascript'],
+            62: problem_row['boilerplate_java'],
+            54: problem_row['boilerplate_cpp']
+        }
+        boilerplate_code = boilerplate_map.get(language_id, problem_row['boilerplate_python'])
+        
         cur.execute("""
-            SELECT id, input, expected_output, points, is_sample
+            SELECT id, input, expected_output, input_json, expected_output_json,
+                   points, is_sample, display_order
             FROM test_cases
             WHERE problem_id = ?
             ORDER BY display_order
         """, (problem_id,))
         test_cases = cur.fetchall()
-        conn.close()
-
+        
         if not test_cases:
             return jsonify({'error': 'No test cases found'}), 404
         
+        prepared_tests = []
+        for tc in test_cases:
+            try:
+                if tc['input_json']:
+                    test_input = safe_json_load(tc['input_json'])
+                else:
+                    test_input = safe_json_load(tc['input']) if tc['input'] else {}
+                
+                if not isinstance(test_input, dict):
+                    test_input = {'input': test_input}
+                
+                if tc['expected_output_json']:
+                    test_output = safe_json_load(tc['expected_output_json'])
+                else:
+                    test_output = safe_json_load(tc['expected_output'])
+                
+                prepared_tests.append({
+                    'id': tc['id'],
+                    'input': test_input,
+                    'output': test_output,
+                    'points': tc['points'],
+                    'is_sample': bool(tc['is_sample']),
+                    'original_input': tc['input'],
+                    'original_output': tc['expected_output']
+                })
+            
+            except Exception as e:
+                print(f"Warning: Failed to parse test case {tc['id']}: {e}")
+                continue
+        
+        if not prepared_tests:
+            return jsonify({'error': 'No valid test cases found'}), 500
+        
+        def execute_test(test):
+            result = execute_code_piston(
+                user_code=code,
+                test_case_input_json=test['input'],
+                test_case_output_json=test['output'],
+                language_id=language_id,
+                boilerplate_code=boilerplate_code,
+                problem_slug=slug,
+                order_matters=order_matters
+            )
+            result['test_id'] = test['id']
+            result['test_points'] = test['points']
+            result['is_sample'] = test['is_sample']
+            result['original_input'] = test['original_input']
+            result['original_output'] = test['original_output']
+            return result
+        
+        futures = {executor.submit(execute_test, test): test for test in prepared_tests}
+        
         results = []
         all_passed = True
-        total_points = 0
-
-        for tc in test_cases:
-            result = execute_code_judge0(code, tc['input'], tc['expected_output'], language_id)
-            results.append({
-                'test_case_id': tc['id'],
-                'input': tc['input'],
-                'expected_output': tc['expected_output'],
-                'actual_output': result['output'],
-                'passed': result['passed'],
-                'status': result['status'],
-                'error': result.get('error', ''),
-                'points': tc['points'] if result['passed'] else 0,
-                'is_sample': bool(tc['is_sample'])
-            })
-
-            if result['passed']:
-                total_points += tc['points']
-            else:
-                all_passed = False
-
-        if all_passed:
-            uid = request.user['uid']
-            user_ref = db.collection('users').document(uid)
-            user_doc = user_ref.get()
-
-            if user_doc.exists:
-                user_data = user_doc.to_dict()
-                solved_problems = user_data.get('solved_problems', [])
+        actual_points_earned = 0  
+        first_failure_status = None
+        
+        for future in as_completed(futures):
+            try:
+                result = future.result(timeout=30)
                 
-                if problem_id not in solved_problems:
-                    solved_problems.append(problem_id)
-                    user_ref.update({
-                        'solved_problems': solved_problems,
-                        'problems_solved': len(solved_problems),
-                        'points': user_data.get('points', 0) + problem_points,
-                        'last_active': datetime.now()
-                    })  
+                if result['is_sample']:
+                    results.append({
+                        'test_case_id': result['test_id'],
+                        'input': result['original_input'],
+                        'expected_output': result['original_output'],
+                        'actual_output': result['output'],
+                        'passed': result['passed'],
+                        'status': result['status'],
+                        'error': result['error'],
+                        'points': result['test_points'] if result['passed'] else 0,
+                        'is_sample': True
+                    })
+                else:
+                    results.append({
+                        'test_case_id': result['test_id'],
+                        'input': None,
+                        'expected_output': None,
+                        'actual_output': None,
+                        'passed': result['passed'],
+                        'status': result['status'],
+                        'error': 'Hidden test case failed' if not result['passed'] and result['status'] != 'Runtime Error' else result['error'],
+                        'points': result['test_points'] if result['passed'] else 0,
+                        'is_sample': False
+                    })
+                
+                if result['passed']:
+                    actual_points_earned += result['test_points']
+                else:
+                    all_passed = False
+                    if not first_failure_status:
+                        first_failure_status = result['status']
+            
+            except Exception as e:
+                print(f"Error executing test: {e}")
+                all_passed = False
+                if not first_failure_status:
+                    first_failure_status = 'System Error'
+        
+        results.sort(key=lambda x: x['test_case_id'])
+        
+        if all_passed:
+            try:
+                uid = request.user['uid']
+                user_ref = db.collection('users').document(uid)
+                user_doc = user_ref.get()
+                
+                if user_doc.exists:
+                    user_data = user_doc.to_dict()
+                    solved_problems = user_data.get('solved_problems', [])
+                    
+                    if problem_id not in solved_problems:
+                        solved_problems.append(problem_id)
+                        user_ref.update({
+                            'solved_problems': solved_problems,
+                            'problems_solved': len(solved_problems),
+                            'points': user_data.get('points', 0) + problem_points,
+                            'last_active': datetime.now()
+                        })
+            except Exception as e:
+                print(f"Warning: Failed to update user stats: {e}")
+        
+        overall_status = 'Accepted' if all_passed else (first_failure_status or 'Wrong Answer')
+        
         return jsonify({
             'success': True,
             'all_passed': all_passed,
             'results': results,
             'total_points': problem_points if all_passed else 0,
-            'message': 'All test cases passed!' if all_passed else 'Some test cases failed'
+            'points_earned': actual_points_earned,  
+            'verdict': overall_status,
+            'message': 'Accepted' if all_passed else f'{overall_status}'
         }), 200
     
     except Exception as e:
-        print(f"Error submitting solution: {e}")
-        return jsonify({'error': str(e)}), 500
+        print(f"Error in submit_solution: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Submission failed: {str(e)}'}), 500
+    
+    finally:
+        if conn:
+            conn.close()
+
     
 @app.route('/api/problem/<slug>/run', methods=['POST'])
 @token_required
 def run_code(slug):
+    conn = None
     try:
         data = request.json
-        code = data.get('code', '')
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        code = data.get('code', '').strip()
         language_id = data.get('language_id', 71)
-
+        
         if not code:
             return jsonify({'error': 'No code provided'}), 400
         
+        if language_id not in [71, 63, 62, 54]:
+            return jsonify({'error': f'Unsupported language: {language_id}'}), 400
+        
         conn = get_db_connection()
         cur = conn.cursor()
+        
         cur.execute("""
-            SELECT id FROM problems WHERE slug = ?
+            SELECT id, boilerplate_python, boilerplate_java, 
+                   boilerplate_cpp, boilerplate_javascript, order_matters
+            FROM problems 
+            WHERE slug = ?
         """, (slug,))
         problem_row = cur.fetchone()
-
+        
         if not problem_row:
-            conn.close()
             return jsonify({'error': 'Problem not found'}), 404
         
         problem_id = problem_row['id']
-
+        order_matters = bool(problem_row['order_matters']) if problem_row['order_matters'] is not None else True
+        
+        boilerplate_map = {
+            71: problem_row['boilerplate_python'],
+            63: problem_row['boilerplate_javascript'],
+            62: problem_row['boilerplate_java'],
+            54: problem_row['boilerplate_cpp']
+        }
+        boilerplate_code = boilerplate_map.get(language_id, problem_row['boilerplate_python'])
+        
         cur.execute("""
-            SELECT id, input, expected_output, explanation, is_sample
+            SELECT id, input, expected_output, input_json, expected_output_json, 
+                   explanation, is_sample, display_order
             FROM test_cases
             WHERE problem_id = ? AND is_sample = 1
             ORDER BY display_order
         """, (problem_id,))
         sample_test_cases = cur.fetchall()
-        conn.close()
-
+        
         if not sample_test_cases:
             return jsonify({'error': 'No sample test cases found'}), 404
         
+        prepared_tests = []
+        for tc in sample_test_cases:
+            try:
+                if tc['input_json']:
+                    test_input = safe_json_load(tc['input_json'])
+                else:
+                    test_input = safe_json_load(tc['input']) if tc['input'] else {}
+                
+                if not isinstance(test_input, dict):
+                    test_input = {'input': test_input}
+                
+                if tc['expected_output_json']:
+                    test_output = safe_json_load(tc['expected_output_json'])
+                else:
+                    test_output = safe_json_load(tc['expected_output'])
+                
+                prepared_tests.append({
+                    'id': tc['id'],
+                    'input': test_input,
+                    'output': test_output,
+                    'explanation': tc['explanation'],
+                    'original_input': tc['input'],
+                    'original_output': tc['expected_output']
+                })
+            
+            except Exception as e:
+                print(f"Warning: Failed to parse test case {tc['id']}: {e}")
+                continue
+        
+        if not prepared_tests:
+            return jsonify({'error': 'No valid test cases found'}), 500
+        
+        def execute_test(test):
+            result = execute_code_piston(
+                user_code=code,
+                test_case_input_json=test['input'],
+                test_case_output_json=test['output'],
+                language_id=language_id,
+                boilerplate_code=boilerplate_code,
+                problem_slug=slug,
+                order_matters=order_matters
+            )
+            result['test_id'] = test['id']
+            result['explanation'] = test['explanation']
+            result['original_input'] = test['original_input']
+            result['original_output'] = test['original_output']
+            return result
+        
+        futures = {executor.submit(execute_test, test): test for test in prepared_tests}
+        
         results = []
         all_passed = True
-
-        for tc in sample_test_cases:
-            result = execute_code_judge0(code, tc['input'], tc['expected_output'], language_id)
-            results.append({
-                'test_case_id': tc['id'],
-                'input': tc['input'],
-                'expected_output': tc['expected_output'],
-                'actual_output': result['output'],
-                'passed': result['passed'],
-                'status': result['status'],
-                'error': result.get('error', ''),
-                'explanation': tc['explanation']
-            })
-
-            if not result['passed']:
+        
+        for future in as_completed(futures):
+            try:
+                result = future.result(timeout=30)
+                
+                results.append({
+                    'test_case_id': result['test_id'],
+                    'input': result['original_input'],
+                    'expected_output': result['original_output'],
+                    'actual_output': result['output'],
+                    'passed': result['passed'],
+                    'status': result['status'],
+                    'error': result['error'],
+                    'explanation': result['explanation']
+                })
+                
+                if not result['passed']:
+                    all_passed = False
+            
+            except Exception as e:
+                print(f"Error executing test: {e}")
                 all_passed = False
-
+        
+        results.sort(key=lambda x: x['test_case_id'])
+        
         return jsonify({
             'success': True,
             'all_passed': all_passed,
@@ -435,8 +545,14 @@ def run_code(slug):
         }), 200
         
     except Exception as e:
-        print(f"Error running code: {e}")
-        return jsonify({'error': str(e)}), 500
+        print(f"Error in run_code: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Execution failed: {str(e)}'}), 500
+    
+    finally:
+        if conn:
+            conn.close()
 
 ##settings
 
@@ -564,13 +680,16 @@ def get_problems():
 
         problems = []
         for row in cur.fetchall():
+            t_tags = row['topic_tags'].split(',') if row['topic_tags'] else []
+            c_tags = row['company_tags'].split(',') if row['company_tags'] else []
+
             problems.append({
                 'id': row['id'],
                 'title': row['title'], 
                 'slug': row['slug'],   
                 'difficulty': row['difficulty'],
-                'topic_tags': json.loads(row['topic_tags']) if row['topic_tags'] else [],
-                'company_tags': json.loads(row['company_tags']) if row['company_tags'] else [],
+                'topic_tags': [t.strip() for t in t_tags],
+                'company_tags': [t.strip() for t in c_tags],
                 'points': row['points'],
                 'acceptance_rate': row['acceptance_rate'],
                 'created_at': row['created_at']
@@ -605,6 +724,9 @@ def get_problem_detail(slug):
             conn.close()
             return jsonify({'error': 'Problem not found'}), 404
         
+        t_tags = problem_row['topic_tags'].split(',') if problem_row['topic_tags'] else []
+        c_tags = problem_row['company_tags'].split(',') if problem_row['company_tags'] else []
+
         problem = {
             'id': problem_row['id'],
             'title': problem_row['title'],
@@ -613,8 +735,8 @@ def get_problem_detail(slug):
             'input_format': problem_row['input_format'],
             'output_format': problem_row['output_format'],
             'difficulty': problem_row['difficulty'],
-            'topic_tags': json.loads(problem_row['topic_tags']) if problem_row['topic_tags'] else [],
-            'company_tags': json.loads(problem_row['company_tags']) if problem_row['company_tags'] else [],
+            'topic_tags': [t.strip() for t in t_tags],    
+            'company_tags': [t.strip() for t in c_tags],
             'constraints': problem_row['constraints'],
             'boilerplate_code': {
                 'python': problem_row['boilerplate_python'],

@@ -68,16 +68,10 @@ function initCodeEditor(boilerplateCode = '', language = 'python') {
 
 // langs
 const languageModes = {
-    '71': 'python',
-    '63': 'javascript',
-    '62': 'text/x-java',
-    '50': 'text/x-csrc',
-    '54': 'text/x-c++src',
-    '51': 'text/x-csharp',
-    '68': 'application/x-httpd-php',
-    '72': 'text/x-ruby',
-    '73': 'text/x-rustsrc',
-    '60': 'text/x-go'
+    '71': 'python',              
+    '63': 'javascript',          
+    '62': 'text/x-java',         
+    '54': 'text/x-c++src'        
 };
 
 const languageToBoilerplate = {
@@ -85,6 +79,13 @@ const languageToBoilerplate = {
     '63': 'javascript',
     '62': 'java',
     '54': 'cpp'
+};
+
+const languageNames = {
+    '71': 'Python 3',
+    '63': 'JavaScript',
+    '62': 'Java',
+    '54': 'C++'
 };
 
 // getting problem details
@@ -219,13 +220,30 @@ function renderHints(hints) {
 }
 
 function initLanguageSelect() {
-    document.getElementById('languageSelect').addEventListener('change', (e) => {
+    const select = document.getElementById('languageSelect');
+    
+    select.addEventListener('change', (e) => {
         const languageId = e.target.value;
-        const mode = languageModes[languageId] || 'python';
+        
+        if (!languageModes[languageId]) {
+            showToast('This language is not supported', 'error');
+            select.value = '71'; 
+            return;
+        }
+        
+        const mode = languageModes[languageId];
         editor.setOption('mode', mode);
+        
         const boilerplateKey = languageToBoilerplate[languageId];
         if (boilerplateKey && currentProblem && currentProblem.boilerplate_code[boilerplateKey]) {
             editor.setValue(currentProblem.boilerplate_code[boilerplateKey]);
+        } else {
+            const langName = languageNames[languageId];
+            if (languageId === '62' || languageId === '54') {
+                editor.setValue(`// ${langName} solution\n`);
+            } else {
+                editor.setValue(`// ${langName} solution\n`);
+            }
         }
     });
 }
@@ -240,6 +258,11 @@ async function runCode() {
     
     if (!code.trim()) {
         showToast('Please write some code first', 'error');
+        return;
+    }
+    
+    if (![71, 63, 62, 54].includes(languageId)) {
+        showToast('This language is not currently supported', 'error');
         return;
     }
     
@@ -269,7 +292,7 @@ async function runCode() {
         displayRunResults(result);
         
         if (result.all_passed) {
-            showToast('All sample test cases passed!', 'success');
+            showToast('All sample test cases passed! ✓', 'success');
         } else {
             showToast('Some sample test cases failed', 'error');
         }
@@ -310,13 +333,16 @@ function displayRunResults(result) {
     `;
     
     result.results.forEach((test, idx) => {
+        const statusColor = test.passed ? '#4ade80' : '#f87171';
+        const statusIcon = test.passed ? 'fa-check-circle' : 'fa-times-circle';
+        
         html += `
             <div class="test-result ${test.passed ? 'passed' : 'failed'}">
                 <div class="result-header">
                     <span style="color: #d4d4d4;">Sample Test Case ${idx + 1}</span>
                     <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
-                        <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                        ${test.passed ? 'Passed' : 'Failed'}
+                        <i class="fas ${statusIcon}"></i>
+                        ${test.status}
                     </span>
                 </div>
                 <div class="result-details">
@@ -327,7 +353,7 @@ function displayRunResults(result) {
                     <div class="result-value">${test.expected_output}</div>
                     
                     <div class="result-label">Your Output:</div>
-                    <div class="result-value" style="color: ${test.passed ? '#4ade80' : '#f87171'};">
+                    <div class="result-value" style="color: ${statusColor};">
                         ${test.actual_output || '(empty)'}
                     </div>
                     
@@ -338,7 +364,7 @@ function displayRunResults(result) {
                     
                     ${test.error ? `
                         <div class="result-label">Error:</div>
-                        <div class="result-value" style="color: #f87171;">${test.error}</div>
+                        <div class="result-value" style="color: #f87171; white-space: pre-wrap; font-family: 'Courier New', monospace;">${test.error}</div>
                     ` : ''}
                 </div>
             </div>
@@ -380,6 +406,11 @@ async function submitCode() {
         return;
     }
     
+    if (![71, 63, 62, 54].includes(languageId)) {
+        showToast('This language is not currently supported', 'error');
+        return;
+    }
+    
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Submitting...</span>';
@@ -407,6 +438,7 @@ async function submitCode() {
         
         if (result.all_passed) {
             showToast(`🎉 All test cases passed! +${result.total_points} points`, 'success');
+            
             const userData = JSON.parse(localStorage.getItem('userData'));
             if (!userData.solved_problems.includes(currentProblem.id)) {
                 userData.solved_problems.push(currentProblem.id);
@@ -415,8 +447,9 @@ async function submitCode() {
                 localStorage.setItem('userData', JSON.stringify(userData));
             }
         } else {
-            showToast('Some test cases failed', 'error');
+            showToast(`${result.verdict} - Try again!`, 'error');
         }
+        
         document.querySelector('[data-tab="results"]').click();
         
     } catch (error) {
@@ -443,7 +476,7 @@ function displaySubmitResults(result) {
                 <i class="fas ${result.all_passed ? 'fa-check-circle' : 'fa-times-circle'}" 
                    style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-size: 20px;"></i>
                 <span style="color: ${result.all_passed ? '#4ade80' : '#f87171'}; font-weight: 700; font-size: 16px;">
-                    ${result.all_passed ? 'Accepted' : 'Wrong Answer'}
+                    ${result.verdict}
                 </span>
             </div>
             <p style="color: #9ca3af; font-size: 14px;">
@@ -452,14 +485,18 @@ function displaySubmitResults(result) {
             </p>
         </div>
     `;
+    
     result.results.forEach((test, idx) => {
+        const statusColor = test.passed ? '#4ade80' : '#f87171';
+        const statusIcon = test.passed ? 'fa-check-circle' : 'fa-times-circle';
+        
         html += `
             <div class="test-result ${test.passed ? 'passed' : 'failed'}">
                 <div class="result-header">
-                    <span style="color: #d4d4d4;">Case ${idx + 1} ${test.is_sample ? '(Sample)' : '(Hidden)'}</span>
+                    <span style="color: #d4d4d4;">Test Case ${idx + 1} ${test.is_sample ? '(Sample)' : '(Hidden)'}</span>
                     <span class="result-status ${test.passed ? 'status-passed' : 'status-failed'}">
-                        <i class="fas ${test.passed ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                        ${test.passed ? 'Passed' : 'Failed'}
+                        <i class="fas ${statusIcon}"></i>
+                        ${test.status}
                     </span>
                 </div>
                 <div class="result-details">
@@ -470,8 +507,8 @@ function displaySubmitResults(result) {
                         <div class="result-label">Expected:</div>
                         <div class="result-value">${test.expected_output}</div>
                         
-                        <div class="result-label">Output:</div>
-                        <div class="result-value" style="color: ${test.passed ? '#4ade80' : '#f87171'};">
+                        <div class="result-label">Your Output:</div>
+                        <div class="result-value" style="color: ${statusColor};">
                             ${test.actual_output || '(empty)'}
                         </div>
                     ` : `
@@ -482,7 +519,7 @@ function displaySubmitResults(result) {
                     
                     ${test.error ? `
                         <div class="result-label">Error:</div>
-                        <div class="result-value" style="color: #f87171;">${test.error}</div>
+                        <div class="result-value" style="color: #f87171; white-space: pre-wrap; font-family: 'Courier New', monospace;">${test.error}</div>
                     ` : ''}
                 </div>
             </div>
