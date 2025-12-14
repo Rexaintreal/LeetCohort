@@ -512,6 +512,127 @@ def get_user(uid):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+## export and delete
+@app.route('/api/user/<uid>/export-data', methods=['GET'])
+@token_required
+def export_user_data(uid):
+    try:
+        if request.user['uid'] != uid:
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+        
+        if not user_doc.exists:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_data = user_doc.to_dict()
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        solved_problem_ids = user_data.get('solved_problems', [])
+        solved_problems_details = []
+        
+        if solved_problem_ids:
+            placeholders = ','.join('?' * len(solved_problem_ids))
+            cur.execute(f"""
+                SELECT id, title, slug, difficulty, points, topic_tags, company_tags
+                FROM problems
+                WHERE id IN ({placeholders})
+            """, solved_problem_ids)
+            
+            for row in cur.fetchall():
+                solved_problems_details.append({
+                    'id': row['id'],
+                    'title': row['title'],
+                    'slug': row['slug'],
+                    'difficulty': row['difficulty'],
+                    'points': row['points'],
+                    'topic_tags': parse_tags(row['topic_tags']),
+                    'company_tags': parse_tags(row['company_tags'])
+                })
+        
+        conn.close()
+        
+        export_data = {
+            'export_info': {
+                'exported_at': datetime.now().isoformat(),
+                'format_version': '1.0'
+            },
+            'account': {
+                'uid': user_data['uid'],
+                'email': user_data['email'],
+                'name': user_data['name'],
+                'provider': user_data.get('provider', 'unknown'),
+                'created_at': user_data['created_at'].isoformat() if 'created_at' in user_data else None,
+                'last_active': user_data['last_active'].isoformat() if 'last_active' in user_data else None
+            },
+            'statistics': {
+                'total_points': user_data.get('points', 0),
+                'problems_solved': user_data.get('problems_solved', 0),
+                'solved_problem_ids': solved_problem_ids
+            },
+            'solved_problems': solved_problems_details
+        }
+        
+        return jsonify(export_data), 200
+        
+    except Exception as e:
+        print(f"Error exporting user data: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/user/<uid>/delete', methods=['DELETE'])
+@token_required
+def delete_user_account(uid):
+    try:
+        if request.user['uid'] != uid:
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        data = request.json
+        confirmation_phrase = data.get('confirmation_phrase', '').strip()
+        
+        if confirmation_phrase != 'DELETE MY ACCOUNT':
+            return jsonify({'error': 'Invalid confirmation phrase'}), 400
+        
+        user_ref = db.collection('users').document(uid)
+        user_doc = user_ref.get()
+        
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            picture_url = user_data.get('picture', '')
+            
+            if picture_url and '/static/uploads/' in picture_url:
+                try:
+                    filename = picture_url.split('/static/uploads/')[-1]
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    if os.path.exists(filepath):
+                        os.remove(filepath)
+                        print(f"Deleted profile picture: {filepath}")
+                except Exception as e:
+                    print(f"Error deleting profile picture: {e}")
+        
+        user_ref.delete()
+        print(f"Deleted user document from Firestore: {uid}")
+        
+        try:
+            firebase_auth.delete_user(uid)
+            print(f"Deleted user from Firebase Auth: {uid}")
+        except Exception as e:
+            print(f"Error deleting from Firebase Auth (user might not exist): {e}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Account deleted successfully'
+        }), 200
+        
+    except Exception as e:
+        print(f"Error deleting user account: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+    
 
 ##problem
 

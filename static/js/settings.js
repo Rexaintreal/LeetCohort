@@ -249,6 +249,50 @@ async function uploadProfilePicture(uid, token, file) {
     }
 }
 
+async function exportUserData(uid, token) {
+    try {
+        const response = await fetch(`/api/user/${uid}/export-data`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to export data');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        throw error;
+    }
+}
+
+async function deleteUserAccount(uid, token, confirmationPhrase) {
+    try {
+        const response = await fetch(`/api/user/${uid}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ confirmation_phrase: confirmationPhrase })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to delete account');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        throw error;
+    }
+}
 
 let selectedFile = null;
 let originalName = '';
@@ -325,7 +369,6 @@ function validateFile(file) {
     }
     return { valid: true };
 }
-
 
 function handleNameChange() {
     const nameInput = document.getElementById('displayName');
@@ -438,6 +481,139 @@ async function handleUploadPicture() {
     }
 }
 
+// Export Data 
+async function handleExportData() {
+    const authData = checkAuth();
+    if (!authData) return;
+    
+    const exportBtn = document.getElementById('exportDataBtn');
+    const originalHTML = exportBtn.innerHTML;
+    
+    exportBtn.disabled = true;
+    exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Exporting...';
+    
+    try {
+        const data = await exportUserData(authData.user.uid, authData.token);
+        
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `leetcohort-data-${authData.user.uid}-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        showToast('Data exported successfully!', 'success');
+        exportBtn.innerHTML = originalHTML;
+        exportBtn.disabled = false;
+        
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        showToast(error.message || 'Failed to export data', 'error');
+        exportBtn.innerHTML = originalHTML;
+        exportBtn.disabled = false;
+    }
+}
+
+// Delete Account Modal 
+let deleteStep = 1;
+
+function showDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    resetDeleteModal();
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    resetDeleteModal();
+}
+
+function resetDeleteModal() {
+    deleteStep = 1;
+    document.getElementById('deleteStep1').classList.remove('hidden', 'completed');
+    document.getElementById('deleteStep2').classList.add('hidden');
+    document.getElementById('deleteStep2').classList.remove('completed');
+    document.getElementById('deleteStep3').classList.add('hidden');
+    document.getElementById('deleteProgress').style.width = '0%';
+    document.getElementById('deleteConfirmationInput').value = '';
+    
+    document.querySelectorAll('.delete-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('continueStep2').disabled = true;
+    document.getElementById('finalDeleteBtn').disabled = true;
+}
+
+function updateDeleteProgress() {
+    const progress = (deleteStep / 3) * 100;
+    document.getElementById('deleteProgress').style.width = `${progress}%`;
+}
+
+function handleDeleteStep1() {
+    deleteStep = 2;
+    document.getElementById('deleteStep1').classList.add('completed');
+    document.getElementById('deleteStep2').classList.remove('hidden');
+    updateDeleteProgress();
+}
+
+function handleDeleteCheckboxes() {
+    const checkboxes = document.querySelectorAll('.delete-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    document.getElementById('continueStep2').disabled = !allChecked;
+}
+
+function handleDeleteStep2() {
+    deleteStep = 3;
+    document.getElementById('deleteStep2').classList.add('completed');
+    document.getElementById('deleteStep3').classList.remove('hidden');
+    updateDeleteProgress();
+}
+
+function handleDeleteInputChange() {
+    const input = document.getElementById('deleteConfirmationInput');
+    const deleteBtn = document.getElementById('finalDeleteBtn');
+    deleteBtn.disabled = input.value !== 'DELETE MY ACCOUNT';
+}
+
+async function handleFinalDelete() {
+    const authData = checkAuth();
+    if (!authData) return;
+    
+    const input = document.getElementById('deleteConfirmationInput');
+    const deleteBtn = document.getElementById('finalDeleteBtn');
+    
+    if (input.value !== 'DELETE MY ACCOUNT') {
+        showToast('Please type the confirmation phrase exactly', 'error');
+        return;
+    }
+    
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting Account...';
+    
+    try {
+        await deleteUserAccount(authData.user.uid, authData.token, input.value);
+        
+        showToast('Account deleted successfully', 'success');
+        
+        localStorage.removeItem('firebaseToken');
+        localStorage.removeItem('userData');
+        
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        showToast(error.message || 'Failed to delete account', 'error');
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = '<i class="fas fa-trash mr-2"></i>Permanently Delete Account';
+    }
+}
+
 // dragndrop
 function setupDragAndDrop() {
     const uploadArea = document.querySelector('.upload-area');
@@ -511,4 +687,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('saveNameBtn').addEventListener('click', handleSaveName);
     document.getElementById('uploadBtn').addEventListener('click', handleUploadPicture);
+        document.getElementById('exportDataBtn').addEventListener('click', handleExportData);
+    
+    document.getElementById('deleteAccountBtn').addEventListener('click', showDeleteModal);
+    document.getElementById('cancelDelete').addEventListener('click', hideDeleteModal);
+    document.getElementById('continueStep1').addEventListener('click', handleDeleteStep1);
+    document.getElementById('continueStep2').addEventListener('click', handleDeleteStep2);
+    document.getElementById('finalDeleteBtn').addEventListener('click', handleFinalDelete);
+    
+    document.querySelectorAll('.delete-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', handleDeleteCheckboxes);
+    });
+    document.getElementById('deleteConfirmationInput').addEventListener('input', handleDeleteInputChange);
+
+    document.querySelector('.modal-backdrop')?.addEventListener('click', hideDeleteModal);
 });
