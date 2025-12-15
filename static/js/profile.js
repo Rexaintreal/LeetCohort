@@ -75,21 +75,25 @@ function updateNavbarProfile(currentUserData, isOwnProfile) {
     
     if (currentUserData && currentUserData.picture) {
         profilePic.src = currentUserData.picture;
+        profilePic.onerror = function() {
+            this.onerror = function() {
+                this.style.display = 'none';
+                profileIcon.style.display = 'block';
+            };
+            this.src = '/static/assets/hcavatar.png';
+        };
         profilePic.style.display = 'block'; 
         profileIcon.style.display = 'none'; 
+        profilePic.alt = currentUserData.name || 'User Profile';
     } else {
-        profilePic.src = '/static/assets/hcavatar.png'; 
-        
-        profilePic.style.display = 'block'; 
-        profileIcon.style.display = 'none'; 
+        profilePic.style.display = 'none'; 
+        profileIcon.style.display = 'block';
     }
 
-    if (profilePic && currentUserData) {
-        profilePic.alt = currentUserData.name || 'User Profile';
-    }
     if (currentUserData) {
         profileLink.href = `/profile/${currentUserData.uid}`;
     }
+    
     if (isOwnProfile) {
         profileLink.classList.add('active');
     } else {
@@ -129,15 +133,35 @@ function timeAgo(dateString) {
 }
 
 function updateProfile(data) {
-    document.getElementById('profileAvatar').src = data.picture || '/static/assets/hcavatar.png';
-    document.getElementById('profileName').textContent = data.name;
-    document.getElementById('profileEmail').style.display = 'none';
+    console.log('Updating profile with data:', data);
+    
+    const profileAvatar = document.getElementById('profileAvatar');
+    if (data.picture) {
+        profileAvatar.src = data.picture;
+        profileAvatar.onerror = function() {
+            this.onerror = function() {
+                this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/%3E%3C/svg%3E';
+            };
+            this.src = '/static/assets/hcavatar.png';
+        };
+    } else {
+        profileAvatar.src = '/static/assets/hcavatar.png';
+        profileAvatar.onerror = function() {
+            this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)"%3E%3Cpath d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/%3E%3C/svg%3E';
+        };
+    }
+    
+    document.getElementById('profileName').textContent = data.name || 'Anonymous User';
     document.getElementById('profileRank').textContent = `#${data.rank || '-'}`;
     document.getElementById('profilePoints').textContent = data.points || 0;
     document.getElementById('profileSolved').textContent = data.problems_solved || 0;
     
     const stats = data.difficulty_stats || { Easy: 0, Medium: 0, Hard: 0 };
     const totals = data.total_by_difficulty || { Easy: 0, Medium: 0, Hard: 0 };
+    
+    console.log('Stats:', stats);
+    console.log('Totals:', totals);
+    
     setTimeout(() => {
         ['Easy', 'Medium', 'Hard'].forEach(diff => {
             const solved = stats[diff] || 0;
@@ -148,6 +172,8 @@ function updateProfile(data) {
             document.getElementById(`${key}Solved`).textContent = `${solved}/${total}`;
             document.getElementById(`${key}Bar`).style.width = `${percent}%`;
             document.getElementById(`${key}Percent`).textContent = `${percent}%`;
+            
+            console.log(`${diff}: ${solved}/${total} = ${percent}%`);
         });
     }, 200);
     
@@ -160,7 +186,11 @@ function updateProfile(data) {
 function createDifficultyChart(stats) {
     const ctx = document.getElementById('difficultyChart');
     
-    new Chart(ctx, {
+    if (window.difficultyChartInstance) {
+        window.difficultyChartInstance.destroy();
+    }
+    
+    window.difficultyChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Easy', 'Medium', 'Hard'],
@@ -227,7 +257,11 @@ function createDifficultyChart(stats) {
 function createProgressChart(solved, totals) {
     const ctx = document.getElementById('progressChart');
     
-    new Chart(ctx, {
+    if (window.progressChartInstance) {
+        window.progressChartInstance.destroy();
+    }
+    
+    window.progressChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Easy', 'Medium', 'Hard'],
@@ -335,6 +369,7 @@ function createProgressChart(solved, totals) {
 
 async function fetchProfile(uid) {
     try {
+        console.log('Fetching profile for UID:', uid);
         const response = await fetch(`/api/profile/${uid}`);
         
         if (!response.ok) {
@@ -344,8 +379,11 @@ async function fetchProfile(uid) {
             throw new Error('Failed to load profile');
         }
         
-        return await response.json();
+        const data = await response.json();
+        console.log('Profile data received:', data);
+        return data;
     } catch (error) {
+        console.error('Fetch error:', error);
         throw error;
     }
 }
@@ -355,16 +393,21 @@ async function initProfilePage() {
     
     try {
         const uid = username;
+        console.log('Initializing profile page for:', uid);
         
         if (!uid) {
             throw new Error('No user ID provided');
         }
+        
         const authData = checkAuth();
         const currentUserData = authData ? authData.user : null;
         const isOwnProfile = currentUserData && currentUserData.uid === uid;
+        
         updateNavbarProfile(currentUserData, isOwnProfile);
+        
         const profileData = await fetchProfile(uid);
         updateProfile(profileData);
+        
         showContent();
         
     } catch (error) {

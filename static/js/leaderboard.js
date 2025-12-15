@@ -126,7 +126,6 @@ function calculateUserStats(userData, allUsers) {
 function updateUserStatsCard(userData, stats) {
     const rankEl = document.getElementById('userRank');
     rankEl.textContent = `#${stats.userRank}`;
-    rankEl.classList.add('points-animate');
     
     const percentileEl = document.getElementById('userPercentile');
     animateValue(percentileEl, 0, stats.percentile, 1000);
@@ -146,17 +145,15 @@ function updateUserStatsCard(userData, stats) {
 
 function getMedalIcon(rank) {
     const medals = {
-        0: '<i class="fas fa-medal text-yellow-400 text-2xl medal-icon"></i>',
-        1: '<i class="fas fa-medal text-gray-300 text-2xl medal-icon"></i>',
-        2: '<i class="fas fa-medal text-orange-400 text-2xl medal-icon"></i>'
+        0: '<i class="fas fa-medal text-yellow-400 text-2xl"></i>',
+        1: '<i class="fas fa-medal text-gray-300 text-2xl"></i>',
+        2: '<i class="fas fa-medal text-orange-400 text-2xl"></i>'
     };
     return medals[rank] || `<span class="text-base font-bold text-gray-500">#${rank + 1}</span>`;
 }
 
-function getPointsDelta(points) {
-    if (points > 500) return '+50';
-    if (points > 200) return '+20';
-    return '+10';
+function isTopPerformer(rank, problemsSolved, points) {
+    return rank < 10 && problemsSolved >= 5 && points >= 50;
 }
 
 function renderLeaderboardItem(user, actualRank, isCurrentUser) {
@@ -167,24 +164,24 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
     if (isCurrentUser) {
         badges.push('<span class="status-badge online">You</span>');
     }
-    if (actualRank < 10 && user.points > 100) {
-        badges.push('<span class="status-badge rising">Rising</span>');
+    
+    if (isTopPerformer(actualRank, user.problems_solved || 0, user.points || 0)) {
+        badges.push('<span class="status-badge top-performer">Top Performer</span>');
     }
     
     return `
         <a href="/profile/${user.uid}" class="block" data-rank="${displayRank}">
             <div class="leaderboard-item p-4 ${isCurrentUser ? 'current-user-highlight' : ''}">
                 <div class="flex items-center gap-3">
-                    <!-- Rank -->
                     <div class="rank-display flex items-center justify-center flex-shrink-0">
                         ${rankIcon}
                     </div>
                     
-                    <!-- User Info -->
                     <div class="flex items-center gap-3 flex-1 min-w-0">
                         <img src="${user.picture || '/static/assets/hcavatar.png'}" 
                             alt="${user.name}"
                             class="h-10 w-10 rounded-full flex-shrink-0"
+                            onerror="this.onerror=null; this.src='/static/assets/hcavatar.png';"
                             loading="lazy">
                         
                         <div class="flex-1 min-w-0">
@@ -194,19 +191,15 @@ function renderLeaderboardItem(user, actualRank, isCurrentUser) {
                             </div>
                             <div class="flex items-center gap-2 text-xs text-gray-500">
                                 <span>${user.problems_solved || 0} problems</span>
-                                ${actualRank < 10 ? '<span class="text-green-400">• Top 10</span>' : ''}
+                                ${actualRank < 10 ? '<span class="text-primary">• Top 10</span>' : ''}
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Stats -->
                     <div class="flex items-center gap-4 flex-shrink-0">
                         <div class="text-center hidden sm:block">
                             <p class="text-xs text-gray-500 mb-1">Points</p>
-                            <div class="flex items-center gap-1">
-                                <p class="text-sm font-bold text-white points-animate">${user.points || 0}</p>
-                                ${actualRank < 20 ? `<span class="text-xs text-green-400">↑</span>` : ''}
-                            </div>
+                            <p class="text-sm font-bold text-white">${user.points || 0}</p>
                         </div>
                         
                         <div class="text-center">
@@ -347,12 +340,18 @@ function updateNavbarProfile(userData) {
     
     if (userData.picture) {
         profilePic.src = userData.picture;
+        profilePic.onerror = function() {
+            this.onerror = function() {
+                this.style.display = 'none';
+                profileIcon.style.display = 'block';
+            };
+            this.src = '/static/assets/hcavatar.png';
+        };
         profilePic.style.display = 'block';
         profileIcon.style.display = 'none';
     } else {
-        profilePic.src = '/static/assets/hcavatar.png'; 
-        profilePic.style.display = 'block'; 
-        profileIcon.style.display = 'none'; 
+        profilePic.style.display = 'none';
+        profileIcon.style.display = 'block';
     }
 }
 

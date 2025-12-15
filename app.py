@@ -15,6 +15,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from execution import execute_code_piston, safe_json_load, check_code_complexity
 import json
 import secrets
+from flask_mail import Mail, Message
+from flask import current_app
+from io import BytesIO
+
 
 app = Flask(__name__)
 CORS(app)
@@ -35,6 +39,14 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  
 MAX_IMAGE_DIMENSION = 500 
 
+# Gmail Configuration
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = ('LeetCohort', os.getenv('MAIL_DEFAULT_SENDER'))
+mail = Mail(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
@@ -69,11 +81,287 @@ def token_required(f):
     
     return decorated_function
 
+
+def download_and_save_google_image(photo_url, uid):
+    try:
+        response = requests.get(photo_url, timeout=10)
+        if response.status_code == 200:
+            image = Image.open(BytesIO(response.content))
+            
+            if image.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', image.size, (255, 255, 255))
+                if image.mode == 'P':
+                    image = image.convert('RGBA')
+                background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+                image = background
+            
+            image.thumbnail((MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION), Image.Resampling.LANCZOS)
+            
+            unique_filename = f"{uid}_google_{uuid.uuid4().hex[:8]}.jpg"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            image.save(filepath, 'JPEG', quality=85, optimize=True)
+            
+            return url_for('static', filename=f'uploads/{unique_filename}', _external=True)
+    except Exception as e:
+        print(f"Error downloading Google profile image: {e}")
+    
+    return None
+
 def get_db_connection():
     conn = sqlite3.connect('db/problems.db')
     conn.row_factory = sqlite3.Row
     return conn
 
+def send_welcome_email(user_email, user_name, home_url, logo_url, hackclub_logo_url, axiom_logo_url):
+    """Send a welcome email to new users"""
+    try:
+        with app.app_context():
+            msg = Message(
+                subject='Welcome to LeetCohort',
+                recipients=[user_email],
+                sender=('LeetCohort', os.getenv('MAIL_DEFAULT_SENDER'))
+            )
+            
+            try:
+                with app.open_resource('static/assets/logo.png') as fp:
+                    logo_data = fp.read()
+                    msg.attach('logo.png', 'image/png', logo_data, 'inline', headers={'Content-ID': '<logo>'})
+                
+                with app.open_resource('static/assets/hackclub.png') as fp:
+                    hackclub_data = fp.read()
+                    msg.attach('hackclub.png', 'image/png', hackclub_data, 'inline', headers={'Content-ID': '<hackclub>'})
+                
+                with app.open_resource('static/assets/axiom.png') as fp:
+                    axiom_data = fp.read()
+                    msg.attach('axiom.png', 'image/png', axiom_data, 'inline', headers={'Content-ID': '<axiom>'})
+            except Exception as e:
+                print(f"Warning: Could not attach images: {e}")
+            
+            msg.html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to LeetCohort</title>
+</head>
+<body style="margin: 0; padding: 0; background: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background: #000000; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; overflow: hidden; max-width: 600px;">
+                    
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #7E1EE7 0%, #6B19C7 100%); padding: 48px 40px; text-align: center;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center">
+                                        <img src="cid:logo" alt="LeetCohort Logo" style="width: 80px; height: 80px; margin-bottom: 24px; border-radius: 16px; border: 2px solid rgba(255, 255, 255, 0.2); display: block; margin-left: auto; margin-right: auto;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Welcome to LeetCohort</h1>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="padding: 48px 40px; background: rgba(255, 255, 255, 0.02);">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="color: #e5e7eb; font-size: 16px; line-height: 1.6; padding-bottom: 24px;">
+                                        Hello <strong style="color: #ffffff;">{user_name}</strong>,
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #e5e7eb; font-size: 16px; line-height: 1.6; padding-bottom: 24px;">
+                                        Thank you for joining our community. We're excited to have you on board.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #9ca3af; font-size: 15px; line-height: 1.6; padding-bottom: 32px;">
+                                        LeetCohort is your platform for solving coding challenges, earning points, and competing with fellow developers. Start your journey today.
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+                                            <tr>
+                                                <td style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px;">
+                                                    <h3 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">Solve Problems</h3>
+                                                    <p style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.5;">Browse our curated collection of coding challenges across multiple difficulty levels.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+                                            <tr>
+                                                <td style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px;">
+                                                    <h3 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">Earn Points</h3>
+                                                    <p style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.5;">Gain points for every problem you solve and track your progress over time.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">
+                                            <tr>
+                                                <td style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px;">
+                                                    <h3 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">Climb the Leaderboard</h3>
+                                                    <p style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.5;">Compete with developers worldwide and see how you rank against others.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td align="center" style="padding: 8px 0 32px 0;">
+                                        <a href="{home_url}" style="display: inline-block; background: linear-gradient(135deg, #7E1EE7 0%, #6B19C7 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 600; font-size: 16px; letter-spacing: 0.025em;">
+                                            Start Solving Problems
+                                        </a>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 32px;">
+                                        <p style="margin: 0 0 16px 0; color: #9ca3af; font-size: 14px; line-height: 1.6;">
+                                            If you have any questions or need assistance, feel free to reach out.
+                                        </p>
+                                        <p style="margin: 0; color: #e5e7eb; font-size: 15px; line-height: 1.6;">
+                                            Best regards,<br>
+                                            <strong style="color: #ffffff;">The LeetCohort Team</strong>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="background: rgba(255, 255, 255, 0.01); padding: 32px 40px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding-bottom: 24px;">
+                                        <table cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="padding: 0 12px;">
+                                                    <a href="https://github.com/rexaintreal/leetcohort" style="color: #9ca3af; text-decoration: none; font-size: 14px; font-weight: 500;">
+                                                        GitHub
+                                                    </a>
+                                                </td>
+                                                <td style="color: rgba(255, 255, 255, 0.2);">•</td>
+                                                <td style="padding: 0 12px;">
+                                                    <a href="https://saurabhcodesawfully.pythonanywhere.com/" style="color: #9ca3af; text-decoration: none; font-size: 14px; font-weight: 500;">
+                                                        Portfolio
+                                                    </a>
+                                                </td>
+                                                <td style="color: rgba(255, 255, 255, 0.2);">•</td>
+                                                <td style="padding: 0 12px;">
+                                                    <a href="https://axiom.hackclub.com/" style="color: #9ca3af; text-decoration: none; font-size: 14px; font-weight: 500;">
+                                                        Axiom
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td align="center" style="padding-bottom: 20px;">
+                                        <table cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td align="center" style="padding-bottom: 12px;">
+                                                    <p style="margin: 0; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Built with</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center">
+                                                    <table cellpadding="0" cellspacing="0">
+                                                        <tr>
+                                                            <td style="padding: 0 16px;" align="center">
+                                                                <a href="https://hackclub.com/" target="_blank">
+                                                                    <img src="cid:hackclub" alt="Hack Club" style="height: 32px; opacity: 0.6; display: block;">
+                                                                </a>
+                                                            </td>
+                                                            <td style="padding: 0 16px;" align="center">
+                                                                <a href="https://axiom.hackclub.com/" target="_blank">
+                                                                    <img src="cid:axiom" alt="Axiom" style="height: 32px; opacity: 0.6; display: block;">
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td align="center" style="color: #6b7280; font-size: 13px; line-height: 1.5;">
+                                        You're receiving this email because you created an account on LeetCohort.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding-top: 16px;">
+                                        <p style="margin: 0; color: #4b5563; font-size: 12px;">
+                                            © 2025 LeetCohort. All rights reserved.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+            """
+            
+            msg.body = f"""
+Welcome to LeetCohort
+
+Hello {user_name},
+
+Thank you for joining our community. We're excited to have you on board.
+
+LeetCohort is your platform for solving coding challenges, earning points, and competing with fellow developers. Start your journey today.
+
+What You Can Do:
+- Solve Problems: Browse our curated collection of coding challenges
+- Earn Points: Gain points for every problem you solve
+- Climb the Leaderboard: Compete with developers worldwide
+
+Get Started: {home_url}
+
+If you have any questions or need assistance, feel free to reach out.
+
+Best regards,
+The LeetCohort Team
+
+---
+GitHub: https://github.com/rexaintreal/leetcohort
+Portfolio: https://saurabhcodesawfully.pythonanywhere.com/
+Axiom: https://axiom.hackclub.com/
+
+Built with Hack Club & Axiom
+            """
+            
+            mail.send(msg)
+            print(f"Welcome email sent successfully to {user_email}")
+            return True
+    except Exception as e:
+        print(f"Error sending welcome email to {user_email}: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+    
 def parse_tags(tag_string):
     if not tag_string:
         return []
@@ -116,7 +404,23 @@ def create_or_update_user(email, name, picture, provider, provider_id):
         }
         user_ref.set(user_data)
         is_new = True
-    
+        
+        if email:
+            home_url = url_for('home', _external=True)
+            logo_url = url_for('static', filename='assets/logo.png', _external=True)
+            hackclub_logo_url = url_for('static', filename='assets/hackclub.png', _external=True)
+            axiom_logo_url = url_for('static', filename='assets/axiom.png', _external=True)
+            
+            executor.submit(
+                send_welcome_email, 
+                email, 
+                user_data['name'],
+                home_url,
+                logo_url,
+                hackclub_logo_url,
+                axiom_logo_url
+            )
+
     return user_data, is_new
 
 # Image proxy route
@@ -456,11 +760,18 @@ def verify_and_create_user():
             })
             user_data = user_doc.to_dict()
         else:
+            picture_url = None
+            if user.photo_url:
+                picture_url = download_and_save_google_image(user.photo_url, uid)
+                if not picture_url:
+                    from urllib.parse import quote
+                    picture_url = url_for('proxy_image', url=quote(user.photo_url, safe=''), _external=True)
+            
             user_data = {
                 'uid': uid,
                 'email': user.email,
                 'name': user.display_name or user.email.split('@')[0],
-                'picture': user.photo_url,
+                'picture': picture_url,
                 'points': 0,
                 'problems_solved': 0,
                 'solved_problems': [],
@@ -469,6 +780,22 @@ def verify_and_create_user():
                 'provider': 'google'
             }
             user_ref.set(user_data)
+            
+            if user.email:
+                home_url = url_for('home', _external=True)
+                logo_url = url_for('static', filename='assets/logo.png', _external=True)
+                hackclub_logo_url = url_for('static', filename='assets/hackclub.png', _external=True)
+                axiom_logo_url = url_for('static', filename='assets/axiom.png', _external=True)
+                
+                executor.submit(
+                    send_welcome_email, 
+                    user.email, 
+                    user_data['name'],
+                    home_url,
+                    logo_url,
+                    hackclub_logo_url,
+                    axiom_logo_url
+                )
 
         response_data = {
             'uid': user_data['uid'],
