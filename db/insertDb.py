@@ -132,13 +132,13 @@ def seed_database():
                     ))
 
             inserted_count += 1
-            print(f"✓ Inserted: {p['title']}")
+            print(f"Inserted: {p['title']}")
 
         except sqlite3.IntegrityError as e:
-            print(f"✗ Skipping '{p['title']}' (likely already exists): {e}")
+            print(f"Skipping '{p['title']}' (likely already exists): {e}")
             skipped_count += 1
         except Exception as e:
-            print(f"✗ Error inserting '{p['title']}': {e}")
+            print(f"Error inserting '{p['title']}': {e}")
             import traceback
             traceback.print_exc()
 
@@ -147,8 +147,8 @@ def seed_database():
     
     print("-" * 50)
     print(f"Process Complete.")
-    print(f"✓ Inserted: {inserted_count}")
-    print(f"✗ Skipped:  {skipped_count}")
+    print(f"Inserted: {inserted_count}")
+    print(f"Skipped:  {skipped_count}")
 
 if __name__ == "__main__":
     seed_database()

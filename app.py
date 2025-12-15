@@ -8,7 +8,6 @@ import os
 from functools import wraps
 import sqlite3
 import requests
-from werkzeug.utils import secure_filename
 import uuid
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -16,7 +15,6 @@ from execution import execute_code_piston, safe_json_load, check_code_complexity
 import json
 import secrets
 from flask_mail import Mail, Message
-from flask import current_app
 from io import BytesIO
 
 
@@ -27,11 +25,11 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', secrets.token_hex(32))
 # OAuth Configuration
 HACKCLUB_CLIENT_ID = os.getenv('HACKCLUB_CLIENT_ID')
 HACKCLUB_CLIENT_SECRET = os.getenv('HACKCLUB_CLIENT_SECRET')
-HACKCLUB_REDIRECT_URI = os.getenv('HACKCLUB_REDIRECT_URI', 'http://localhost:5000/auth/hackclub/callback')
+HACKCLUB_REDIRECT_URI = os.getenv('HACKCLUB_REDIRECT_URI', 'http://localhost:5000/auth/hackclub/callback') # change this if diff urls
 
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
 GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
-GITHUB_REDIRECT_URI = os.getenv('GITHUB_REDIRECT_URI', 'http://localhost:5000/auth/github/callback')
+GITHUB_REDIRECT_URI = os.getenv('GITHUB_REDIRECT_URI', 'http://localhost:5000/auth/github/callback') # this too
 
 # upload configs
 UPLOAD_FOLDER = 'static/uploads'
@@ -354,10 +352,8 @@ Built with Hack Club & Axiom
             """
             
             mail.send(msg)
-            print(f"Welcome email sent successfully to {user_email}")
             return True
     except Exception as e:
-        print(f"Error sending welcome email to {user_email}: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -1178,7 +1174,6 @@ def submit_solution(slug):
         return jsonify(response), 200
     
     except Exception as e:
-        print(f"Error in submit_solution: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': f'Submission failed: {str(e)}'}), 500
@@ -1257,7 +1252,6 @@ def run_code(slug):
                 })
             
             except Exception as e:
-                print(f"Warning: Failed to parse test case {tc['id']}: {e}")
                 continue
         
         if not prepared_tests:
@@ -1302,7 +1296,6 @@ def run_code(slug):
                     all_passed = False
             
             except Exception as e:
-                print(f"Error executing test: {e}")
                 all_passed = False
         
         results.sort(key=lambda x: x['test_case_id'])
@@ -1315,7 +1308,6 @@ def run_code(slug):
         }), 200
         
     except Exception as e:
-        print(f"Error in run_code: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': f'Execution failed: {str(e)}'}), 500
@@ -1360,7 +1352,6 @@ def update_display_name(uid):
         }), 200
         
     except Exception as e:
-        print(f"Error updating display name: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/user/<uid>/upload-picture', methods=['POST'])
@@ -1428,7 +1419,6 @@ def upload_profile_picture(uid):
         }), 200
         
     except Exception as e:
-        print(f"Error uploading profile picture: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -1464,7 +1454,6 @@ def get_problems():
         return jsonify(problems), 200
     
     except Exception as e:
-        print(f"Error fetching problems: {e}")
         return jsonify({'error': str(e)}), 500
 
 ##problems
@@ -1551,7 +1540,6 @@ def get_problem_detail(slug):
         return jsonify(problem), 200
     
     except Exception as e:
-        print(f"Error fetching problem detail: {e}")
         return jsonify({'error': str(e)}), 500
 
 ##leaderboards
@@ -1577,7 +1565,6 @@ def get_leaderboard():
         return jsonify(leaderboard), 200
     
     except Exception as e:
-        print(f"Error fetching leaderboard: {e}")
         return jsonify({'error': str(e)}), 500
     
 ##profile
@@ -1634,7 +1621,6 @@ def get_public_profile(uid):
         return jsonify(profile_data), 200
         
     except Exception as e:
-        print(f"Error fetching public profile: {e}")
         return jsonify({'error': str(e)}), 500
 
 

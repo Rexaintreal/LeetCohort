@@ -17,14 +17,14 @@
 
 ## About
 
-LeetCohort is a free coding practice platform focused on Python Solve problems, earn points, and compete on the leaderboard. Built as part of the Axiom YSWS program.
+LeetCohort is a free coding practice platform focused on Python Solve problems, earn points, and compete on the leaderboard. Built as part of the Axiom YSWS (HackClub) program.
 
 ---
 
 ## Live Demo
 
 Try it out at [leetcohort.pythonanywhere.com](https://leetcohort.pythonanywhere.com/)
-> **Note:** Hack Club OAuth is currently unavailable on the hosted version due to PythonAnywhere domain restrictions. A whitelist request has been submitted. For now, please use Google or GitHub to sign in.
+> **Note:** Hack Club OAuth is currently unavailable on the hosted version due to PythonAnywhere domain restrictions [[Allowed Sites](https://www.pythonanywhere.com/whitelist/)]. A whitelist request has been submitted (Mailed them). For now, please use Google or GitHub to sign in.
 
 
 ---
@@ -92,6 +92,7 @@ Try it out at [leetcohort.pythonanywhere.com](https://leetcohort.pythonanywhere.
 - Hard problems: 50+ points
 - Each test case within a problem can award partial points
 - Leaderboard ranks users by total points earned
+- Points are given based on various things such as difficulty, time complexity, hints etc.
 
 
 ---
@@ -120,9 +121,10 @@ LeetCohort/
 ## Setup and Installation
 
 ### Prerequisites
-- Python 3.12 or higher
+- Python 3.12 or higher (I used 3.12.10)
 - pip for installing packages
 - Firebase project with Firestore and Authentication enabled
+- If you want to use [HackClub](https://auth.hackclub.com/docs/welcome) or [GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) OAuth please refer to their respective Docs (Almost same as Google)
 
 ### Installation Steps
 
@@ -132,7 +134,7 @@ LeetCohort/
    cd LeetCohort
 ```
 
-2. Create a virtual environment
+2. Create a virtual environment (Recommended)
    
    Windows:
 ```bash
@@ -195,7 +197,7 @@ LeetCohort/
    python app.py
 ```
 
-8. Open your browser and go to `http://127.0.0.1:5000`
+8. Open your browser and go to `http://127.0.0.1:5000` or `localhost:500` if you've specified that in the OAuth Urls
 
 ---
 
@@ -270,10 +272,10 @@ CREATE TABLE hints (
 
 **User Accounts**
 - OAuth login via Google, GitHub, or Hack Club
-- Customizable profile with name and picture
+- Customizable profile with name and picture (we've a cute default avatar for HackClub users)
 - View solved problems and statistics
-- Export all your data as JSON
-- Delete account and all associated data
+- Export all your data as JSON format
+- Delete account and all associated data easily
 
 ---
 
@@ -319,7 +321,7 @@ CREATE TABLE hints (
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+MIT [LICENSE](LICENSE)
 
 ---
 
