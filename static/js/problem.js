@@ -20,6 +20,32 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// Timer 
+let timerInterval;
+let seconds = 0;
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        seconds++;
+        updateTimerDisplay();
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    const display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    document.getElementById('timerDisplay').textContent = display;
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+}
+
 // auth
 function checkAuth() {
     const token = localStorage.getItem('firebaseToken');
@@ -149,7 +175,7 @@ function formatDescription(problem) {
     
     if (problem.input_format) {
         html += `
-            <div style="margin-top: 24px; padding: 16px; background: rgba(126, 30, 231, 0.05); border-radius: 8px; border-left: 3px solid #7E1EE7;">
+            <div style="margin-top: 24px; padding: 16px; background: rgba(126, 30, 231, 0.05); border-radius: 8px; border: 1px solid rgba(126, 30, 231, 0.15);">
                 <div style="font-weight: 600; color: #7E1EE7; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Input Format</div>
                 <div style="color: #cccccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${problem.input_format}</div>
             </div>
@@ -158,7 +184,7 @@ function formatDescription(problem) {
     
     if (problem.output_format) {
         html += `
-            <div style="margin-top: 12px; padding: 16px; background: rgba(126, 30, 231, 0.05); border-radius: 8px; border-left: 3px solid #7E1EE7;">
+            <div style="margin-top: 12px; padding: 16px; background: rgba(126, 30, 231, 0.05); border-radius: 8px; border: 1px solid rgba(126, 30, 231, 0.15);">
                 <div style="font-weight: 600; color: #7E1EE7; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Output Format</div>
                 <div style="color: #cccccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${problem.output_format}</div>
             </div>
@@ -229,10 +255,30 @@ function renderHints(hints) {
     }
     
     container.innerHTML = hints.map((h, idx) => `
-        <div class="hint-item">
-            <p><strong>Hint ${idx + 1}:</strong> ${h.hint}</p>
+        <div class="hint-wrapper">
+            <button class="hint-toggle" onclick="toggleHint(${idx})">
+                <i class="fas fa-lightbulb"></i>
+                <span>Hint ${idx + 1}</span>
+                <i class="fas fa-chevron-down hint-chevron" id="hint-chevron-${idx}"></i>
+            </button>
+            <div class="hint-content" id="hint-content-${idx}" style="display: none;">
+                <p>${h.hint}</p>
+            </div>
         </div>
     `).join('');
+}
+
+function toggleHint(index) {
+    const content = document.getElementById(`hint-content-${index}`);
+    const chevron = document.getElementById(`hint-chevron-${index}`);
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        chevron.style.transform = 'rotate(0deg)';
+    }
 }
 
 // runCode
@@ -410,7 +456,7 @@ async function submitCode() {
         displaySubmitResults(result);
         
         if (result.all_passed) {
-            showToast(`🎉 All test cases passed! +${result.total_points} points`, 'success');
+            showToast(`All test cases passed! +${result.total_points} points`, 'success');
             
             const userData = JSON.parse(localStorage.getItem('userData'));
             if (!userData.solved_problems.includes(currentProblem.id)) {
@@ -638,6 +684,7 @@ function initConsoleTabs() {
 
 // Logout
 function handleLogout() {
+    stopTimer();
     localStorage.removeItem('firebaseToken');
     localStorage.removeItem('userData');
     window.location.href = '/auth';
@@ -647,6 +694,8 @@ function handleLogout() {
 async function initProblemPage() {
     const authData = checkAuth();
     if (!authData) return;
+    
+    startTimer();
     
     try {
         const problem = await fetchProblemDetail(PROBLEM_SLUG);

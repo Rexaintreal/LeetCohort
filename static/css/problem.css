@@ -12,12 +12,6 @@ body {
     height: 100vh;
 }
 
-.glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 .split-container {
     display: flex;
     height: calc(100vh - 57px);
@@ -47,7 +41,7 @@ body {
     background: rgba(255, 255, 255, 0.05);
     position: relative;
     z-index: 10;
-    transition: background 0.2s ease;
+    transition: background 0.15s ease;
 }
 
 .resizer:hover,
@@ -58,19 +52,19 @@ body {
 .difficulty-easy {
     background: rgba(34, 197, 94, 0.1);
     color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .difficulty-medium {
     background: rgba(234, 179, 8, 0.1);
     color: #eab308;
-    border: 1px solid rgba(234, 179, 8, 0.2);
+    border: 1px solid rgba(234, 179, 8, 0.3);
 }
 
 .difficulty-hard {
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .section {
@@ -122,6 +116,11 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 12px;
     color: #9ca3af;
+    transition: background 0.2s ease;
+}
+
+.info-item:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .info-item i {
@@ -152,6 +151,11 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    transition: background 0.2s ease;
+}
+
+.topic-tag:hover {
+    background: rgba(126, 30, 231, 0.15);
 }
 
 .topic-tag i {
@@ -169,6 +173,11 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    transition: background 0.2s ease;
+}
+
+.company-tag:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .company-tag i {
@@ -193,12 +202,11 @@ body {
     margin-bottom: 12px;
     font-family: 'Courier New', monospace;
     font-size: 13px;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease;
 }
 
 .example-box:hover {
-    border-color: rgba(126, 30, 231, 0.3);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .example-label {
@@ -216,25 +224,66 @@ body {
     line-height: 1.6;
 }
 
-.hint-item {
-    background: rgba(126, 30, 231, 0.08);
-    border: 1px solid rgba(126, 30, 231, 0.15);
-    border-left: 3px solid #7E1EE7;
-    border-radius: 6px;
-    padding: 14px 16px;
+.hint-wrapper {
     margin-bottom: 10px;
-    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
 }
 
-.hint-item:hover {
-    background: rgba(126, 30, 231, 0.12);
-    border-color: rgba(126, 30, 231, 0.25);
+.hint-wrapper:hover {
+    border-color: rgba(126, 30, 231, 0.3);
 }
 
-.hint-item p {
+.hint-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: #a78bfa;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.hint-toggle:hover {
+    background: rgba(126, 30, 231, 0.05);
+}
+
+.hint-toggle span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hint-chevron {
+    transition: transform 0.2s ease;
+    font-size: 12px;
+}
+
+.hint-content {
+    padding: 0 16px 14px 16px;
     color: #cccccc;
     font-size: 14px;
     line-height: 1.6;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .complexity-grid {
@@ -260,6 +309,13 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.complexity-label i {
+    color: #7E1EE7;
 }
 
 .complexity-value {
@@ -269,6 +325,24 @@ body {
     font-family: 'Courier New', monospace;
 }
 
+.timer-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #d4d4d4;
+    font-weight: 600;
+}
+
+.timer-display i {
+    color: #7E1EE7;
+}
+
 .editor-header {
     background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -276,37 +350,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.language-select {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #d4d4d4;
-    padding: 8px 32px 8px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23cccccc' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    transition: all 0.2s ease;
-}
-
-.language-select:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-.language-select:focus {
-    border-color: #7E1EE7;
-}
-
-.language-select option {
-    background: #1a1a1a;
-    color: #d4d4d4;
 }
 
 .editor-actions {
@@ -336,7 +379,7 @@ body {
 
 .btn-run:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .btn-submit {
@@ -382,7 +425,7 @@ body {
     left: 0;
     right: 0;
     z-index: 10;
-    transition: background 0.2s ease;
+    transition: background 0.15s ease;
 }
 
 .console-resizer:hover,
@@ -408,6 +451,9 @@ body {
     border-bottom: 2px solid transparent;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .console-tab:hover {
@@ -433,8 +479,6 @@ body {
     display: block;
 }
 
-
-
 .test-result {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -442,21 +486,19 @@ body {
     padding: 14px;
     margin-bottom: 12px;
     font-size: 13px;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease;
 }
 
 .test-result.passed {
-    border-left: 3px solid #22c55e;
-    background: rgba(34, 197, 94, 0.05);
+    border-color: rgba(34, 197, 94, 0.3);
 }
 
 .test-result.failed {
-    border-left: 3px solid #ef4444;
-    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 .test-result:hover {
-    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .result-header {
@@ -534,19 +576,16 @@ body {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
     border-radius: 12px;
     padding: 16px 20px;
     min-width: 300px;
     max-width: 500px;
     z-index: 1000;
-    animation: slideDown 0.3s ease-out, fadeOutUp 0.3s ease-in 2.7s;
-    opacity: 0;
-}
-
-.toast.show {
-    opacity: 1;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .toast.success {
@@ -557,7 +596,7 @@ body {
     border-left: 4px solid #ef4444;
 }
 
-@keyframes slideDown {
+@keyframes slideIn {
     from {
         transform: translateX(-50%) translateY(-100px);
         opacity: 0;
@@ -565,13 +604,6 @@ body {
     to {
         transform: translateX(-50%) translateY(0);
         opacity: 1;
-    }
-}
-
-@keyframes fadeOutUp {
-    to {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-100px);
     }
 }
 
@@ -594,24 +626,24 @@ body {
 }
 
 .nav-link {
-    transition: all 0.2s ease;
-    position: relative;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.03);
-    color: white;
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.profile-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.2s ease;
-}
-
-.profile-avatar:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: scale(1.05);
+@media (max-width: 768px) {
+    .left-panel {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .resizer {
+        display: none;
+    }
+    
+    .complexity-grid {
+        grid-template-columns: 1fr;
+    }
 }
