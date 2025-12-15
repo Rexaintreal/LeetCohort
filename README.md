@@ -23,7 +23,8 @@ LeetCohort is a free coding practice platform focused on Python Solve problems, 
 
 ## Live Demo
 
-Try it out at [leetcohort.pythonanywhere.com](https://leetcohort.pythonanywhere.com/)
+Try it out at [LeetCohort](https://leetcohort.pythonanywhere.com/)
+and Demo Video [DEMO](https://drive.google.com/file/d/1P_uuZ9h47RuxZA-a98k90Q8su9i1DCXJ/view?usp=sharing) google drive link
 > **Note:** Hack Club OAuth is currently unavailable on the hosted version due to PythonAnywhere domain restrictions [[Allowed Sites](https://www.pythonanywhere.com/whitelist/)]. A whitelist request has been submitted (Mailed them). For now, please use Google or GitHub to sign in.
 
 
